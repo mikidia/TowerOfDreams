@@ -1,32 +1,37 @@
 using System;
-using UnityEditor.Experimental.GraphView;
+using System.Collections;
+using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.XR;
 
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IDamageable
 {
     #region Declarations 
     [Header("Player settings")]
-    [SerializeField] float playerSpeed,playerDamage,xInput,yInput;
-    [SerializeField] int playerHp;
-    [SerializeField] Vector3 offset;
-    [SerializeField] float attackDistance;
+    [SerializeField] float _playerSpeed;
+    [SerializeField] float _playerDamage;
+    [SerializeField] float _attackDistance;
+    [SerializeField] float _attackSpeed;
+    [SerializeField] int _playerHp;
 
 
-
-
-
-    [NonSerialized] Vector2 inputVector;
-    [NonSerialized] bool playerDamageable;
-    [NonSerialized] Vector2 facingDirection;
-    [NonSerialized] Vector2 attackDirection;
-
+    #region Nonserialized
+    [NonSerialized] Vector3 offset;
+    [NonSerialized] Vector3 input;
+    [NonSerialized] bool _isAttackAvailable = true;
+    [NonSerialized] bool _playerDamageable;
+    [NonSerialized] Vector2 facingDirection,attackDirection,inputVector;
     [NonSerialized] Animator animator;
+    [NonSerialized] Rigidbody rb;
+    #endregion
 
 
+    #region Input Buttons
+    KeyCode interractButton = KeyCode.E;
+    KeyCode attackbutton = KeyCode.Mouse0;
 
-    Rigidbody rb;
+    #endregion
+
 
 
     #endregion
@@ -41,7 +46,7 @@ public class Player : MonoBehaviour
     }
     private void Start ()
     {
-        
+
     }
 
     #endregion
@@ -52,67 +57,99 @@ public class Player : MonoBehaviour
     private void FixedUpdate ()
     {
         Movement();
-        SetDirection();
-        Attack();
+        Debugs();
+        GetInputs();
     }
 
 
+    void GetInputs ()
+    {
+        if (Input.GetKeyDown(interractButton))
+        {
+            //Interract
 
 
-    #region Movement and animations
-    void Movement () 
+        }
+        if (Input.GetKeyDown(attackbutton) && _isAttackAvailable == true)
+        {
+
+            Attack();
+
+
+        }
+
+
+    }
+
+    #region Movement, attack and their animations
+    void Movement ()
     {
 
-        xInput = Input.GetAxis("Horizontal"); 
-        yInput = Input.GetAxis("Vertical");
-        Debug.Log(yInput);
-        Vector3 newPos = new Vector3 (rb.position.x+xInput*playerSpeed*Time.deltaTime ,0,rb.position.z+yInput*playerSpeed*Time.deltaTime);  
-        rb.MovePosition(newPos); 
 
+        input = new Vector3( Input.GetAxis("Horizontal"),0, Input.GetAxis("Vertical")).normalized;
+        
+        
+        Vector3 newPos =rb.position+input*_playerSpeed*Time.deltaTime;
+        rb.MovePosition( newPos);
+
+        SetDirection();
 
     }
 
     void SetDirection ()
     {
-        facingDirection = Vector2.ClampMagnitude(new Vector2(xInput, yInput), 1); 
+        facingDirection = Vector2.ClampMagnitude(new Vector2(input.x, input.y), 1);
+        if (math.abs(input.x) >= 0.1 || math.abs(input.y) >= 0.1)
+        {
+            attackDirection = new Vector2(input.x, input.y);
+        }
+    }
 
+
+
+
+    void Attack ()
+    {
+
+        RaycastHit2D hit  =  Physics2D.Raycast(transform.position +offset,transform.forward*facingDirection,_attackDistance);
+        print("attack");
+        StartCoroutine("AttackCd");
+    }
+
+    public void GetDamage (int damage)
+    {
+        _playerHp -= damage;
+        if (_playerHp <= 0)
+        {
+            PlayerDead();
+        }
+    }
+
+
+
+    void PlayerDead ()
+    {
+        //animator.SetTrigger("playerDead"); 
     }
 
     #endregion
 
 
-    void Attack () 
+    void Debugs ()
     {
-
-        RaycastHit2D hit  =  Physics2D.Raycast(transform.position +offset,transform.forward*facingDirection,attackDistance);
-        
-    }
-    public void GetDamage (int damage) 
-    {
-        playerHp-= damage;
-        if (playerHp <= 0)
-        {
-
-            PlayerDead();
-        
-        
-        }
-    
+        //Debug.DrawRay(transform.position, facingDirection * 2, Color.red);// draw move direction ray
+        //Debug.DrawRay(transform.position, attackDirection * 2f, Color.green); //not correctly draw size of attack direction ray
     }
 
-    void PlayerDead () 
+
+    IEnumerator AttackCd ()
     {
 
-        
-        //animator.SetTrigger("playerDead"); 
-    
-    }
-
-    void Debugs () 
-    {
-        Debug.DrawRay(transform.position, facingDirection * 2, Color.red);
-
+        _isAttackAvailable = false;
+        yield return new WaitForSeconds(_attackSpeed);
+        _isAttackAvailable = true;
 
     }
+
 
 }
