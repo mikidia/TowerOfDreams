@@ -68,15 +68,12 @@ public class Player : MonoBehaviour, IDamageable
         {
             //Interract
 
-
         }
         if (Input.GetKeyDown(attackbutton) && _isAttackAvailable == true)
         {
-
-            Attack();
-
-
+            StartCoroutine("AttackCd");
         }
+        
 
 
     }
@@ -106,16 +103,6 @@ public class Player : MonoBehaviour, IDamageable
     }
 
 
-
-
-    void Attack ()
-    {
-
-        RaycastHit2D hit  =  Physics2D.Raycast(transform.position +offset,transform.forward*facingDirection,_attackDistance);
-        print("attack");
-        StartCoroutine("AttackCd");
-    }
-
     public void GetDamage (int damage)
     {
         _playerHp -= damage;
@@ -144,7 +131,8 @@ public class Player : MonoBehaviour, IDamageable
 
     IEnumerator AttackCd ()
     {
-
+        print("attack");
+        //RaycastHit2D hit  =  Physics2D.Raycast(transform.position +offset,transform.forward*facingDirection,_attackDistance);
         _isAttackAvailable = false;
         yield return new WaitForSeconds(_attackSpeed);
         _isAttackAvailable = true;
