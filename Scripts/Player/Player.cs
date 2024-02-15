@@ -10,25 +10,44 @@ public class Player : MonoBehaviour, IDamageable
     [Header("Player settings")]
     [SerializeField] float _playerSpeed;
     [SerializeField] float _playerDamage;
+    [SerializeField] int _playerHp;
+    [SerializeField] bool _playerControlIsEnable;
+    [Header("Player attack settings")]
     [SerializeField] float _attackDistance;
     [SerializeField] float _attackSpeed;
-    [SerializeField] int _playerHp;
+    [Header("Roll settings")]
+    [SerializeField] float _rollCd;
+    [SerializeField] float _rollDistance;
+    [SerializeField] float _rollSpeed;
+    [SerializeField] bool _rollIsPossible;
+    [SerializeField]float _rollSpendStamina;
 
+    [Header("Stamina settings")]
+    [SerializeField] float _stamina=100;
+    [SerializeField]float _maxStamina;
+    [SerializeField]float _staminaRegeneration;
 
     #region Nonserialized
     [NonSerialized] Vector3 offset;
     [NonSerialized] Vector3 input;
     [NonSerialized] bool _isAttackAvailable = true;
     [NonSerialized] bool _playerDamageable;
-    [NonSerialized] Vector2 facingDirection,attackDirection,inputVector;
+    [NonSerialized] Vector3 facingDirection,attackDirection;
     [NonSerialized] Animator animator;
     [NonSerialized] Rigidbody rb;
+    //[NonSerialized] KeyCode _inputBuffer; // dont forger add input buffer after roll (attack,another roll)
     #endregion
 
 
     #region Input Buttons
     KeyCode interractButton = KeyCode.E;
-    KeyCode attackbutton = KeyCode.Mouse0;
+    KeyCode attackButton = KeyCode.Mouse0;
+    KeyCode rollButton = KeyCode.LeftShift;
+    KeyCode inventoryButton = KeyCode.I;
+
+
+
+
 
     #endregion
 
@@ -42,6 +61,8 @@ public class Player : MonoBehaviour, IDamageable
     private void Awake ()
     {
         rb = GetComponent<Rigidbody>();
+        _playerControlIsEnable = true;
+        _rollIsPossible = true;
 
     }
     private void Start ()
@@ -52,28 +73,49 @@ public class Player : MonoBehaviour, IDamageable
     #endregion
 
 
-
-
     private void FixedUpdate ()
     {
-        Movement();
+
+    }
+
+    void Update ()
+    {
+        
+
+        if (_playerControlIsEnable)
+        {
+            GetInputs();
+            SetDirection();
+            Movement();
+            
+
+        }
+        UpdateStamina();
         Debugs();
-        GetInputs();
     }
 
 
     void GetInputs ()
     {
+
+        if (Input.GetKeyDown(rollButton) && _rollIsPossible == true && (math.abs(input.x) >= 0.1||  math.abs(input.z) >= 0.1))
+        {
+            StartCoroutine("Roll");
+
+        }
         if (Input.GetKeyDown(interractButton))
         {
             //Interract
 
         }
-        if (Input.GetKeyDown(attackbutton) && _isAttackAvailable == true)
+        if (Input.GetKeyDown(attackButton) && _isAttackAvailable == true)
         {
-            StartCoroutine("AttackCd");
+            StartCoroutine("Attack");
         }
-        
+
+
+
+
 
 
     }
@@ -83,22 +125,21 @@ public class Player : MonoBehaviour, IDamageable
     {
 
 
-        input = new Vector3( Input.GetAxis("Horizontal"),0, Input.GetAxis("Vertical")).normalized;
-        
-        
-        Vector3 newPos =rb.position+input*_playerSpeed*Time.deltaTime;
-        rb.MovePosition( newPos);
+        input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+        Vector3 newPos =rb.position+(input.normalized*_playerSpeed*Time.deltaTime);
+        //rb.velocity = newPos;
+        rb.MovePosition(newPos);
 
-        SetDirection();
+
 
     }
 
     void SetDirection ()
     {
-        facingDirection = Vector2.ClampMagnitude(new Vector2(input.x, input.y), 1);
-        if (math.abs(input.x) >= 0.1 || math.abs(input.y) >= 0.1)
+        facingDirection = Vector3.ClampMagnitude(new Vector3(input.x,0, input.z), 1);
+        if (math.abs(input.x) >= 0.1 || math.abs(input.z) >= 0.1)
         {
-            attackDirection = new Vector2(input.x, input.y);
+            attackDirection = new Vector2(input.x, input.z);
         }
     }
 
@@ -127,9 +168,31 @@ public class Player : MonoBehaviour, IDamageable
         //Debug.DrawRay(transform.position, facingDirection * 2, Color.red);// draw move direction ray
         //Debug.DrawRay(transform.position, attackDirection * 2f, Color.green); //not correctly draw size of attack direction ray
     }
+    void Roll () 
+    {
+    
+        if (_stamina>=_rollSpendStamina) 
+        {
+            Vector3 rollPosition = transform.position +input.normalized* _rollDistance ;
+            transform.position = Vector3.MoveTowards(transform.position, rollPosition, _rollSpeed);
+            _stamina -= _rollSpendStamina;
+        }
+    
+    }
+
+    void UpdateStamina () 
+    {
+    
+    if (_stamina < _maxStamina) 
+        {
+            _stamina += Time.deltaTime*_staminaRegeneration;
+        }
+    
+    }
 
 
-    IEnumerator AttackCd ()
+
+    IEnumerator Attack ()
     {
         print("attack");
         //RaycastHit2D hit  =  Physics2D.Raycast(transform.position +offset,transform.forward*facingDirection,_attackDistance);
@@ -137,6 +200,13 @@ public class Player : MonoBehaviour, IDamageable
         yield return new WaitForSeconds(_attackSpeed);
         _isAttackAvailable = true;
 
+    }
+    IEnumerator RollCd ()
+    {
+        _rollIsPossible = false;
+        Roll();
+        yield return new WaitForSeconds(_rollCd);
+        _rollIsPossible = true;
     }
 
 
