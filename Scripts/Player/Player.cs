@@ -49,6 +49,13 @@ public class Player : MonoBehaviour, IDamageable
 
 
 
+
+
+    #endregion
+
+    #region Getters
+    public float Stamina { get => _stamina; }
+    public float MaxStamina { get => _maxStamina; }
     #endregion
 
 
@@ -80,14 +87,14 @@ public class Player : MonoBehaviour, IDamageable
 
     void Update ()
     {
-        
+
 
         if (_playerControlIsEnable)
         {
             GetInputs();
             SetDirection();
             Movement();
-            
+
 
         }
         UpdateStamina();
@@ -98,7 +105,7 @@ public class Player : MonoBehaviour, IDamageable
     void GetInputs ()
     {
 
-        if (Input.GetKeyDown(rollButton) && _rollIsPossible == true && (math.abs(input.x) >= 0.1||  math.abs(input.z) >= 0.1))
+        if (Input.GetKeyDown(rollButton) && _rollIsPossible == true && (math.abs(input.x) >= 0.1 || math.abs(input.z) >= 0.1))
         {
             StartCoroutine("Roll");
 
@@ -136,7 +143,7 @@ public class Player : MonoBehaviour, IDamageable
 
     void SetDirection ()
     {
-        facingDirection = Vector3.ClampMagnitude(new Vector3(input.x,0, input.z), 1);
+        facingDirection = Vector3.ClampMagnitude(new Vector3(input.x, 0, input.z), 1);
         if (math.abs(input.x) >= 0.1 || math.abs(input.z) >= 0.1)
         {
             attackDirection = new Vector2(input.x, input.z);
@@ -149,13 +156,13 @@ public class Player : MonoBehaviour, IDamageable
         _playerHp -= damage;
         if (_playerHp <= 0)
         {
-            PlayerDead();
+            Dead();
         }
     }
 
 
 
-    void PlayerDead ()
+    void Dead ()
     {
         //animator.SetTrigger("playerDead"); 
     }
@@ -168,26 +175,15 @@ public class Player : MonoBehaviour, IDamageable
         //Debug.DrawRay(transform.position, facingDirection * 2, Color.red);// draw move direction ray
         //Debug.DrawRay(transform.position, attackDirection * 2f, Color.green); //not correctly draw size of attack direction ray
     }
-    void Roll () 
-    {
-    
-        if (_stamina>=_rollSpendStamina) 
-        {
-            Vector3 rollPosition = transform.position +input.normalized* _rollDistance ;
-            transform.position = Vector3.MoveTowards(transform.position, rollPosition, _rollSpeed);
-            _stamina -= _rollSpendStamina;
-        }
-    
-    }
 
-    void UpdateStamina () 
+    void UpdateStamina ()
     {
-    
-    if (_stamina < _maxStamina) 
+
+        if (_stamina < _maxStamina)
         {
-            _stamina += Time.deltaTime*_staminaRegeneration;
+            _stamina += Time.deltaTime * _staminaRegeneration;
         }
-    
+
     }
 
 
@@ -197,17 +193,41 @@ public class Player : MonoBehaviour, IDamageable
         print("attack");
         //RaycastHit2D hit  =  Physics2D.Raycast(transform.position +offset,transform.forward*facingDirection,_attackDistance);
         _isAttackAvailable = false;
+        _rollIsPossible = false;
         yield return new WaitForSeconds(_attackSpeed);
+        _rollIsPossible = true;
         _isAttackAvailable = true;
 
     }
-    IEnumerator RollCd ()
+    IEnumerator Roll ()
     {
-        _rollIsPossible = false;
-        Roll();
-        yield return new WaitForSeconds(_rollCd);
-        _rollIsPossible = true;
+
+        if (_stamina >= _rollSpendStamina)
+        {
+            _rollIsPossible = false;
+            _playerSpeed += _rollSpeed;
+            _stamina -= _rollSpendStamina;
+            yield return new WaitForSeconds(_rollCd);
+            _playerSpeed -= _rollSpeed;
+            _rollIsPossible = true;
+        }
     }
 
+    //IEnumerator Dash ()
+    //{
 
+    //if (_stamina >= _dashSpendStamina)
+    //{
+
+
+    //Vector3 rollPosition = transform.position +input.normalized* _rollDistance ;
+    //transform.position = Vector3.MoveTowards(transform.position, rollPosition, _rollSpeed);
+
+    //yield return new WaitForSeconds(_dashCd);
+    //}
+    //}
+
+
+
+    
 }
