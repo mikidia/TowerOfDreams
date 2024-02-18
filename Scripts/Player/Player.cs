@@ -12,9 +12,14 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] float _playerDamage;
     [SerializeField] int _playerHp;
     [SerializeField] bool _playerControlIsEnable;
+
     [Header("Player attack settings")]
     [SerializeField] float _attackDistance;
     [SerializeField] float _attackSpeed;
+    [SerializeField] Vector3 attackOffset;
+
+
+
     [Header("Roll settings")]
     [SerializeField] float _rollCd;
     [SerializeField] float _rollDistance;
@@ -28,14 +33,15 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField]float _staminaRegeneration;
 
     #region Nonserialized
+
+    [NonSerialized] Vector3 facingDirection;
     [NonSerialized] Vector3 offset;
     [NonSerialized] Vector3 input;
     [NonSerialized] bool _isAttackAvailable = true;
     [NonSerialized] bool _playerDamageable;
-    [NonSerialized] Vector3 facingDirection,attackDirection;
     [NonSerialized] Animator animator;
     [NonSerialized] Rigidbody rb;
-    //[NonSerialized] KeyCode _inputBuffer; // dont forger add input buffer after roll (attack,another roll)
+    [SerializeField]PlayerAttackTriger attackTriger;
     #endregion
 
 
@@ -70,6 +76,8 @@ public class Player : MonoBehaviour, IDamageable
         rb = GetComponent<Rigidbody>();
         _playerControlIsEnable = true;
         _rollIsPossible = true;
+        attackTriger = GetComponentInChildren<PlayerAttackTriger>();
+
 
     }
     private void Start ()
@@ -117,7 +125,7 @@ public class Player : MonoBehaviour, IDamageable
         }
         if (Input.GetKeyDown(attackButton) && _isAttackAvailable == true)
         {
-            StartCoroutine("Attack");
+            StartCoroutine("AttackCd");
         }
 
 
@@ -127,7 +135,7 @@ public class Player : MonoBehaviour, IDamageable
 
     }
 
-    #region Movement, attack and their animations
+    #region Movement,animations
     void Movement ()
     {
 
@@ -143,11 +151,13 @@ public class Player : MonoBehaviour, IDamageable
 
     void SetDirection ()
     {
-        facingDirection = Vector3.ClampMagnitude(new Vector3(input.x, 0, input.z), 1);
-        if (math.abs(input.x) >= 0.1 || math.abs(input.z) >= 0.1)
+        
+        if (math.abs(input.x) >= 0.3 || math.abs(input.z) >= 0.3)
         {
-            attackDirection = new Vector2(input.x, input.z);
+            facingDirection = Vector3.ClampMagnitude(new Vector3(input.x, 0, input.z), 1);
         }
+        attackTriger.transform.position = new Vector3(transform.position.x + facingDirection.x, attackTriger.transform.position.y, transform.position.z + facingDirection.z )+attackOffset;
+
     }
 
 
@@ -170,10 +180,12 @@ public class Player : MonoBehaviour, IDamageable
     #endregion
 
 
+
+
     void Debugs ()
     {
-        //Debug.DrawRay(transform.position, facingDirection * 2, Color.red);// draw move direction ray
-        //Debug.DrawRay(transform.position, attackDirection * 2f, Color.green); //not correctly draw size of attack direction ray
+
+        Debug.DrawRay(transform.position, facingDirection * 2f, Color.green); //not correctly draw size of attack direction ray
     }
 
     void UpdateStamina ()
@@ -186,16 +198,14 @@ public class Player : MonoBehaviour, IDamageable
 
     }
 
-
-
-    IEnumerator Attack ()
+    
+    #region Enumerators
+    IEnumerator AttackCd ()
     {
-        print("attack");
-        //RaycastHit2D hit  =  Physics2D.Raycast(transform.position +offset,transform.forward*facingDirection,_attackDistance);
+
         _isAttackAvailable = false;
-        _rollIsPossible = false;
+        attackTriger.Attack();
         yield return new WaitForSeconds(_attackSpeed);
-        _rollIsPossible = true;
         _isAttackAvailable = true;
 
     }
@@ -227,7 +237,7 @@ public class Player : MonoBehaviour, IDamageable
     //}
     //}
 
+    #endregion
 
 
-    
 }

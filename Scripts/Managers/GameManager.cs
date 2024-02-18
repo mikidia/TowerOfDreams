@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
         ShowStaminaBar();
         print("fixed");
     }
+
     void ShowStaminaBar () 
     {
         if (player.Stamina>=player.MaxStamina) 
