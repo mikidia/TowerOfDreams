@@ -4,12 +4,16 @@ using Unity.Mathematics;
 using UnityEngine;
 
 
-public class Player : MonoBehaviour, IDamageable
+public class Player : MonoBehaviour
 {
-    #region Declarations 
-    [Header("Player settings")]
+    #region Declarations
+
+    [Header("Player settings")] 
     [SerializeField] float _playerSpeed;
     [SerializeField] float _playerDamage;
+    public HealthBar healthBar;
+    
+    [SerializeField] int _maxHp;
     [SerializeField] int _playerHp;
     [SerializeField] bool _playerControlIsEnable;
 
@@ -77,12 +81,13 @@ public class Player : MonoBehaviour, IDamageable
         _playerControlIsEnable = true;
         _rollIsPossible = true;
         attackTriger = GetComponentInChildren<PlayerAttackTriger>();
-
+        
 
     }
     private void Start ()
     {
-
+        _playerHp = _maxHp;
+        healthBar.SetMaxHealth(_maxHp);
     }
 
     #endregion
@@ -105,6 +110,10 @@ public class Player : MonoBehaviour, IDamageable
 
 
         }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+            TakeDamage(20);
+        
         UpdateStamina();
         Debugs();
     }
@@ -127,14 +136,13 @@ public class Player : MonoBehaviour, IDamageable
         {
             StartCoroutine("AttackCd");
         }
-
-
-
-
-
-
     }
 
+    void TakeDamage(int damage)
+    {
+        _playerHp -= damage;
+        healthBar.SetHealth(_playerHp);
+    }
     #region Movement,animations
     void Movement ()
     {
@@ -159,17 +167,7 @@ public class Player : MonoBehaviour, IDamageable
         attackTriger.transform.position = new Vector3(transform.position.x + facingDirection.x, attackTriger.transform.position.y, transform.position.z + facingDirection.z )+attackOffset;
 
     }
-
-
-    public void GetDamage (int damage)
-    {
-        _playerHp -= damage;
-        if (_playerHp <= 0)
-        {
-            Dead();
-        }
-    }
-
+    
 
 
     void Dead ()
@@ -179,7 +177,7 @@ public class Player : MonoBehaviour, IDamageable
 
     #endregion
 
-
+    
 
 
     void Debugs ()
