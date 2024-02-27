@@ -4,13 +4,19 @@ using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "New Item", menuName = "Item/Create New Item")]
-public class Item : ScriptableObject
+public abstract class Item : ScriptableObject
 {
+    [Header("Item")]
     public int id;
 
     public string itemName;
 
-    public int value;
-
+    public bool isStackable = true;
     public Sprite icon;
+
+
+    public abstract Item GetItem();
+    public abstract ConsumableItem GetConsumable();
+
+    public abstract WeaponItem GetWeapon();
 }
