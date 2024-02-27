@@ -2330,7 +2330,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5400667c777d7d24890c9e633c17c466, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemCursor: {fileID: 0}
+  itemCursor: {fileID: 154008007}
   slotHolder: {fileID: 303687314}
   ItemToAdd: {fileID: 11400000, guid: 5c63634b16029e642adb1b12865d5350, type: 2}
   ItemToRemove: {fileID: 11400000, guid: 5c63634b16029e642adb1b12865d5350, type: 2}
