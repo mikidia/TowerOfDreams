@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Flyingenemy : MonoBehaviour
@@ -6,11 +7,20 @@ public class Flyingenemy : MonoBehaviour
 
 
     #region Declaration 
-    [SerializeField] int _hp;
+    [Header("Settings")]
+    [SerializeField]int _hp;
     [SerializeField]float _enemySpeed;
-    [SerializeField] float _distanceToPlayer;
+    [Header("Attack ")]
+    [SerializeField]float _distanceToPlayer;
+    [SerializeField]float _attackSpeed;
+    [SerializeField]bool _isAttackAvailable = true;
+
+
+
+    #region Nonserialized
     Player _player;
-    [SerializeField]Rigidbody rb;
+    Rigidbody rb;
+    #endregion
 
 
     #endregion
@@ -22,11 +32,12 @@ public class Flyingenemy : MonoBehaviour
         _player = GameObject.Find("Player").GetComponent<Player>();
         rb = gameObject.GetComponent<Rigidbody>();
     }
-    #endregion
     private void Update ()
     {
         Move();
     }
+    #endregion
+
     public void GetDamage (int damage)
     {
         _hp -= damage;
@@ -40,9 +51,25 @@ public class Flyingenemy : MonoBehaviour
         if (Vector3.Distance(transform.position, _player.transform.position) > _distanceToPlayer)
         {
             Vector3 target =new Vector3( _player.transform.position.x - transform.position.x ,0,_player.transform.position.z - transform.position.z);
-            transform.position += target * _enemySpeed;
+            transform.position += target * (_enemySpeed * Time.deltaTime);
 
         }
+        else if (Vector3.Distance(transform.position, _player.transform.position) < _distanceToPlayer) 
+        {
+            Vector3 target =new Vector3( _player.transform.position.x - transform.position.x ,0,_player.transform.position.z - transform.position.z);
+            transform.position -= target * (_enemySpeed*Time.deltaTime);
+
+
+        }
+    }
+    IEnumerator AttackCd ()
+    {
+
+        _isAttackAvailable = false;
+        
+        yield return new WaitForSeconds(_attackSpeed);
+        _isAttackAvailable = true;
+
     }
 
 }

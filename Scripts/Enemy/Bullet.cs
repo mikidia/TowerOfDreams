@@ -7,21 +7,23 @@ public class Bullet : MonoBehaviour
 
 	#region Declaration
 	[SerializeField] float bulletSpeed;
+	Rigidbody rb;
+    
 
 
+    #endregion
 
-	#endregion
 
-
-	#region MonoBehaviour
-	private void Awake ()
+    #region MonoBehaviour
+    private void Awake ()
 	{
 
 	}
 	private void Start ()
 	{
+		
 
-	}
+    }
 
 	#endregion
 	private void Update ()
