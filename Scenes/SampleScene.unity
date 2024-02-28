@@ -2337,7 +2337,7 @@ MonoBehaviour:
   ItemToRemove: {fileID: 11400000, guid: 5c63634b16029e642adb1b12865d5350, type: 2}
   startingItems:
   - item: {fileID: 11400000, guid: 5c63634b16029e642adb1b12865d5350, type: 2}
-    quantity: 1
+    quantity: 4
 --- !u!1 &921871374
 GameObject:
   m_ObjectHideFlags: 0
