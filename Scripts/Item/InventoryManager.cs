@@ -65,7 +65,18 @@ public class InventoryManager : MonoBehaviour
                 BeginItemMove();
             }
         }
-	}
+        else if (Input.GetMouseButtonDown(1))
+        {
+            if (isMovingItem)
+            {
+                EndItemMove_Single();
+            }
+            else
+            {
+                BeginItemMove_Half ();
+            }
+        }
+    }
 
     #region Inventory Utils
     public void RefreshUI(){
@@ -163,52 +174,105 @@ public class InventoryManager : MonoBehaviour
 		return true;
 	}
 
-	private bool EndItemMove()
-	{
-		originalSlot = GetClosestSlot();
-		if (originalSlot == null)
+    private bool BeginItemMove_Half()
+    {
+        originalSlot = GetClosestSlot();
+        if (originalSlot == null || originalSlot.GetItem() == null)
+        {
+            return false;
+        }
+        movingSlot = new Slot(originalSlot.GetItem(), Mathf.CeilToInt(originalSlot.GetQuantity()/ 2f));
+		originalSlot.RemoveQuantity(movingSlot.GetQuantity());
+
+		if(originalSlot.GetQuantity() == 0)
 		{
-			Add(movingSlot.GetItem(), movingSlot.GetQuantity());
+			originalSlot.Clear();
+		}
+        isMovingItem = true;
+        RefreshUI();
+        return true;
+    }
+
+    private bool EndItemMove()
+    {
+        originalSlot = GetClosestSlot();
+        if (originalSlot == null)
+        {
+            Add(movingSlot.GetItem(), movingSlot.GetQuantity());
+            movingSlot.Clear();
+        }
+        else
+        {
+
+
+            if (originalSlot.GetItem() != null)
+            {
+                if (originalSlot.GetItem() == movingSlot.GetItem())
+                {
+                    if (originalSlot.GetItem().isStackable)
+                    {
+                        originalSlot.AddQuantity(movingSlot.GetQuantity());
+                        movingSlot.Clear();
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    tempSlot = new Slot(originalSlot.GetItem(), originalSlot.GetQuantity());
+                    originalSlot.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
+                    movingSlot.AddItem(tempSlot.GetItem(), tempSlot.GetQuantity());
+                    RefreshUI();
+                    return true;
+                }
+            }
+            else
+            {
+                originalSlot.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
+                movingSlot.Clear();
+            }
+        }
+        isMovingItem = false;
+        RefreshUI();
+        return true;
+
+    }
+
+    private bool EndItemMove_Single()
+    {
+        originalSlot = GetClosestSlot();
+        if (originalSlot == null)
+        {
+            return false;
+        }
+
+		movingSlot.RemoveQuantity(1);
+		if(originalSlot.GetItem() != null && originalSlot.GetItem() == movingSlot.GetItem())
+		{
+			originalSlot.AddQuantity(1);
+		}
+		else
+		{
+			originalSlot.AddItem(movingSlot.GetItem(), 1);
+		}
+        originalSlot.AddItem(movingSlot.GetItem(), 1);
+
+		if(movingSlot.GetQuantity() < 1)
+		{
+			isMovingItem = false;
 			movingSlot.Clear();
 		}
 		else
 		{
+            isMovingItem = true;
+        }
+        RefreshUI();
+        return true;
 
+    }
 
-			if (originalSlot.GetItem() != null)
-			{
-				if (originalSlot.GetItem() == movingSlot.GetItem())
-				{
-					if (originalSlot.GetItem().isStackable)
-					{
-						originalSlot.AddQuantity(movingSlot.GetQuantity());
-						movingSlot.Clear();
-					}
-					else
-					{
-						return false;
-					}
-				}
-				else
-				{
-					tempSlot = new Slot(originalSlot.GetItem(), originalSlot.GetQuantity());
-					originalSlot.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
-					movingSlot.AddItem(tempSlot.GetItem(), tempSlot.GetQuantity());
-					RefreshUI();
-					return true;
-				}
-			}
-			else
-			{
-				originalSlot.AddItem(movingSlot.GetItem(), movingSlot.GetQuantity());
-				movingSlot.Clear();
-			}
-		}
-			isMovingItem = false;
-		RefreshUI();
-		return true;
-
-	}
 	private Slot GetClosestSlot()
 	{
         for (int i = 0; i < slots.Length; i++)
