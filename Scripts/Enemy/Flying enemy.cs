@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour, IDamageable
+public class Flyingenemy : MonoBehaviour
 {
 
 
@@ -10,6 +8,7 @@ public class Enemy : MonoBehaviour, IDamageable
     #region Declaration 
     [SerializeField] int _hp;
     [SerializeField]float _enemySpeed;
+    [SerializeField] float _distanceToPlayer;
     Player _player;
     [SerializeField]Rigidbody rb;
 
@@ -27,22 +26,23 @@ public class Enemy : MonoBehaviour, IDamageable
     private void Update ()
     {
         Move();
-    }  
+    }
     public void GetDamage (int damage)
     {
         _hp -= damage;
-        if (_hp < 0) 
+        if (_hp < 0)
         {
             Destroy(gameObject);
         }
     }
-
-
-    void Move () 
+    void Move ()
     {
-       
-        Vector3 target =new Vector3( _player.transform.position.x - transform.position.x ,0,_player.transform.position.z - transform.position.z);
-        rb.velocity = target * _enemySpeed;
-    }
-}
+        if (Vector3.Distance(transform.position, _player.transform.position) > _distanceToPlayer)
+        {
+            Vector3 target =new Vector3( _player.transform.position.x - transform.position.x ,0,_player.transform.position.z - transform.position.z);
+            transform.position += target * _enemySpeed;
 
+        }
+    }
+
+}
