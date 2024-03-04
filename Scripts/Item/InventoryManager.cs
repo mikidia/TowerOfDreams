@@ -8,16 +8,19 @@ public class InventoryManager : MonoBehaviour
 	[SerializeField] private GameObject itemCursor;
 
     [SerializeField] private GameObject slotHolder;
-	[SerializeField] private Item ItemToAdd;
+    [SerializeField] private GameObject hotbarSlotHolder;
+
+    [SerializeField] private Item ItemToAdd;
 	[SerializeField] private Item ItemToRemove;
 
 	[SerializeField] private Slot[] startingItems;
     
 	private Slot[] items;
 
-	private GameObject[] slots;
+    private GameObject[] slots;
+    private GameObject[] hotbarSlots;
 
-	private Slot movingSlot;
+    private Slot movingSlot;
 
     private Slot tempSlot;
 
@@ -25,10 +28,18 @@ public class InventoryManager : MonoBehaviour
 
 	private bool isMovingItem;
 
+	[SerializeField] private GameObject hotbarSelector;
+	[SerializeField] private int selectedSlotIndex = 0;
+	public Item selectedItem;
     public void Start(){
 		slots = new GameObject[slotHolder.transform.childCount];
 		items = new Slot[slots.Length];
-		for(int i = 0; i < slotHolder.transform.childCount; i++)
+
+        hotbarSlots = new GameObject[hotbarSlotHolder.transform.childCount];
+        for (int i = 0; i < hotbarSlots.Length; i++)
+            hotbarSlots[i] = hotbarSlotHolder.transform.GetChild(i).gameObject;
+
+        for (int i = 0; i < slotHolder.transform.childCount; i++)
 			slots[i] = slotHolder.transform.GetChild(i).gameObject;
 
         for (int i = 0; i < items.Length; i++)
@@ -76,6 +87,17 @@ public class InventoryManager : MonoBehaviour
                 BeginItemMove_Half ();
             }
         }
+
+		if(Input.GetAxis("Mouse ScrollWheel") > 0)
+		{
+			selectedSlotIndex = Mathf.Clamp(selectedSlotIndex + 1, 0, hotbarSlots.Length);
+		}
+		else if(Input.GetAxis("Mouse ScrollWheel") < 0)
+		{
+            selectedSlotIndex = Mathf.Clamp(selectedSlotIndex - 1, 0, hotbarSlots.Length);
+
+        }
+        hotbarSelector.transform.position = hotbarSlots[selectedSlotIndex].transform.position;
     }
 
     #region Inventory Utils
@@ -97,14 +119,36 @@ public class InventoryManager : MonoBehaviour
 
 			}
 		}
-		
+
+		RefreshHotbar();
 	}
 
+	public void RefreshHotbar()
+	{
+        for (int i = 0; i < hotbarSlots.Length; i++)
+        {
+            try
+            {
+                hotbarSlots[i].transform.GetChild(0).GetComponent<Image>().enabled = true;
+                hotbarSlots[i].transform.GetChild(0).GetComponent<Image>().sprite = items[i + (hotbarSlots.Length * 3)].GetItem().icon;
+                if (items[i + (hotbarSlots.Length * 3)].GetItem().isStackable)
+                    hotbarSlots[i].transform.GetChild(1).GetComponent<Text>().text = items[i + (hotbarSlots.Length * 3)].GetQuantity() + "";
+                else
+                    hotbarSlots[i].transform.GetChild(1).GetComponent<Text>().text = "";
+            }
+            catch
+            {
+                hotbarSlots[i].transform.GetChild(0).GetComponent<Image>().enabled = false;
+                hotbarSlots[i].transform.GetChild(1).GetComponent<Text>().text = "";
+
+            }
+        }
+    }
 	public void Add(Item item, int quantity){
 		Slot slot = Contains(item);
 
 		if (slot != null && slot.GetItem().isStackable)
-			slot.AddQuantity(1);
+			slot.AddQuantity(quantity);
 		else
 		{
 			for(int i = 0; i < items.Length; i++)
@@ -244,9 +288,9 @@ public class InventoryManager : MonoBehaviour
     {
         originalSlot = GetClosestSlot();
         if (originalSlot == null)
-        {
             return false;
-        }
+		if (originalSlot.GetItem() != null && originalSlot.GetItem() != movingSlot.GetItem())
+			return false;
 
 		movingSlot.RemoveQuantity(1);
 		if(originalSlot.GetItem() != null && originalSlot.GetItem() == movingSlot.GetItem())
