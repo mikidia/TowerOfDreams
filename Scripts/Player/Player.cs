@@ -8,11 +8,11 @@ public class Player : MonoBehaviour
 {
     #region Declarations
 
-    [Header("Player settings")] 
+    [Header("Player settings")]
     [SerializeField] float _playerSpeed;
     [SerializeField] float _playerDamage;
     public HealthBar healthBar;
-    
+
     [SerializeField] int _maxHp;
     [SerializeField] int _playerHp;
     [SerializeField] bool _playerControlIsEnable;
@@ -46,6 +46,8 @@ public class Player : MonoBehaviour
     [NonSerialized] Animator animator;
     [NonSerialized] Rigidbody rb;
     [SerializeField]PlayerAttackTriger attackTriger;
+    [SerializeField]Vector3 attackDirection;
+
     #endregion
 
 
@@ -81,7 +83,8 @@ public class Player : MonoBehaviour
         _playerControlIsEnable = true;
         _rollIsPossible = true;
         attackTriger = GetComponentInChildren<PlayerAttackTriger>();
-        
+        animator = GetComponent<Animator>();
+
 
     }
     private void Start ()
@@ -92,11 +95,6 @@ public class Player : MonoBehaviour
 
     #endregion
 
-
-    private void FixedUpdate ()
-    {
-
-    }
 
     void Update ()
     {
@@ -113,7 +111,7 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
             TakeDamage(20);
-        
+
         UpdateStamina();
         Debugs();
     }
@@ -125,23 +123,29 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(rollButton) && _rollIsPossible == true && (math.abs(input.x) >= 0.1 || math.abs(input.z) >= 0.1))
         {
             StartCoroutine("Roll");
+            //animator.SetTrigger("Roll");
 
         }
         if (Input.GetKeyDown(interractButton))
         {
             //Interract
+            //animator.SetTrigger("Interract");
+
 
         }
         if (Input.GetKeyDown(attackButton) && _isAttackAvailable == true)
         {
             StartCoroutine("AttackCd");
+            animator.SetTrigger("Attack");
         }
     }
 
-    void TakeDamage(int damage)
+    void TakeDamage (int damage)
     {
         _playerHp -= damage;
         healthBar.SetHealth(_playerHp);
+        //animator.SetTrigger("GetDamage");
+
     }
     #region Movement,animations
     void Movement ()
@@ -159,33 +163,55 @@ public class Player : MonoBehaviour
 
     void SetDirection ()
     {
-        
+
         if (math.abs(input.x) >= 0.3 || math.abs(input.z) >= 0.3)
         {
             facingDirection = Vector3.ClampMagnitude(new Vector3(input.x, 0, input.z), 1);
+
+
         }
-        attackTriger.transform.position = new Vector3(transform.position.x + facingDirection.x, attackTriger.transform.position.y, transform.position.z + facingDirection.z )+attackOffset;
+
+        attackDirection = new Vector3(facingDirection.x, transform.position.y, facingDirection.z);
+
+
+
+
+        attackTriger.transform.position = new Vector3(transform.position.x + facingDirection.x, attackTriger.transform.position.y, transform.position.z + facingDirection.z) + attackOffset;
+        if (attackDirection.x > 0) { animator.SetInteger("MoveX", 1); }
+
+        if (attackDirection.x < 0) { animator.SetInteger("MoveX", -1); }
+
+        if (attackDirection.x == 0) { animator.SetInteger("MoveX", 0); }
+
+        if (attackDirection.z > 0) { animator.SetInteger("MoveY", 1); }
+
+        if (attackDirection.z < 0) { animator.SetInteger("MoveY", -1); }
+
+        if (attackDirection.z == 0) { animator.SetInteger("MoveY", 0); }
+        if (attackDirection.x == 0&&attackDirection.z == 0) { animator.SetBool("IsStay", true); }
 
     }
-    
+
 
 
     void Dead ()
     {
-        //animator.SetTrigger("playerDead"); 
+        //animator.SetTrigger("PlayerDead"); 
     }
 
     #endregion
 
-    
 
 
+#if UNITY_EDITOR
     void Debugs ()
     {
 
         Debug.DrawRay(transform.position, facingDirection * 2f, Color.green); //not correctly draw size of attack direction ray
     }
 
+
+#endif
     void UpdateStamina ()
     {
 
@@ -196,7 +222,7 @@ public class Player : MonoBehaviour
 
     }
 
-    
+
     #region Enumerators
     IEnumerator AttackCd ()
     {
@@ -221,19 +247,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    //IEnumerator Dash ()
-    //{
 
-    //if (_stamina >= _dashSpendStamina)
-    //{
-
-
-    //Vector3 rollPosition = transform.position +input.normalized* _rollDistance ;
-    //transform.position = Vector3.MoveTowards(transform.position, rollPosition, _rollSpeed);
-
-    //yield return new WaitForSeconds(_dashCd);
-    //}
-    //}
 
     #endregion
 

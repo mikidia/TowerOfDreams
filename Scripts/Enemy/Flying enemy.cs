@@ -10,6 +10,9 @@ public class Flyingenemy : MonoBehaviour
     [Header("Settings")]
     [SerializeField]int _hp;
     [SerializeField]float _enemySpeed;
+    [SerializeField]bool isGoToPlayer = true;
+    
+
     [Header("Attack ")]
     [SerializeField]float _distanceToPlayer;
     [SerializeField]float _attackSpeed;
@@ -20,6 +23,7 @@ public class Flyingenemy : MonoBehaviour
     #region Nonserialized
     Player _player;
     Rigidbody rb;
+    Animator animator;
     #endregion
 
 
@@ -30,7 +34,8 @@ public class Flyingenemy : MonoBehaviour
     private void Awake ()
     {
         _player = GameObject.Find("Player").GetComponent<Player>();
-        rb = gameObject.GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>(); 
     }
     private void Update ()
     {
@@ -52,15 +57,27 @@ public class Flyingenemy : MonoBehaviour
         {
             Vector3 target =new Vector3( _player.transform.position.x - transform.position.x ,0,_player.transform.position.z - transform.position.z);
             transform.position += target * (_enemySpeed * Time.deltaTime);
+            isGoToPlayer = false;
+           
 
         }
-        else if (Vector3.Distance(transform.position, _player.transform.position) < _distanceToPlayer) 
+        if (Vector3.Distance(transform.position, _player.transform.position) < _distanceToPlayer) 
         {
             Vector3 target =new Vector3( _player.transform.position.x - transform.position.x ,0,_player.transform.position.z - transform.position.z);
             transform.position -= target * (_enemySpeed*Time.deltaTime);
-
+            isGoToPlayer = true;
+            
 
         }
+        if (Vector3.Distance(transform.position, _player.transform.position) == _distanceToPlayer) 
+        {
+            animator.SetTrigger("IsStaying");
+        
+
+        }
+        animator.SetBool("IsGoToPlayer", isGoToPlayer); 
+        
+
     }
     IEnumerator AttackCd ()
     {
