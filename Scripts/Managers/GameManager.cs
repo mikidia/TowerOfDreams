@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour
     #region Declarations
     [SerializeField]Player player;
     [SerializeField]UiManager uiManager;
+    [SerializeField] GameObject inventory;
+    bool inventoryIsOpen =false;
     bool cursorVisible=false;
 
     #endregion
@@ -16,23 +18,41 @@ public class GameManager : MonoBehaviour
         player = GameObject.Find("Player").GetComponent<Player>();
         Cursor.visible = cursorVisible;
     }
+
+
+    public void showInventory () 
+    {
+        inventoryIsOpen = !inventoryIsOpen;
+        if (inventoryIsOpen) 
+        {
+            inventory.SetActive(true);
+
+
+
+        }
+        else { 
+            inventory.SetActive(false);
+        }
+    
+    
+    }
     private void FixedUpdate ()
     {
-        ShowStaminaBar();
-        print("fixed");
+        //ShowStaminaBar();
+        //print("fixed");
     }
 
-    void ShowStaminaBar () 
-    {
-        if (player.Stamina>=player.MaxStamina) 
-        {
-              uiManager.StaminaBarHide();
-            print("hide");
-        }
-        else 
-        {
-        uiManager.StaminaBarShow();
-        }
-    }
+    //void ShowStaminaBar () 
+    //{
+    //    if (player.Stamina>=player.MaxStamina) 
+    //    {
+    //          uiManager.StaminaBarHide();
+    //        print("hide");
+    //    }
+    //    else 
+    //    {
+    //    uiManager.StaminaBarShow();
+    //    }
+    //}
     
 }

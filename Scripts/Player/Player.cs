@@ -47,6 +47,7 @@ public class Player : MonoBehaviour
     [NonSerialized] Rigidbody rb;
     [SerializeField]PlayerAttackTriger attackTriger;
     [SerializeField]Vector3 attackDirection;
+    [NonSerialized]UiManager uiManager;
 
     #endregion
 
@@ -84,6 +85,7 @@ public class Player : MonoBehaviour
         _rollIsPossible = true;
         attackTriger = GetComponentInChildren<PlayerAttackTriger>();
         animator = GetComponent<Animator>();
+        //uiManager = UiManager.instance;
 
 
     }
@@ -120,7 +122,7 @@ public class Player : MonoBehaviour
     void GetInputs ()
     {
 
-        if (Input.GetKeyDown(rollButton) && _rollIsPossible == true && (math.abs(input.x) >= 0.1 || math.abs(input.z) >= 0.1))
+        if (Input.GetKeyDown(rollButton) &&  && (math.abs(input.x) >= 0.1 || math.abs(input.z) >= 0.1))
         {
             StartCoroutine("Roll");
             //animator.SetTrigger("Roll");
@@ -137,6 +139,10 @@ public class Player : MonoBehaviour
         {
             StartCoroutine("AttackCd");
             animator.SetTrigger("Attack");
+        }
+        if (Input.GetKeyDown(inventoryButton) )
+        {
+            
         }
     }
 
@@ -177,17 +183,17 @@ public class Player : MonoBehaviour
 
 
         attackTriger.transform.position = new Vector3(transform.position.x + facingDirection.x, attackTriger.transform.position.y, transform.position.z + facingDirection.z) + attackOffset;
-        if (attackDirection.x > 0) { animator.SetInteger("MoveX", 1); }
+        if (attackDirection.x > 0) { animator.SetFloat("MoveX", 1); }
 
-        if (attackDirection.x < 0) { animator.SetInteger("MoveX", -1); }
+        if (attackDirection.x < 0) { animator.SetFloat("MoveX", -1); }
 
-        if (attackDirection.x == 0) { animator.SetInteger("MoveX", 0); }
+        if (attackDirection.x == 0) { animator.SetFloat("MoveX", 0); }
 
-        if (attackDirection.z > 0) { animator.SetInteger("MoveY", 1); }
+        if (attackDirection.z > 0) { animator.SetFloat("MoveY", 1); }
 
-        if (attackDirection.z < 0) { animator.SetInteger("MoveY", -1); }
+        if (attackDirection.z < 0) { animator.SetFloat("MoveY", -1); }
 
-        if (attackDirection.z == 0) { animator.SetInteger("MoveY", 0); }
+        if (attackDirection.z == 0) { animator.SetFloat("MoveY", 0); }
         if (attackDirection.x == 0&&attackDirection.z == 0) { animator.SetBool("IsStay", true); }
 
     }
