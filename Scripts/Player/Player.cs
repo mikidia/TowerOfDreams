@@ -190,13 +190,13 @@ public class Player : MonoBehaviour
 
         if (attackDirection.x < 0) { animator.SetFloat("MoveX", -1); }
 
-        //if (attackDirection.x == 0) { animator.SetFloat("MoveX", 0); }
+        if (attackDirection.x == 0) { animator.SetFloat("MoveX", 0); }
 
         if (attackDirection.z > 0) { animator.SetFloat("MoveY", 1); }
 
         if (attackDirection.z < 0) { animator.SetFloat("MoveY", -1); }
 
-        //if (attackDirection.z == 0) { animator.SetFloat("MoveY", 0); }
+        if (attackDirection.z == 0) { animator.SetFloat("MoveY", 0); }
 
     }
 
