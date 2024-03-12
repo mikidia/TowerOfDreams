@@ -122,7 +122,7 @@ public class Player : MonoBehaviour
     void GetInputs ()
     {
 
-        if (Input.GetKeyDown(rollButton) &&  && (math.abs(input.x) >= 0.1 || math.abs(input.z) >= 0.1))
+        if (Input.GetKeyDown(rollButton) &&  (math.abs(input.x) >= 0.1 || math.abs(input.z) >= 0.1))
         {
             StartCoroutine("Roll");
             //animator.SetTrigger("Roll");
@@ -159,6 +159,9 @@ public class Player : MonoBehaviour
 
 
         input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+        if (input.x == 0 && input.z == 0) { animator.SetBool("IsStay", true); } else { animator.SetBool("IsStay", false); }
+        
+
         Vector3 newPos =rb.position+(input.normalized*_playerSpeed*Time.deltaTime);
         //rb.velocity = newPos;
         rb.MovePosition(newPos);
@@ -181,20 +184,19 @@ public class Player : MonoBehaviour
 
 
 
-
+       
         attackTriger.transform.position = new Vector3(transform.position.x + facingDirection.x, attackTriger.transform.position.y, transform.position.z + facingDirection.z) + attackOffset;
         if (attackDirection.x > 0) { animator.SetFloat("MoveX", 1); }
 
         if (attackDirection.x < 0) { animator.SetFloat("MoveX", -1); }
 
-        if (attackDirection.x == 0) { animator.SetFloat("MoveX", 0); }
+        //if (attackDirection.x == 0) { animator.SetFloat("MoveX", 0); }
 
         if (attackDirection.z > 0) { animator.SetFloat("MoveY", 1); }
 
         if (attackDirection.z < 0) { animator.SetFloat("MoveY", -1); }
 
-        if (attackDirection.z == 0) { animator.SetFloat("MoveY", 0); }
-        if (attackDirection.x == 0&&attackDirection.z == 0) { animator.SetBool("IsStay", true); }
+        //if (attackDirection.z == 0) { animator.SetFloat("MoveY", 0); }
 
     }
 
@@ -212,7 +214,8 @@ public class Player : MonoBehaviour
 #if UNITY_EDITOR
     void Debugs ()
     {
-
+        Debug.Log(input);
+        //Debug.Log(attackDirection);
         Debug.DrawRay(transform.position, facingDirection * 2f, Color.green); //not correctly draw size of attack direction ray
     }
 
