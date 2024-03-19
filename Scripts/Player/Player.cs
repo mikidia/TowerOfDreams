@@ -153,6 +153,12 @@ public class Player : MonoBehaviour
         //animator.SetTrigger("GetDamage");
 
     }
+    bool  ColliderCheck () 
+    {
+    
+    
+    
+    }
     #region Movement,animations
     void Movement ()
     {
@@ -164,6 +170,7 @@ public class Player : MonoBehaviour
 
         Vector3 newPos =rb.position+(input.normalized*_playerSpeed*Time.deltaTime);
         //rb.velocity = newPos;
+        
         rb.MovePosition(newPos);
 
 
