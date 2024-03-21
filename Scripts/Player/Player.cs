@@ -30,6 +30,7 @@ public class Player : MonoBehaviour
     [SerializeField] float _rollSpeed;
     [SerializeField] bool _rollIsPossible;
     [SerializeField]float _rollSpendStamina;
+    
 
     [Header("Stamina settings")]
     [SerializeField] float _stamina=100;
@@ -69,6 +70,7 @@ public class Player : MonoBehaviour
     #region Getters
     public float Stamina { get => _stamina; }
     public float MaxStamina { get => _maxStamina; }
+    public bool RollIsPossible { get => _rollIsPossible; set => _rollIsPossible = value; }
     #endregion
 
 
@@ -153,12 +155,12 @@ public class Player : MonoBehaviour
         //animator.SetTrigger("GetDamage");
 
     }
-    bool  ColliderCheck () 
-    {
+    //bool  ColliderCheck () 
+    //{
     
     
     
-    }
+    //}
     #region Movement,animations
     void Movement ()
     {
@@ -176,6 +178,13 @@ public class Player : MonoBehaviour
 
 
     }
+
+
+
+
+    
+    
+    
 
     void SetDirection ()
     {
@@ -252,7 +261,7 @@ public class Player : MonoBehaviour
     IEnumerator Roll ()
     {
 
-        if (_stamina >= _rollSpendStamina)
+        if (_stamina >= _rollSpendStamina&& _rollIsPossible)
         {
             _rollIsPossible = false;
             _playerSpeed += _rollSpeed;
