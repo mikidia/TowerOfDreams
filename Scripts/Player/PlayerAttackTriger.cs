@@ -9,6 +9,13 @@ using System.Collections;
 public class PlayerAttackTriger : MonoBehaviour
 {
     bool attack=false;
+    Player player;
+
+
+    public void Awake ()
+    {
+        player = GetComponentInParent<Player>();
+    }
 
     public void Attack ()
     {
@@ -16,9 +23,18 @@ public class PlayerAttackTriger : MonoBehaviour
         attack =true;
 
     }
+    public void Update ()
+    {
+
+    }
     void OnTriggerStay(Collider other)
     {
-        
+
+        if (other.tag == "Wall")
+        {
+            player.RollIsPossible = false;
+        }
+
 
         if (other.TryGetComponent(out IDamageable hit) && attack)
         {
@@ -27,7 +43,27 @@ public class PlayerAttackTriger : MonoBehaviour
 
 
 
+       
         }
     }
+
+
+    public void OnTriggerExit (Collider other)
+    {
+               
+        
+            player.RollIsPossible = true;
+
+        
+    }
+
+
+    //public void OnTriggerStay (Collision collision)
+    //{
+    //    print("Asdasdasdsd");
+
+
+    //}
+
 
 }

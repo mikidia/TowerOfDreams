@@ -11,6 +11,7 @@ public class UiManager : MonoBehaviour
     [SerializeField]GameObject staminaBar;
     [SerializeField]Player player;
     Slider staminaSlider;
+    
 
 
     private void FixedUpdate ()
@@ -35,16 +36,16 @@ public class UiManager : MonoBehaviour
         staminaSlider.maxValue = player.MaxStamina;
         staminaSlider.value = player.Stamina;
     }
-    public void StaminaBarShow () 
-    {
-        staminaBar.SetActive(true);
+    //public void StaminaBarShow () 
+    //{
+    //    staminaBar.SetActive(true);
 
 
-    }
-    public void StaminaBarHide()
-    {
-        staminaBar.SetActive(false);
+    //}
+    //public void StaminaBarHide()
+    //{
+    //    staminaBar.SetActive(false);
 
 
-    }
+    //}
 }
