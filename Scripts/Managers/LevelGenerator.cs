@@ -39,7 +39,7 @@ public class LevelGenerator : MonoBehaviour
     }
 	void levelGen () 
 	{
-        floor.transform.localScale = new Vector3(Random.RandomRange((bounds[0]), bounds[1]), floor.transform.localScale.y, Random.RandomRange((bounds[2]), bounds[3]));
+        floor.transform.localScale = new Vector3(Random.Range((bounds[0]), bounds[1]), floor.transform.localScale.y, Random.Range((bounds[2]), bounds[3]));
 		foreach (GameObject i in walls)
 		{
 			
@@ -69,13 +69,6 @@ public class LevelGenerator : MonoBehaviour
                     i.transform.position = new Vector3(i.transform.position.x, i.transform.position.y, floor.GetComponent<MeshRenderer>().bounds.max.z);
 
             }
-
         }
-
-
-
-
-
-
     }
 }

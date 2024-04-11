@@ -24,7 +24,7 @@ public class EnemySpawn : MonoBehaviour
     {
         foreach (Transform i in spawnPoints) 
         {
-            i.position = new Vector3(Random.RandomRange(levelGenerator.FloorSize[0].x, levelGenerator.FloorSize[1].x) ,i.position.y, Random.RandomRange(levelGenerator.FloorSize[0].y, levelGenerator.FloorSize[1].y));
+            i.position = new Vector3(Random.Range(levelGenerator.FloorSize[0].x, levelGenerator.FloorSize[1].x) ,i.position.y, Random.Range(levelGenerator.FloorSize[0].y, levelGenerator.FloorSize[1].y));
         
         }
 
