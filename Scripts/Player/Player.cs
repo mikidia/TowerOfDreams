@@ -151,8 +151,9 @@ public class Player : MonoBehaviour
         }
         if (Input.GetKeyDown(attackButton) && _isAttackAvailable == true)
         {
-            StartCoroutine("AttackCd");
             animator.SetTrigger("Attack");
+
+            StartCoroutine("AttackCd");
         }
         if (Input.GetKeyDown(inventoryButton) )
         {

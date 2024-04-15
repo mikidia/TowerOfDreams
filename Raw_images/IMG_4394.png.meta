@@ -108,7 +108,259 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: IMG_4394_0
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 1023
+        width: 741
+        height: 912
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e71d27a6f00df64e816f43cb235f876
+      internalID: -1159667549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IMG_4394_1
+      rect:
+        serializedVersion: 2
+        x: 922
+        y: 1023
+        width: 739
+        height: 902
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a8fc20313d684e45870ab7c9520db2b
+      internalID: 1485309019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IMG_4394_2
+      rect:
+        serializedVersion: 2
+        x: 1689
+        y: 1023
+        width: 738
+        height: 910
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 530a0eb99544d9e46a642c805a0e279e
+      internalID: -1398679885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IMG_4394_3
+      rect:
+        serializedVersion: 2
+        x: 2502
+        y: 1023
+        width: 738
+        height: 912
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5206264a63961f4a872a310e2d2bc58
+      internalID: 1107545540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IMG_4394_4
+      rect:
+        serializedVersion: 2
+        x: 3305
+        y: 1023
+        width: 746
+        height: 915
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 640061ed954a2a1489ae6c7037a1bc65
+      internalID: -126742108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IMG_4394_5
+      rect:
+        serializedVersion: 2
+        x: 4141
+        y: 1023
+        width: 740
+        height: 919
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7d504c217a76ec48af848696c951043
+      internalID: 312167040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IMG_4394_6
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 58
+        width: 752
+        height: 924
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 051bc2ffcc13aa74da1cc2e678896522
+      internalID: 1141492874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IMG_4394_7
+      rect:
+        serializedVersion: 2
+        x: 822
+        y: 58
+        width: 733
+        height: 924
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e94fe90bf5c9a044865212b84b3fc5c
+      internalID: -780266599
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IMG_4394_8
+      rect:
+        serializedVersion: 2
+        x: 1591
+        y: 58
+        width: 733
+        height: 924
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f780ce52d3034a418566e0a867b33c2
+      internalID: -1518070181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IMG_4394_9
+      rect:
+        serializedVersion: 2
+        x: 2433
+        y: 58
+        width: 736
+        height: 922
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 696f78ba6a93a2e4eae900557102858d
+      internalID: 1642078697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IMG_4394_10
+      rect:
+        serializedVersion: 2
+        x: 3271
+        y: 58
+        width: 743
+        height: 912
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 349501269315fb940a563998fcdd4f43
+      internalID: 1588147553
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IMG_4394_11
+      rect:
+        serializedVersion: 2
+        x: 4114
+        y: 58
+        width: 738
+        height: 912
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 17f827534f0d6dd41bfe71425373e22a
+      internalID: -12043519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -119,7 +371,19 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      IMG_4394_0: -1159667549
+      IMG_4394_1: 1485309019
+      IMG_4394_10: 1588147553
+      IMG_4394_11: -12043519
+      IMG_4394_2: -1398679885
+      IMG_4394_3: 1107545540
+      IMG_4394_4: -126742108
+      IMG_4394_5: 312167040
+      IMG_4394_6: 1141492874
+      IMG_4394_7: -780266599
+      IMG_4394_8: -1518070181
+      IMG_4394_9: 1642078697
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

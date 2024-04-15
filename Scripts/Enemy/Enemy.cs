@@ -10,8 +10,13 @@ public class Enemy : MonoBehaviour, IDamageable
     #region Declaration 
     [SerializeField] int _hp;
     [SerializeField]float _enemySpeed;
-    Player _player;
+    [SerializeField]Player _player;
+    [SerializeField]float maxTpRange;
     [SerializeField]Rigidbody rb;
+    [SerializeField]float waitUntilTp;
+    [SerializeField]LevelGenerator levelGenerator;
+    Vector3 _newPos;
+    bool IsTeleporting;
 
 
     #endregion
@@ -20,29 +25,68 @@ public class Enemy : MonoBehaviour, IDamageable
     #region MonoBehaviour
     private void Awake ()
     {
+        levelGenerator = GameObject.Find("LevelGeneratorManager").GetComponent<LevelGenerator>();
         _player = GameObject.Find("Player").GetComponent<Player>();
         rb = gameObject.GetComponent<Rigidbody>();
     }
     #endregion
+    private void Start ()
+    {
+        Player player = Player.instance;
+
+    }
     private void Update ()
     {
         Move();
-    }  
+    }
     public void GetDamage (int damage)
     {
         _hp -= damage;
-        if (_hp < 0) 
+        if (_hp < 0)
         {
             Destroy(gameObject);
         }
     }
 
 
-    void Move () 
+    void Move ()
     {
-       
-        Vector3 target =new Vector3( _player.transform.position.x - transform.position.x ,0,_player.transform.position.z - transform.position.z);
-        rb.velocity = target * _enemySpeed;
+
+        if (Vector3.Distance(transform.position, _player.transform.position) < 2&& !IsTeleporting)
+        {
+            StartCoroutine("teleport");
+
+
+
+        }
+
+    }
+
+    void GenerateNewPos ()
+    {
+        _newPos = new Vector3(_player.transform.position.x - Random.Range(2, maxTpRange), transform.position.y, _player.transform.position.z - Random.Range(2, maxTpRange));
+        if (_newPos.x < levelGenerator.FloorSize[0].x && _newPos.x > levelGenerator.FloorSize[1].x || _newPos.z < levelGenerator.FloorSize[0].z&&_newPos.x > levelGenerator.FloorSize[1].z) 
+        {
+            GenerateNewPos();
+        }
+
+
+    }
+
+
+    IEnumerator teleport()
+    {
+        
+
+
+        IsTeleporting = true;
+        yield return new WaitForSeconds(waitUntilTp);
+        GenerateNewPos();
+        transform.position = _newPos;
+        IsTeleporting=false;
+    
+    
+    
     }
 }
 
