@@ -14,7 +14,6 @@ public class Enemy : MonoBehaviour, IDamageable
     Rigidbody rb;
     [SerializeField]float maxTpRange;
     [SerializeField]float waitUntilTp;
-    [SerializeField]LevelGenerator levelGenerator;
     [SerializeField] private AudioClip damageSoundClip;
     [SerializeField] private AudioClip deathSoundClip;
     LevelGenerator levelGenerator;
