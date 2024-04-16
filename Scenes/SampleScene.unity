@@ -6702,6 +6702,14 @@ PrefabInstance:
       propertyPath: BulletPrefab
       value: 
       objectReference: {fileID: 765850154}
+    - target: {fileID: 8554318366794137575, guid: a55eabfedb0ae9f4fac14325771947b1, type: 3}
+      propertyPath: deathSoundClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 8326b0171d258cf4fac32683d1bda028, type: 3}
+    - target: {fileID: 8554318366794137575, guid: a55eabfedb0ae9f4fac14325771947b1, type: 3}
+      propertyPath: damageSoundClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 8b6b12b0232546f4787c1b75a611eeaa, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
