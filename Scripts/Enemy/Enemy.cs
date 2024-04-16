@@ -11,12 +11,15 @@ public class Enemy : MonoBehaviour, IDamageable
     [SerializeField] int _hp;
     [SerializeField]float _enemySpeed;
     [SerializeField]Player _player;
+    Rigidbody rb;
     [SerializeField]float maxTpRange;
-    [SerializeField]Rigidbody rb;
     [SerializeField]float waitUntilTp;
-    [SerializeField]LevelGenerator levelGenerator;
+    LevelGenerator levelGenerator;
+    [SerializeField]GameObject BearPrefab;
+    [SerializeField]float waitUntilSpawn;
     Vector3 _newPos;
     bool IsTeleporting;
+    bool IsSpawning;
 
 
     #endregion
@@ -32,12 +35,16 @@ public class Enemy : MonoBehaviour, IDamageable
     #endregion
     private void Start ()
     {
-        Player player = Player.instance;
 
     }
     private void Update ()
     {
         Move();
+        if (!IsSpawning ) 
+        {
+            StartCoroutine("spawnBear");
+        }
+        
     }
     public void GetDamage (int damage)
     {
@@ -87,6 +94,16 @@ public class Enemy : MonoBehaviour, IDamageable
     
     
     
+    }
+    IEnumerator spawnBear () 
+    {
+        IsSpawning =true;
+        yield return new WaitForSeconds(waitUntilSpawn);
+        GameObject Bear =  Instantiate(BearPrefab);
+        GenerateNewPos();
+        Bear.transform.position =_newPos;
+        Bear.SetActive(true);
+        IsSpawning=false;
     }
 }
 

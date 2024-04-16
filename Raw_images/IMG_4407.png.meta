@@ -108,7 +108,49 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: IMG_4407_8
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 1785
+        width: 532
+        height: 750
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1852e09daaf1c24fb766c7e0aa1178f
+      internalID: -1721927446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IMG_4407_11
+      rect:
+        serializedVersion: 2
+        x: 1515
+        y: 1734
+        width: 690
+        height: 949
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b8339bed10cee44c982a4a5e334e9d1
+      internalID: 1190902299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -119,7 +161,21 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      IMG_4407_0: -263408021
+      IMG_4407_1: -162668338
+      IMG_4407_10: -406094883
+      IMG_4407_11: 1190902299
+      IMG_4407_12: -1226891524
+      IMG_4407_13: 553935248
+      IMG_4407_2: 1619394675
+      IMG_4407_3: 1991377308
+      IMG_4407_4: 1068094686
+      IMG_4407_5: 1074637774
+      IMG_4407_6: 1296468056
+      IMG_4407_7: -1878417794
+      IMG_4407_8: -1721927446
+      IMG_4407_9: -1938813293
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
