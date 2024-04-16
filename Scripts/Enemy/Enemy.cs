@@ -8,10 +8,22 @@ public class Enemy : MonoBehaviour, IDamageable
 
 
     #region Declaration 
+    [Header("Main settings")]
     [SerializeField] int _hp;
     [SerializeField]float _enemySpeed;
     Player _player;
     [SerializeField]Rigidbody rb;
+<<<<<<< Updated upstream
+=======
+    [SerializeField]float waitUntilTp;
+    [SerializeField]LevelGenerator levelGenerator;
+    [Header("Spawn settings")]
+    [SerializeField]float waitUntilSpawnEnemy;
+    [SerializeField]GameObject EnemyPrefab;
+
+    Vector3 _newPos;
+    bool IsTeleporting;
+>>>>>>> Stashed changes
 
 
     #endregion
@@ -44,5 +56,14 @@ public class Enemy : MonoBehaviour, IDamageable
         Vector3 target =new Vector3( _player.transform.position.x - transform.position.x ,0,_player.transform.position.z - transform.position.z);
         rb.velocity = target * _enemySpeed;
     }
+    IEnumerator spawnBear () 
+    {
+        yield return new WaitForSeconds(waitUntilTp);
+    
+    
+    }
+
+
+
 }
 
