@@ -577,7 +577,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4389671036976380039, guid: f92c398f0bc35344fac7e4ccef6ee568, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8768985813277103212, guid: f92c398f0bc35344fac7e4ccef6ee568, type: 3}
       propertyPath: m_LocalPosition.x
@@ -585,7 +585,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8768985813277103212, guid: f92c398f0bc35344fac7e4ccef6ee568, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.207
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8768985813277103212, guid: f92c398f0bc35344fac7e4ccef6ee568, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1564,7 +1564,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &419900505
 Transform:
   m_ObjectHideFlags: 0
@@ -1602,9 +1602,10 @@ MonoBehaviour:
   enemies:
   - {fileID: 1647889771}
   - {fileID: 692271738}
-  - {fileID: 0}
   - {fileID: 1059036464}
   spawnTime: 3
+  enemyParent: {fileID: 341778939}
+  maxEnemy: 4
   spawnPoints:
   - {fileID: 1578397274}
   - {fileID: 1281447279}
@@ -3759,6 +3760,37 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5202538777995579669, guid: ca47d97426229eb49addea0a4d42788e, type: 3}
   m_PrefabInstance: {fileID: 1176021435}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1193575550
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1193575551}
+  m_Layer: 0
+  m_Name: Bears
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1193575551
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1193575550}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.178126, y: -0.23678088, z: 0.10917895}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1193649369
 GameObject:
   m_ObjectHideFlags: 0
@@ -6174,7 +6206,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _player: {fileID: 0}
   speed: 2
-  _hp: 2
+  _hp: 1
 --- !u!95 &2095522078
 Animator:
   serializedVersion: 5
@@ -6505,7 +6537,7 @@ MonoBehaviour:
   _playerHp: 100
   _playerControlIsEnable: 0
   _attackDistance: 0
-  _attackSpeed: 1
+  _attackSpeed: 0
   attackOffset: {x: 0, y: 0, z: 0}
   _rollCd: 0.1
   _rollDistance: 5
@@ -6768,6 +6800,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -1159667549, guid: f1366116e6514a944b3f157b2ae39dfd, type: 3}
     - target: {fileID: 8603263999258140636, guid: 9f95ad2a835e71944b8138e380d8e426, type: 3}
+      propertyPath: _hp
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8603263999258140636, guid: 9f95ad2a835e71944b8138e380d8e426, type: 3}
       propertyPath: _player
       value: 
       objectReference: {fileID: 2147185758}
@@ -6777,7 +6813,7 @@ PrefabInstance:
       objectReference: {fileID: 2095522072}
     - target: {fileID: 8603263999258140636, guid: 9f95ad2a835e71944b8138e380d8e426, type: 3}
       propertyPath: maxTpRange
-      value: 20
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 8603263999258140636, guid: 9f95ad2a835e71944b8138e380d8e426, type: 3}
       propertyPath: _enemySpeed
@@ -6791,6 +6827,10 @@ PrefabInstance:
       propertyPath: waitUntilSpawn
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 8603263999258140636, guid: 9f95ad2a835e71944b8138e380d8e426, type: 3}
+      propertyPath: smallBearsParent
+      value: 
+      objectReference: {fileID: 1193575551}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6961,3 +7001,4 @@ SceneRoots:
   - {fileID: 401007078}
   - {fileID: 172259504}
   - {fileID: 6266478040499908152}
+  - {fileID: 1193575551}

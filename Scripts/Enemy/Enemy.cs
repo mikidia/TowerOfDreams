@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour, IDamageable
@@ -11,12 +12,12 @@ public class Enemy : MonoBehaviour, IDamageable
     [SerializeField] int _hp;
     [SerializeField]float _enemySpeed;
     [SerializeField]Player _player;
+    [SerializeField]Transform smallBearsParent;
     Rigidbody rb;
     [SerializeField]float maxTpRange;
     [SerializeField]float waitUntilTp;
     LevelGenerator levelGenerator;
     [SerializeField]GameObject BearPrefab;
-    [SerializeField]float waitUntilSpawn;
     Vector3 _newPos;
     bool IsTeleporting;
     bool IsSpawning;
@@ -35,20 +36,21 @@ public class Enemy : MonoBehaviour, IDamageable
     #endregion
     private void Start ()
     {
-
+        spawnBear ();
     }
     private void Update ()
     {
         Move();
-        if (!IsSpawning ) 
-        {
-            StartCoroutine("spawnBear");
-        }
+        
+
         
     }
     public void GetDamage (int damage)
     {
         _hp -= damage;
+        GenerateNewPos();
+        transform.position = _newPos;
+        IsTeleporting = false;
         if (_hp < 0)
         {
             Destroy(gameObject);
@@ -76,8 +78,6 @@ public class Enemy : MonoBehaviour, IDamageable
         {
             GenerateNewPos();
         }
-
-
     }
 
 
@@ -91,19 +91,23 @@ public class Enemy : MonoBehaviour, IDamageable
         GenerateNewPos();
         transform.position = _newPos;
         IsTeleporting=false;
-    
-    
-    
+        if (BearPrefab.GetComponentsInChildren<SmallBear>().Length<1)
+        {
+            spawnBear();
+        }
+
+
+
     }
-    IEnumerator spawnBear () 
+    private void spawnBear () 
     {
-        IsSpawning =true;
-        yield return new WaitForSeconds(waitUntilSpawn);
-        GameObject Bear =  Instantiate(BearPrefab);
+        
+        
+        GameObject Bear =  Instantiate(BearPrefab,smallBearsParent);
         GenerateNewPos();
         Bear.transform.position =_newPos;
         Bear.SetActive(true);
-        IsSpawning=false;
+        
     }
 }
 

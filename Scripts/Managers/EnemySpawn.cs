@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class EnemySpawn : MonoBehaviour
 {
     // The enemy prefab to be spawned.
     [SerializeField]List<GameObject> enemies = new List<GameObject>();
-    [SerializeField] float spawnTime = 3f;            // How long between each spawn.
+    [SerializeField] float spawnTime = 3f;
+    [SerializeField] Transform enemyParent;
+    [SerializeField] float maxEnemy = 4;// How long between each spawn.
     [SerializeField] Transform[] spawnPoints;         // An array of the spawn points this enemy can spawn from.
     LevelGenerator levelGenerator;
 
@@ -34,15 +37,21 @@ public class EnemySpawn : MonoBehaviour
 
     void Spawn ()
     {
-        spawnPoints = new Transform[transform.childCount];
-        for (int i = 0; i < transform.childCount; i++) spawnPoints[i] = transform.GetChild(i);
-        // Call the Spawn function after a delay of the spawnTime and then continue to call after the same amount of time.
-        if (spawnPoints.Length > 0) Invoke("Spawn", spawnTime);
-        // Find a random index between zero and one less than the number of spawn points.
-        int spawnPointIndex = Random.Range(0, spawnPoints.Length);
-        int selectEnemy = Random.Range(0, 3);
-        Instantiate(enemies[selectEnemy], spawnPoints[spawnPointIndex].position, spawnPoints[spawnPointIndex].rotation);
+        if (enemyParent.childCount<maxEnemy+ enemies.Count) 
+        {
+            spawnPoints = new Transform[transform.childCount];
 
+            for (int i = 0; i < transform.childCount; i++) spawnPoints[i] = transform.GetChild(i);
+            // Call the Spawn function after a delay of the spawnTime and then continue to call after the same amount of time.
+            if (spawnPoints.Length > 0) Invoke("Spawn", spawnTime);
+            // Find a random index between zero and one less than the number of spawn points.
+            int spawnPointIndex = Random.Range(0, spawnPoints.Length);
+            int selectEnemy = Random.Range(0, 3);
+            Instantiate(enemies[selectEnemy], spawnPoints[spawnPointIndex].position, spawnPoints[spawnPointIndex].rotation, enemyParent);
+
+        }
+        
+        
 
     }
 

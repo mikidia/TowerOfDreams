@@ -42,11 +42,15 @@ public class SmallBear : MonoBehaviour,IDamageable
 
     }
 
-
-    private void OnCollisionEnter (Collider collision)
+    private void OnCollisionEnter (Collision collision)
     {
-        Player player = collision.GetComponent<Player>();
-        if (player != null) 
+
+
+
+
+
+        Player player = collision.gameObject.GetComponent<Player>();
+        if (player != null)
         {
 
             player.TakeDamage(10);
@@ -55,4 +59,5 @@ public class SmallBear : MonoBehaviour,IDamageable
 
         }
     }
+    
 }

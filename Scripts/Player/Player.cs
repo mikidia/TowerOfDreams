@@ -168,6 +168,12 @@ public class Player : MonoBehaviour
         animator.SetFloat("Hp", _playerHp);
         healthBar.SetHealth(_playerHp);
         animator.SetTrigger("GetDamage");
+        if (_playerHp < 0) 
+        {
+
+            Dead();
+        
+        }
 
     }
     //bool  ColliderCheck () 
