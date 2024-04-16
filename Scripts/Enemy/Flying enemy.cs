@@ -11,12 +11,14 @@ public class Flyingenemy : MonoBehaviour
     [SerializeField]int _hp;
     [SerializeField]float _enemySpeed;
     [SerializeField]bool isGoToPlayer = true;
+    [SerializeField]GameObject BulletPrefab;
     
 
     [Header("Attack ")]
     [SerializeField]float _distanceToPlayer;
     [SerializeField]float _attackSpeed;
     [SerializeField]bool _isAttackAvailable = true;
+    [SerializeField]float bulletCd;
 
 
 
@@ -40,6 +42,7 @@ public class Flyingenemy : MonoBehaviour
     private void Update ()
     {
         Move();
+        Attack();
     }
     #endregion
 
@@ -49,6 +52,7 @@ public class Flyingenemy : MonoBehaviour
         if (_hp < 0)
         {
             Destroy(gameObject);
+            animator.SetTrigger("Death");
         }
     }
     void Move ()
@@ -79,12 +83,26 @@ public class Flyingenemy : MonoBehaviour
         
 
     }
+
+    void Attack () 
+    {
+        if (_isAttackAvailable) 
+        {
+            GameObject bullet =  Instantiate(BulletPrefab);
+            bullet.transform.position = transform.position;
+            bullet.SetActive(true);
+            StartCoroutine("AttackCd");
+        }
+    
+    
+    }
+
+
     IEnumerator AttackCd ()
     {
-
-        _isAttackAvailable = false;
         
-        yield return new WaitForSeconds(_attackSpeed);
+        _isAttackAvailable = false;
+        yield return new WaitForSeconds(bulletCd);
         _isAttackAvailable = true;
 
     }

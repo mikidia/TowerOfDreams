@@ -36,6 +36,7 @@ public class Player : MonoBehaviour
     [SerializeField] float _stamina=100;
     [SerializeField]float _maxStamina;
     [SerializeField]float _staminaRegeneration;
+    public static Player instance;
 
     #region Nonserialized
 
@@ -82,11 +83,24 @@ public class Player : MonoBehaviour
 
     private void Awake ()
     {
+        if (instance == null)
+        {
+
+            instance = this;
+
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
         rb = GetComponent<Rigidbody>();
         _playerControlIsEnable = true;
         _rollIsPossible = true;
         attackTriger = GetComponentInChildren<PlayerAttackTriger>();
         animator = GetComponent<Animator>();
+        animator.SetFloat("Hp", _playerHp);
+
+
         //uiManager = UiManager.instance;
 
 
@@ -95,6 +109,7 @@ public class Player : MonoBehaviour
     {
         _playerHp = _maxHp;
         healthBar.SetMaxHealth(_maxHp);
+        
     }
 
     #endregion
@@ -112,11 +127,8 @@ public class Player : MonoBehaviour
 
 
         }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-            TakeDamage(20);
-
         UpdateStamina();
+        
         Debugs();
     }
 
@@ -139,8 +151,9 @@ public class Player : MonoBehaviour
         }
         if (Input.GetKeyDown(attackButton) && _isAttackAvailable == true)
         {
-            StartCoroutine("AttackCd");
             animator.SetTrigger("Attack");
+
+            StartCoroutine("AttackCd");
         }
         if (Input.GetKeyDown(inventoryButton) )
         {
@@ -148,11 +161,13 @@ public class Player : MonoBehaviour
         }
     }
 
-    void TakeDamage (int damage)
+     public void TakeDamage (int damage)
     {
+
         _playerHp -= damage;
+        animator.SetFloat("Hp", _playerHp);
         healthBar.SetHealth(_playerHp);
-        //animator.SetTrigger("GetDamage");
+        animator.SetTrigger("GetDamage");
 
     }
     //bool  ColliderCheck () 
@@ -167,15 +182,19 @@ public class Player : MonoBehaviour
 
 
         input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
-        if (input.x == 0 && input.z == 0) { animator.SetBool("IsStay", true); } else { animator.SetBool("IsStay", false); }
+        if (input.x == 0 && input.z == 0) 
+        { 
+            animator.SetBool("IsStay", true); 
+            rb.velocity = Vector3.zero;
+        }
+        else
+        { 
+            animator.SetBool("IsStay", false);
+            Vector3 newPos =rb.position+(input.normalized*_playerSpeed*Time.deltaTime);
+            
+            rb.MovePosition(newPos);
+        }
         
-
-        Vector3 newPos =rb.position+(input.normalized*_playerSpeed*Time.deltaTime);
-        //rb.velocity = newPos;
-        
-        rb.MovePosition(newPos);
-
-
 
     }
 
@@ -220,7 +239,7 @@ public class Player : MonoBehaviour
 
     void Dead ()
     {
-        //animator.SetTrigger("PlayerDead"); 
+        animator.SetTrigger("PlayerDead");
     }
 
     #endregion
@@ -230,9 +249,9 @@ public class Player : MonoBehaviour
 #if UNITY_EDITOR
     void Debugs ()
     {
-        Debug.Log(input);
+        
         //Debug.Log(attackDirection);
-        Debug.DrawRay(transform.position, facingDirection * 2f, Color.green); //not correctly draw size of attack direction ray
+        //Debug.DrawRay(transform.position, facingDirection * 2f, Color.green); //not correctly draw size of attack direction ray
     }
 
 

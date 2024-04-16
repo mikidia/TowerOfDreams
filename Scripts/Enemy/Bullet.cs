@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -7,35 +7,59 @@ public class Bullet : MonoBehaviour
 
 	#region Declaration
 	[SerializeField] float bulletSpeed;
-	Rigidbody rb;
-    
+	[SerializeField] int bulletDamage;
+	Vector3 playerLastPos;
+	Player playerscript;
+    [SerializeField]Vector3 offset;
 
 
-    #endregion
+    Rigidbody rb;
 
 
-    #region MonoBehaviour
-    private void Awake ()
+
+	#endregion
+
+
+	#region MonoBehaviour
+	private void Awake ()
 	{
 
-	}
+    }
 	private void Start ()
 	{
-		
+        playerscript     = Player.instance;
+        rb = GetComponent<Rigidbody>();
+		rb.velocity = Vector3.zero;
+        playerLastPos = playerscript.transform.position;
+        rb.AddForce((playerLastPos - transform.position) * bulletSpeed, ForceMode.Impulse);
+        transform.rotation = Quaternion.LookRotation(Camera.main.transform.position);
+        StartCoroutine("destroyBullet");
+
+
 
     }
 
-	#endregion
-	private void Update ()
-	{
+    #endregion
 
-	}
+    private void OnTriggerEnter (Collider collision)
+    {
+        Player player = collision.gameObject.GetComponent<Player>();
+        Debug.Log(player);
+        if (player != null)
+        {
 
-	void Move (Vector3 playerLastPos) 
-	{
-	
-	
-	
-	}
-		
+            player.TakeDamage(bulletDamage);
+
+        }
+        
+    }
+   IEnumerator destroyBullet () 
+    {
+    
+        yield return new WaitForSeconds(5);
+        Destroy(gameObject);
+    }
+
+
+
 }
