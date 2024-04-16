@@ -19,6 +19,8 @@ public class Flyingenemy : MonoBehaviour
     [SerializeField]float _attackSpeed;
     [SerializeField]bool _isAttackAvailable = true;
     [SerializeField]float bulletCd;
+    [SerializeField] private AudioClip damageSoundClip;
+    [SerializeField] private AudioClip deathSoundClip;
 
 
 
@@ -26,6 +28,7 @@ public class Flyingenemy : MonoBehaviour
     Player _player;
     Rigidbody rb;
     Animator animator;
+    private AudioSource audioSource;
     #endregion
 
 
@@ -38,6 +41,7 @@ public class Flyingenemy : MonoBehaviour
         _player = GameObject.Find("Player").GetComponent<Player>();
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>(); 
+        audioSource = GetComponent<AudioSource>();
     }
     private void Update ()
     {
@@ -51,6 +55,8 @@ public class Flyingenemy : MonoBehaviour
         _hp -= damage;
         if (_hp < 0)
         {
+            audioSource.clip = deathSoundClip;
+            audioSource.Play();
             Destroy(gameObject);
             animator.SetTrigger("Death");
         }
@@ -88,6 +94,8 @@ public class Flyingenemy : MonoBehaviour
     {
         if (_isAttackAvailable) 
         {
+            audioSource.clip = damageSoundClip;
+            audioSource.Play();
             GameObject bullet =  Instantiate(BulletPrefab);
             bullet.transform.position = transform.position;
             bullet.SetActive(true);

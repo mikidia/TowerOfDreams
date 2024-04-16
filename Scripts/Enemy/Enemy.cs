@@ -15,9 +15,12 @@ public class Enemy : MonoBehaviour, IDamageable
     [SerializeField]Rigidbody rb;
     [SerializeField]float waitUntilTp;
     [SerializeField]LevelGenerator levelGenerator;
+    [SerializeField] private AudioClip damageSoundClip;
+    [SerializeField] private AudioClip deathSoundClip;
     Vector3 _newPos;
     bool IsTeleporting;
 
+    private AudioSource audioSource;
 
     #endregion
 
@@ -32,6 +35,7 @@ public class Enemy : MonoBehaviour, IDamageable
     #endregion
     private void Start ()
     {
+        audioSource = GetComponent<AudioSource>();
         Player player = Player.instance;
 
     }
@@ -44,6 +48,8 @@ public class Enemy : MonoBehaviour, IDamageable
         _hp -= damage;
         if (_hp < 0)
         {
+            audioSource.clip = deathSoundClip;
+            audioSource.Play();
             Destroy(gameObject);
         }
     }
@@ -55,8 +61,6 @@ public class Enemy : MonoBehaviour, IDamageable
         if (Vector3.Distance(transform.position, _player.transform.position) < 2&& !IsTeleporting)
         {
             StartCoroutine("teleport");
-
-
 
         }
 
