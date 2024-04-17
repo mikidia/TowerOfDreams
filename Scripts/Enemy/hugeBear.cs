@@ -7,6 +7,11 @@ public class hugeBear : MonoBehaviour, IDamageable
     [SerializeField]Player _player;
     [SerializeField]float speed;
     [SerializeField] float _hp;
+    [SerializeField] private AudioClip damageSoundClip;
+    [SerializeField] private AudioClip deathSoundClip;
+
+    private AudioSource audioSource;
+
     Animator animator;
     bool isAttacking = false;
     bool isDeath = false;
@@ -16,6 +21,7 @@ public class hugeBear : MonoBehaviour, IDamageable
     {
         _player = GameObject.Find("Player").GetComponent<Player>();
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update ()
@@ -49,6 +55,8 @@ public class hugeBear : MonoBehaviour, IDamageable
 
         if (_hp < 0)
         {
+            audioSource.clip = deathSoundClip;
+            audioSource.Play();
             animator.SetTrigger("Death");
             isDeath = true;
             StartCoroutine("Death");
