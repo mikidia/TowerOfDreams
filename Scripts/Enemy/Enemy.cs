@@ -24,7 +24,7 @@ public class Enemy : MonoBehaviour, IDamageable
     bool IsTeleporting;
     bool IsSpawning;
 
-    private AudioSource audioSource;
+    [SerializeField]private AudioSource audioSource;
 
     #endregion
 
@@ -55,9 +55,6 @@ public class Enemy : MonoBehaviour, IDamageable
     public void GetDamage (int damage)
     {
         _hp -= damage;
-        GenerateNewPos();
-        transform.position = _newPos;
-        IsTeleporting = false;
         if (_hp < 0)
         {
             audioSource.clip = deathSoundClip;

@@ -10,6 +10,7 @@ public class LevelGenerator : MonoBehaviour
 	[SerializeField] GameObject[] walls  ;
 	[SerializeField]float[] bounds = new float[4];
 	[SerializeField] Vector3[] floorSize = new Vector3[1];
+
 	[SerializeField] GameObject[] items;
 	public static LevelGenerator instance;
 
@@ -35,6 +36,13 @@ public class LevelGenerator : MonoBehaviour
         floorSize[0] = new Vector2(floor.GetComponent<MeshRenderer>().bounds.min.x, floor.GetComponent<MeshRenderer>().bounds.min.z);
 		floorSize[1] = new Vector2(floor.GetComponent<MeshRenderer>().bounds.max.x, floor.GetComponent<MeshRenderer>().bounds.max.z);
 
+    }
+    private void Update ()
+    {
+        if(Input.GetKeyUp(KeyCode.P)) 
+		{
+			levelGen();
+        }
     }
     private void Start ()
     {
