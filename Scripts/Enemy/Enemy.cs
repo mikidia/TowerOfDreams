@@ -20,6 +20,8 @@ public class Enemy : MonoBehaviour, IDamageable
     [SerializeField] private AudioClip deathSoundClip;
     LevelGenerator levelGenerator;
     [SerializeField]GameObject BearPrefab;
+    Animator animator;
+    GameManager gameManager;
     Vector3 _newPos;
     bool IsTeleporting;
     bool IsSpawning;
@@ -35,6 +37,8 @@ public class Enemy : MonoBehaviour, IDamageable
         levelGenerator = GameObject.Find("LevelGeneratorManager").GetComponent<LevelGenerator>();
         _player = GameObject.Find("Player").GetComponent<Player>();
         rb = gameObject.GetComponent<Rigidbody>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        animator = gameObject.GetComponent<Animator>();
     }
     #endregion
     private void Start ()
@@ -55,19 +59,39 @@ public class Enemy : MonoBehaviour, IDamageable
     public void GetDamage (int damage)
     {
         _hp -= damage;
+
         if (_hp < 0)
         {
-            audioSource.clip = deathSoundClip;
-            audioSource.Play();
-            Destroy(gameObject);
+            animator.SetTrigger("death");
+            
+            StartCoroutine("Death");
+            gameManager.addDeathForEnemy();
         }
     }
+    IEnumerator Death ()
+    {
+
+        yield return new WaitForSeconds(1);
+
+        Destroy(gameObject);
+        gameManager.addDeathForEnemy();
+
+
+
+
+    }
+
 
 
     void Move ()
     {
 
         if (Vector3.Distance(transform.position, _player.transform.position) < 2&& !IsTeleporting)
+        {
+            StartCoroutine("teleport");
+
+        }
+        if (Vector3.Distance(transform.position, _player.transform.position) > 10 && !IsTeleporting)
         {
             StartCoroutine("teleport");
 

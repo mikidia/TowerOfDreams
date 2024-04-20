@@ -69,9 +69,15 @@ public class Player : MonoBehaviour
     #endregion
 
     #region Getters
-    public float Stamina { get => _stamina; }
+    
     public float MaxStamina { get => _maxStamina; }
     public bool RollIsPossible { get => _rollIsPossible; set => _rollIsPossible = value; }
+    public int PlayerHp { get => _playerHp; set => _playerHp = value; }
+    public float Stamina { get => _stamina; set => _stamina = value; }
+    public float RollSpendStamina { get => _rollSpendStamina; set => _rollSpendStamina = value; }
+    public float PlayerSpeed { get => _playerSpeed; set => _playerSpeed = value; }
+    public int MaxHp { get => _maxHp; set => _maxHp = value; }
+
     #endregion
 
 
@@ -98,7 +104,7 @@ public class Player : MonoBehaviour
         _rollIsPossible = true;
         attackTriger = GetComponentInChildren<PlayerAttackTriger>();
         animator = GetComponent<Animator>();
-        animator.SetFloat("Hp", _playerHp);
+        animator.SetFloat("Hp", PlayerHp);
 
 
         //uiManager = UiManager.instance;
@@ -107,7 +113,7 @@ public class Player : MonoBehaviour
     }
     private void Start ()
     {
-        _playerHp = _maxHp;
+        PlayerHp = _maxHp;
         healthBar.SetMaxHealth(_maxHp);
         
     }
@@ -124,6 +130,7 @@ public class Player : MonoBehaviour
             GetInputs();
             SetDirection();
             Movement();
+            healthBar.SetHealth(PlayerHp);
 
 
         }
@@ -164,11 +171,11 @@ public class Player : MonoBehaviour
      public void TakeDamage (int damage)
     {
 
-        _playerHp -= damage;
-        animator.SetFloat("Hp", _playerHp);
-        healthBar.SetHealth(_playerHp);
+        PlayerHp -= damage;
+        animator.SetFloat("Hp", PlayerHp);
+        healthBar.SetHealth(PlayerHp);
         animator.SetTrigger("GetDamage");
-        if (_playerHp < 0) 
+        if (PlayerHp < 0) 
         {
 
             Dead();
@@ -296,6 +303,7 @@ public class Player : MonoBehaviour
             _rollIsPossible = true;
         }
     }
+    
 
 
 

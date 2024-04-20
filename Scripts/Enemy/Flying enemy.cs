@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Flyingenemy : MonoBehaviour
+public class Flyingenemy : MonoBehaviour,IDamageable
 {
 
 
@@ -29,6 +29,7 @@ public class Flyingenemy : MonoBehaviour
     Rigidbody rb;
     Animator animator;
     private AudioSource audioSource;
+    GameManager gameManager;
     #endregion
 
 
@@ -42,6 +43,7 @@ public class Flyingenemy : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>(); 
         audioSource = GetComponent<AudioSource>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
     private void Update ()
     {
@@ -57,10 +59,24 @@ public class Flyingenemy : MonoBehaviour
         {
             audioSource.clip = deathSoundClip;
             audioSource.Play();
-            Destroy(gameObject);
+            gameManager.addDeathForEnemy();
             animator.SetTrigger("Death");
+            StartCoroutine("Death");
         }
     }
+    IEnumerator Death ()
+    {
+
+        yield return new WaitForSeconds(1);
+        Destroy(gameObject);
+        gameManager.addDeathForEnemy();
+
+
+
+
+    }
+
+
     void Move ()
     {
         if (Vector3.Distance(transform.position, _player.transform.position) > _distanceToPlayer)
@@ -95,7 +111,7 @@ public class Flyingenemy : MonoBehaviour
         if (_isAttackAvailable) 
         {
             audioSource.clip = damageSoundClip;
-            audioSource.Play();
+            //audioSource.Play();
             GameObject bullet =  Instantiate(BulletPrefab);
             bullet.transform.position = transform.position;
             bullet.SetActive(true);

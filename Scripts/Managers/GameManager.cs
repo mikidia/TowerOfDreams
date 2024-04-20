@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -10,13 +11,23 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject inventory;
     bool inventoryIsOpen =false;
     bool cursorVisible=false;
+    public int enemyIsdeath = 0;
+
+    
 
     #endregion
     private void Start ()
     {
-        uiManager= GameObject.Find("UiManager").GetComponent<UiManager>();
+        uiManager = GameObject.Find("UiManager").GetComponent<UiManager>();
         player = GameObject.Find("Player").GetComponent<Player>();
         Cursor.visible = cursorVisible;
+    }
+    public void addDeathForEnemy () 
+    {
+
+        enemyIsdeath++;
+
+
     }
 
 

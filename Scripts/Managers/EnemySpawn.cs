@@ -9,16 +9,22 @@ public class EnemySpawn : MonoBehaviour
     [SerializeField]List<GameObject> enemies = new List<GameObject>();
     [SerializeField] float spawnTime = 3f;
     [SerializeField] Transform enemyParent;
+    [SerializeField] Transform bossParent;
+
     [SerializeField] float maxEnemy = 4;// How long between each spawn.
     [SerializeField] Transform[] spawnPoints;         // An array of the spawn points this enemy can spawn from.
+    GameManager gameManager;
     LevelGenerator levelGenerator;
+    [SerializeField]GameObject boss;
+    bool spawnIsActive = true;
 
     void Start ()
     {
 
 
-        levelGenerator = LevelGenerator.instance;
+        levelGenerator =  GameObject.Find("LevelGeneratorManager").GetComponent<LevelGenerator>(); 
         spawnPoints = GetComponentsInChildren<Transform>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         setSpawnPoints();
     }
 
@@ -33,11 +39,18 @@ public class EnemySpawn : MonoBehaviour
 
         Spawn();
     }
+    private void Update ()
+    {
+        if (gameManager.enemyIsdeath > 50) 
+        {
+            bool spawnIsActive = false;
+        }
+    }
 
 
     void Spawn ()
     {
-        if (enemyParent.childCount<maxEnemy+ enemies.Count) 
+        if ((enemyParent.childCount<maxEnemy+ enemies.Count)&&spawnIsActive) 
         {
             spawnPoints = new Transform[transform.childCount];
 
@@ -47,11 +60,18 @@ public class EnemySpawn : MonoBehaviour
             // Find a random index between zero and one less than the number of spawn points.
             int spawnPointIndex = Random.Range(0, spawnPoints.Length);
             int selectEnemy = Random.Range(0, 3);
-            Instantiate(enemies[selectEnemy], spawnPoints[spawnPointIndex].position, spawnPoints[spawnPointIndex].rotation, enemyParent);
+           GameObject enemyprefab =  Instantiate(enemies[selectEnemy], spawnPoints[spawnPointIndex].position, spawnPoints[spawnPointIndex].rotation, enemyParent);
+            enemyprefab.SetActive(true);
+        }else if (!spawnIsActive) 
+        {
+            int spawnPointIndex = Random.Range(0, spawnPoints.Length);
+
+            GameObject enemyprefab =  Instantiate(boss,spawnPoints[spawnPointIndex].position,spawnPoints[spawnPointIndex].rotation, bossParent);
+
 
         }
-        
-        
+
+
 
     }
 

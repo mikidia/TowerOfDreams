@@ -7,13 +7,19 @@ public class hugeBear : MonoBehaviour, IDamageable
     [SerializeField]Player _player;
     [SerializeField]float speed;
     [SerializeField] float _hp;
+    [SerializeField] float attackCdTime;
+    [SerializeField]bool _isAttackAvailable;
+
+    [SerializeField] GameObject attackPrefab;
     Animator animator;
+    GameManager gameManager;
     bool isAttacking = false;
     bool isDeath = false;
 
     // Start is called before the first frame update
     void Start ()
     {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _player = GameObject.Find("Player").GetComponent<Player>();
         animator = GetComponent<Animator>();
     }
@@ -25,6 +31,7 @@ public class hugeBear : MonoBehaviour, IDamageable
             if (!isAttacking)
             {
                 Move();
+                Attack();
             }
             else
             {
@@ -60,7 +67,33 @@ public class hugeBear : MonoBehaviour, IDamageable
     
     yield return new WaitForSeconds(1);
         Destroy(gameObject);
-    
+        gameManager.addDeathForEnemy();
+
+
+
+
+    }
+
+    void Attack ()
+    {
+        if (_isAttackAvailable)
+        {
+            //audioSource.Play();
+            GameObject bullet =  Instantiate(attackPrefab);
+            bullet.transform.position = transform.position;
+            bullet.SetActive(true);
+            StartCoroutine("AttackCd");
+        }
+
+
+    }
+    IEnumerator AttackCd ()
+    {
+
+        _isAttackAvailable = false;
+        yield return new WaitForSeconds(attackCdTime);
+        _isAttackAvailable = true;
+
     }
 
 
