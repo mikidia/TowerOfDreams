@@ -12,6 +12,7 @@ public class Flyingenemy : MonoBehaviour,IDamageable
     [SerializeField]float _enemySpeed;
     [SerializeField]bool isGoToPlayer = true;
     [SerializeField]GameObject BulletPrefab;
+    bool isDeath = false;
     
 
     [Header("Attack ")]
@@ -30,6 +31,7 @@ public class Flyingenemy : MonoBehaviour,IDamageable
     Animator animator;
     private AudioSource audioSource;
     GameManager gameManager;
+    SoundManager audio;
     #endregion
 
 
@@ -42,28 +44,38 @@ public class Flyingenemy : MonoBehaviour,IDamageable
         _player = GameObject.Find("Player").GetComponent<Player>();
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>(); 
-        audioSource = GetComponent<AudioSource>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        audio = GameObject.Find("Sound manager").GetComponent<SoundManager>();
     }
     private void Update ()
     {
-        Move();
-        Attack();
+        if ( !isDeath)
+        {
+            Move();
+            Attack();  
+        }
+
     }
     #endregion
 
     public void GetDamage (int damage)
     {
-        _hp -= damage;
-        if (_hp < 0)
+        if (!isDeath) 
         {
-            audioSource.clip = deathSoundClip;
-            audioSource.Play();
-            gameManager.addDeathForEnemy();
-            animator.SetTrigger("Death");
-            StartCoroutine("Death");
+            _hp -= damage;
+            if (_hp < 0)
+            {
+                isDeath = true;
+                audio.BatDeathSound();
+                gameManager.addDeathForEnemy();
+                animator.SetTrigger("Death");
+                StartCoroutine("Death");
+            }
         }
+
     }
+
+   
     IEnumerator Death ()
     {
 
@@ -110,11 +122,10 @@ public class Flyingenemy : MonoBehaviour,IDamageable
     {
         if (_isAttackAvailable) 
         {
-            audioSource.clip = damageSoundClip;
-            //audioSource.Play();
             GameObject bullet =  Instantiate(BulletPrefab);
             bullet.transform.position = transform.position;
             bullet.SetActive(true);
+            audio.BatAttackSound();
             StartCoroutine("AttackCd");
         }
     

@@ -44,7 +44,6 @@ public class Bullet : MonoBehaviour
     private void OnTriggerEnter (Collider collision)
     {
         Player player = collision.gameObject.GetComponent<Player>();
-        Debug.Log(player);
         if (player != null)
         {
 

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class hugeBear : MonoBehaviour, IDamageable
@@ -13,11 +12,7 @@ public class hugeBear : MonoBehaviour, IDamageable
 
     [SerializeField] GameObject attackPrefab;
 
-    [SerializeField] private AudioClip damageSoundClip;
-    [SerializeField] private AudioClip deathSoundClip;
-
-    private AudioSource audioSource;
-
+    SoundManager audio;
 
     Animator animator;
     GameManager gameManager;
@@ -27,15 +22,18 @@ public class hugeBear : MonoBehaviour, IDamageable
     // Start is called before the first frame update
     void Start ()
     {
+
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _player = GameObject.Find("Player").GetComponent<Player>();
         animator = GetComponent<Animator>();
-        audioSource = GetComponent<AudioSource>();
+        audio = GameObject.Find("Sound manager").GetComponent<SoundManager>();
+        audio.HugeBearReliseSound();
+        audio.StartBossFight();
     }
 
     void Update ()
     {
-        if (!isDeath) 
+        if (!isDeath)
         {
             if (!isAttacking)
             {
@@ -61,22 +59,27 @@ public class hugeBear : MonoBehaviour, IDamageable
 
     public void GetDamage (int damage)
     {
-        _hp -= damage;
-
-        if (_hp < 0)
+        if (!isDeath)
         {
-            audioSource.clip = deathSoundClip;
-            audioSource.Play();
-            animator.SetTrigger("Death");
-            isDeath = true;
-            StartCoroutine("Death");
+
+
+            _hp -= damage;
+
+            if (_hp < 0)
+            {
+
+                animator.SetTrigger("Death");
+                audio.HugeBearDeathSound();
+                isDeath = true;
+                StartCoroutine("Death");
+            }
         }
     }
 
-    IEnumerator Death () 
+    IEnumerator Death ()
     {
-    
-    yield return new WaitForSeconds(1);
+
+        yield return new WaitForSeconds(1);
         Destroy(gameObject);
         gameManager.addDeathForEnemy();
 

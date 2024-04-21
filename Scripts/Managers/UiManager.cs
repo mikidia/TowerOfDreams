@@ -36,16 +36,5 @@ public class UiManager : MonoBehaviour
         staminaSlider.maxValue = player.MaxStamina;
         staminaSlider.value = player.Stamina;
     }
-    //public void StaminaBarShow () 
-    //{
-    //    staminaBar.SetActive(true);
 
-
-    //}
-    //public void StaminaBarHide()
-    //{
-    //    staminaBar.SetActive(false);
-
-
-    //}
 }

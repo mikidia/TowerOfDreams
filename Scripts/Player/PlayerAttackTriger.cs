@@ -19,7 +19,7 @@ public class PlayerAttackTriger : MonoBehaviour
 
     public void Attack ()
     {
-        print("Attack");
+        
         attack =true;
 
     }
@@ -38,7 +38,20 @@ public class PlayerAttackTriger : MonoBehaviour
 
         if (other.TryGetComponent(out IDamageable hit) && attack)
         {
+            
+           if ( other.gameObject.TryGetComponent(out SpriteRenderer sprite)) 
+            {
+                if (other.gameObject.name != "Bear Small") 
+                {
+
+                StartCoroutine("damageEffect",sprite);
+                
+                }
+
+                
+            }
             hit.GetDamage(1);
+            
             attack = false;
 
 
@@ -47,7 +60,17 @@ public class PlayerAttackTriger : MonoBehaviour
         }
     }
 
+    IEnumerator damageEffect (SpriteRenderer sprite) 
+    {
+        
 
+        sprite.color = Color.red;
+
+        yield return new WaitForSeconds(0.1f);
+                sprite.color = Color.white;
+
+
+    }
     public void OnTriggerExit (Collider other)
     {
                
@@ -56,14 +79,6 @@ public class PlayerAttackTriger : MonoBehaviour
 
         
     }
-
-
-    //public void OnTriggerStay (Collision collision)
-    //{
-    //    print("Asdasdasdsd");
-
-
-    //}
 
 
 }

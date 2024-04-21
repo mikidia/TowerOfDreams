@@ -37,6 +37,9 @@ public class Player : MonoBehaviour
     [SerializeField]float _maxStamina;
     [SerializeField]float _staminaRegeneration;
     public static Player instance;
+    [Header("sound settings")]
+    [SerializeField] GameObject stepsAudio;
+
 
     #region Nonserialized
 
@@ -50,6 +53,11 @@ public class Player : MonoBehaviour
     [SerializeField]PlayerAttackTriger attackTriger;
     [SerializeField]Vector3 attackDirection;
     [NonSerialized]UiManager uiManager;
+    SpriteRenderer sprite;
+    GameManager gameManager;
+    SoundManager audio;
+    bool paused;
+    bool isDeath =false;
 
     #endregion
 
@@ -59,6 +67,8 @@ public class Player : MonoBehaviour
     KeyCode attackButton = KeyCode.Mouse0;
     KeyCode rollButton = KeyCode.LeftShift;
     KeyCode inventoryButton = KeyCode.I;
+    KeyCode pause = KeyCode.Escape;
+
 
 
 
@@ -105,6 +115,11 @@ public class Player : MonoBehaviour
         attackTriger = GetComponentInChildren<PlayerAttackTriger>();
         animator = GetComponent<Animator>();
         animator.SetFloat("Hp", PlayerHp);
+        sprite = GetComponent<SpriteRenderer>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        audio = GameObject.Find("Sound manager").GetComponent<SoundManager>();
+
+
 
 
         //uiManager = UiManager.instance;
@@ -125,7 +140,7 @@ public class Player : MonoBehaviour
     {
 
 
-        if (_playerControlIsEnable)
+        if (_playerControlIsEnable&&!isDeath)
         {
             GetInputs();
             SetDirection();
@@ -138,7 +153,6 @@ public class Player : MonoBehaviour
         
         Debugs();
     }
-
 
     void GetInputs ()
     {
@@ -159,6 +173,7 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(attackButton) && _isAttackAvailable == true)
         {
             animator.SetTrigger("Attack");
+            audio.PlayerAttackSound();
 
             StartCoroutine("AttackCd");
         }
@@ -166,28 +181,57 @@ public class Player : MonoBehaviour
         {
             
         }
+        if (Input.GetKeyDown(pause)&& !paused) 
+        {
+             paused = true;
+             gameManager.Pause();
+        }else if (Input.GetKeyDown(pause) && paused) 
+        {
+            gameManager.UpPause();
+            paused = false;
+
+        }
     }
 
      public void TakeDamage (int damage)
     {
-
-        PlayerHp -= damage;
-        animator.SetFloat("Hp", PlayerHp);
-        healthBar.SetHealth(PlayerHp);
-        animator.SetTrigger("GetDamage");
-        if (PlayerHp < 0) 
+        if (!isDeath) 
         {
+            
+            audio.PlayerGetHitSound();
+            PlayerHp -= damage;
+            animator.SetFloat("Hp", PlayerHp);
+            healthBar.SetHealth(PlayerHp);
+            animator.SetTrigger("GetDamage");
+            StartCoroutine("damageEffect");
+            if (PlayerHp < 0)
+            {
+                isDeath = true;
+                audio.PlayerDeathSound();
+                Dead();
 
-            Dead();
-        
+            }
+
+
         }
+
+
+    }
+    IEnumerator damageEffect ()
+    {
+        
+        
+        sprite.color = Color.red;
+        yield return new WaitForSeconds(0.1f);
+        sprite.color = Color.white;
+
 
     }
     //bool  ColliderCheck () 
     //{
-    
-    
-    
+
+
+
     //}
     #region Movement,animations
     void Movement ()
@@ -199,10 +243,19 @@ public class Player : MonoBehaviour
         { 
             animator.SetBool("IsStay", true); 
             rb.velocity = Vector3.zero;
+              
+            
+                stepsAudio.SetActive(false);
+
         }
         else
         { 
+
             animator.SetBool("IsStay", false);
+
+
+            stepsAudio.SetActive(true);
+
             Vector3 newPos =rb.position+(input.normalized*_playerSpeed*Time.deltaTime);
             
             rb.MovePosition(newPos);
@@ -248,11 +301,12 @@ public class Player : MonoBehaviour
 
     }
 
-
+    
 
     void Dead ()
     {
         animator.SetTrigger("PlayerDead");
+        
     }
 
     #endregion

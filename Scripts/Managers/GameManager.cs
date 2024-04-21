@@ -9,9 +9,11 @@ public class GameManager : MonoBehaviour
     [SerializeField]Player player;
     [SerializeField]UiManager uiManager;
     [SerializeField] GameObject inventory;
+    [SerializeField] GameObject pauseMenu;
     bool inventoryIsOpen =false;
     bool cursorVisible=false;
     public int enemyIsdeath = 0;
+    SoundManager audio;
 
     
 
@@ -21,6 +23,8 @@ public class GameManager : MonoBehaviour
         uiManager = GameObject.Find("UiManager").GetComponent<UiManager>();
         player = GameObject.Find("Player").GetComponent<Player>();
         Cursor.visible = cursorVisible;
+        audio = GameObject.Find("Sound manager").GetComponent<SoundManager>();
+
     }
     public void addDeathForEnemy () 
     {
@@ -47,23 +51,21 @@ public class GameManager : MonoBehaviour
     
     
     }
-    private void FixedUpdate ()
+    public void Pause () 
     {
-        //ShowStaminaBar();
-        //print("fixed");
+        Time.timeScale = 0f;
+        cursorVisible = true;
+        pauseMenu.SetActive(true);
+        audio.StopMusicAndSound();
+    }
+    public void UpPause () 
+    {
+        pauseMenu.SetActive(false);
+        cursorVisible = false;
+        Time.timeScale = 1.0f;
+        audio.StartMusicAfterPause();
     }
 
-    //void ShowStaminaBar () 
-    //{
-    //    if (player.Stamina>=player.MaxStamina) 
-    //    {
-    //          uiManager.StaminaBarHide();
-    //        print("hide");
-    //    }
-    //    else 
-    //    {
-    //    uiManager.StaminaBarShow();
-    //    }
-    //}
-    
+
+
 }

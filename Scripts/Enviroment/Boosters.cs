@@ -42,17 +42,17 @@ public class Boosters : MonoBehaviour
             StartCoroutine("MoveSpeed",player);
             transform.position = new Vector3(transform.position.x,transform.position.y+100,transform.position.z) ;
         }
-        if (player == null && StaminaInfinityPoision) 
+        if (player != null && StaminaInfinityPoision)
         {
-            StartCoroutine("InfinityStamina",player);
+            StartCoroutine(InfinityStamina(player));
             transform.position = new Vector3(transform.position.x, transform.position.y + 100, transform.position.z);
-
         }
 
     }
     IEnumerator InfinityStamina (Player player) 
     {
         stamina = player.RollSpendStamina;
+        player.Stamina = player.MaxStamina;
         player.RollSpendStamina = 0;
 
         yield return new WaitForSeconds(5);

@@ -25,6 +25,9 @@ public class Enemy : MonoBehaviour, IDamageable
     Vector3 _newPos;
     bool IsTeleporting;
     bool IsSpawning;
+    SoundManager audio;
+    bool isDeath = false;
+
 
     [SerializeField]private AudioSource audioSource;
 
@@ -39,6 +42,8 @@ public class Enemy : MonoBehaviour, IDamageable
         rb = gameObject.GetComponent<Rigidbody>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         animator = gameObject.GetComponent<Animator>();
+        audio = GameObject.Find("Sound manager").GetComponent<SoundManager>();
+
     }
     #endregion
     private void Start ()
@@ -51,7 +56,11 @@ public class Enemy : MonoBehaviour, IDamageable
     }
     private void Update ()
     {
-        Move();
+        if (!isDeath) 
+        {
+            Move();
+        }
+        
         
 
         
@@ -60,10 +69,11 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         _hp -= damage;
 
-        if (_hp < 0)
+        if (_hp < 0 && !isDeath)
         {
+            isDeath = true;
             animator.SetTrigger("death");
-            
+            audio.FrogDeathSound();
             StartCoroutine("Death");
             gameManager.addDeathForEnemy();
         }
@@ -119,7 +129,7 @@ public class Enemy : MonoBehaviour, IDamageable
         GenerateNewPos();
         transform.position = _newPos;
         IsTeleporting=false;
-        if (BearPrefab.GetComponentsInChildren<SmallBear>().Length<1)
+        if (BearPrefab.GetComponentsInChildren<SmallBear>().Length<2)
         {
             spawnBear();
         }
