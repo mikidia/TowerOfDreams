@@ -2024,7 +2024,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &419900505
 Transform:
   m_ObjectHideFlags: 0
@@ -2063,7 +2063,7 @@ MonoBehaviour:
   - {fileID: 2095522072}
   - {fileID: 692271738}
   - {fileID: 1059036464}
-  spawnTime: 4
+  spawnTime: 2
   enemyParent: {fileID: 341778939}
   bossParent: {fileID: 1647889772}
   maxEnemy: 7
@@ -2073,7 +2073,8 @@ MonoBehaviour:
   - {fileID: 237212555}
   - {fileID: 1578397274}
   - {fileID: 1578397274}
-  boss: {fileID: 0}
+  maxDeathEnemyAtArena: 0
+  boss: {fileID: 1647889771}
 --- !u!1001 &453477219
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2854,7 +2855,7 @@ MonoBehaviour:
   uiManager: {fileID: 0}
   inventory: {fileID: 0}
   pauseMenu: {fileID: 624593902}
-  enemyIsdeath: 49
+  enemyIsdeath: 0
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -4283,13 +4284,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 851765159}
+  - component: {fileID: 851765160}
   m_Layer: 0
   m_Name: Boosters
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &851765159
 Transform:
   m_ObjectHideFlags: 0
@@ -4309,6 +4311,24 @@ Transform:
   - {fileID: 1872123973}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &851765160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 851765158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 566467219732d5942bb9354465ebd96c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  items:
+  - {fileID: 839322646}
+  - {fileID: 1428368056}
+  - {fileID: 2025829331}
+  - {fileID: 1872123972}
+  boosterParent: {fileID: 1387166499}
 --- !u!1001 &866175255
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6161,6 +6181,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1368825041}
   m_CullTransparentMesh: 1
+--- !u!1 &1387166498
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1387166499}
+  m_Layer: 0
+  m_Name: BoosterParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1387166499
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1387166498}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 50.099625, y: -0.32983482, z: -34.316833}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1428368056
 GameObject:
   m_ObjectHideFlags: 0
@@ -9543,7 +9594,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8554318366794137575, guid: a55eabfedb0ae9f4fac14325771947b1, type: 3}
       propertyPath: _hp
-      value: 1
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8554318366794137575, guid: a55eabfedb0ae9f4fac14325771947b1, type: 3}
       propertyPath: bulletCd
@@ -9856,3 +9907,4 @@ SceneRoots:
   - {fileID: 404349151}
   - {fileID: 1195417641}
   - {fileID: 851765159}
+  - {fileID: 1387166499}

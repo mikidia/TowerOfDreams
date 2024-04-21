@@ -11,11 +11,13 @@ public class EnemySpawn : MonoBehaviour
     [SerializeField] Transform enemyParent;
     [SerializeField] Transform bossParent;
 
-    [SerializeField] float maxEnemy = 4;// How long between each spawn.
-    [SerializeField] Transform[] spawnPoints;         // An array of the spawn points this enemy can spawn from.
+    [SerializeField] float maxEnemy = 4;
+    [SerializeField] Transform[] spawnPoints;
+    [SerializeField] int maxDeathEnemyAtArena;// An array of the spawn points this enemy can spawn from.
     GameManager gameManager;
     LevelGenerator levelGenerator;
     [SerializeField]GameObject boss;
+
     bool spawnIsActive = true;
 
     void Start ()
@@ -41,7 +43,7 @@ public class EnemySpawn : MonoBehaviour
     }
     private void Update ()
     {
-        if (gameManager.enemyIsdeath > 50) 
+        if (gameManager.enemyIsdeath > maxDeathEnemyAtArena) 
         {
             bool spawnIsActive = false;
         }
