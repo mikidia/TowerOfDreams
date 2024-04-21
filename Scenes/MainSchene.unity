@@ -2338,7 +2338,7 @@ MonoBehaviour:
   - {fileID: 2095522072}
   - {fileID: 692271738}
   - {fileID: 1059036464}
-  spawnTime: 4
+  spawnTime: 2
   enemyParent: {fileID: 341778939}
   bossParent: {fileID: 1647889772}
   maxEnemy: 6
@@ -3211,7 +3211,7 @@ MonoBehaviour:
   pauseMenu: {fileID: 624593902}
   winMenu: {fileID: 758375873}
   looseMenu: {fileID: 267994900}
-  enemyIsdeath: 0
+  enemyIsdeath: 74
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0

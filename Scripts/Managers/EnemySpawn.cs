@@ -43,11 +43,12 @@ public class EnemySpawn : MonoBehaviour
     }
     private void Update ()
     {
-        if (gameManager.enemyIsdeath == maxDeathEnemyAtArena) 
+        if (gameManager.enemyIsdeath >= maxDeathEnemyAtArena && !BossSpawnIsActive) 
         {
             bool BossSpawnIsActive = true;
             
         }
+        Spawn();
     }
 
 
@@ -67,7 +68,7 @@ public class EnemySpawn : MonoBehaviour
             enemyprefab.SetActive(true);
         }else if (BossSpawnIsActive) 
         {
-            BossSpawnIsActive =false;
+            
             int spawnPointIndex = Random.Range(0, spawnPoints.Length);
             GameObject enemyprefab =  Instantiate(boss,spawnPoints[spawnPointIndex].position,spawnPoints[spawnPointIndex].rotation, bossParent);
 

@@ -19,21 +19,26 @@ public class Boosters : MonoBehaviour
         Player player = other.gameObject.GetComponent<Player>();
         if (player != null && HpPoision) 
         {
-            if (player.PlayerHp+25 < player.MaxHp) 
-            {
+
 
                 player.PlayerHp += 25;
                 Destroy(gameObject);
+            if (player.PlayerHp + 25 > player.MaxHp)
+            {
+                player.PlayerHp = player.MaxHp;
 
             }
 
         }
         if (player != null && StaminaPoision)
         {
-            if (player.Stamina + 25 < player.MaxStamina)
-            {
+           
                 player.Stamina += 25;
                 Destroy(gameObject);
+            if (player.Stamina > player.MaxStamina)
+            {
+                player.Stamina = player.MaxStamina;
+
             }
         }
         if (player != null && speedPoision)
