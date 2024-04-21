@@ -18,7 +18,7 @@ public class EnemySpawn : MonoBehaviour
     LevelGenerator levelGenerator;
     [SerializeField]GameObject boss;
 
-    bool spawnIsActive = true;
+    bool BossSpawnIsActive = false;
 
     void Start ()
     {
@@ -43,16 +43,17 @@ public class EnemySpawn : MonoBehaviour
     }
     private void Update ()
     {
-        if (gameManager.enemyIsdeath > maxDeathEnemyAtArena) 
+        if (gameManager.enemyIsdeath == maxDeathEnemyAtArena) 
         {
-            bool spawnIsActive = false;
+            bool BossSpawnIsActive = true;
+            
         }
     }
 
 
     void Spawn ()
     {
-        if ((enemyParent.childCount<maxEnemy+ enemies.Count)&&spawnIsActive) 
+        if ((enemyParent.childCount<maxEnemy+ enemies.Count)&&!BossSpawnIsActive) 
         {
             spawnPoints = new Transform[transform.childCount];
 
@@ -64,10 +65,10 @@ public class EnemySpawn : MonoBehaviour
             int selectEnemy = Random.Range(0, 3);
            GameObject enemyprefab =  Instantiate(enemies[selectEnemy], spawnPoints[spawnPointIndex].position, spawnPoints[spawnPointIndex].rotation, enemyParent);
             enemyprefab.SetActive(true);
-        }else if (!spawnIsActive) 
+        }else if (BossSpawnIsActive) 
         {
+            BossSpawnIsActive =false;
             int spawnPointIndex = Random.Range(0, spawnPoints.Length);
-
             GameObject enemyprefab =  Instantiate(boss,spawnPoints[spawnPointIndex].position,spawnPoints[spawnPointIndex].rotation, bossParent);
 
 

@@ -23,4 +23,14 @@ public void Exit ()
 
 
     }
+    public void Restart () 
+    {
+
+        
+        string currentSceneName = SceneManager.GetActiveScene().name;
+
+        
+        SceneManager.LoadScene(currentSceneName);
+
+    }
 }

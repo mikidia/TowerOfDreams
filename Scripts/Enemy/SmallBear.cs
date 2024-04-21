@@ -8,6 +8,7 @@ public class SmallBear : MonoBehaviour,IDamageable
     [SerializeField]float speed;
     [SerializeField] float _hp;
     GameManager gameManager;
+    ItemSpawn itemSpawn;
     Animator animator;
 
     // Start is called before the first frame update
@@ -17,6 +18,8 @@ public class SmallBear : MonoBehaviour,IDamageable
         _player = GameObject.Find("Player").GetComponent<Player>();
         animator = GetComponent<Animator>();
         animator.SetTrigger("Spawn");
+        itemSpawn = GameObject.Find("Boosters").GetComponent<ItemSpawn>();
+
     }
 
     // Update is called once per frame
@@ -36,10 +39,11 @@ public class SmallBear : MonoBehaviour,IDamageable
     {
         _hp -= damage;
 
-        if (_hp < 0)
+        if (_hp <= 0)
         {
             animator.SetTrigger("Death");
             gameManager.addDeathForEnemy();
+            itemSpawn.getRandomBuster(transform.position);
             Destroy(gameObject);
 
 

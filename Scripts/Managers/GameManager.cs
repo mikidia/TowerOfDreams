@@ -10,6 +10,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]UiManager uiManager;
     [SerializeField] GameObject inventory;
     [SerializeField] GameObject pauseMenu;
+    [SerializeField] GameObject winMenu;
+    [SerializeField] GameObject looseMenu;
+
     bool inventoryIsOpen =false;
     bool cursorVisible=false;
     public int enemyIsdeath = 0;
@@ -35,6 +38,7 @@ public class GameManager : MonoBehaviour
     }
 
 
+
     public void showInventory () 
     {
         inventoryIsOpen = !inventoryIsOpen;
@@ -55,15 +59,35 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 0f;
         cursorVisible = true;
+        Cursor.visible = cursorVisible;
         pauseMenu.SetActive(true);
         audio.StopMusicAndSound();
     }
     public void UpPause () 
     {
         pauseMenu.SetActive(false);
+
         cursorVisible = false;
+        Cursor.visible = cursorVisible;
         Time.timeScale = 1.0f;
         audio.StartMusicAfterPause();
+    }
+    public void win ()
+    {   cursorVisible = true;
+        Cursor.visible = cursorVisible;
+
+        Time.timeScale = 0f;
+        
+        winMenu.SetActive(true);
+        audio.StopMusicAndSound();
+    }
+    public void loose ()
+    {   cursorVisible = true;
+        Cursor.visible = cursorVisible;
+        Time.timeScale = 0f;
+        
+        looseMenu.SetActive(true);
+        audio.StopMusicAndSound();
     }
 
 

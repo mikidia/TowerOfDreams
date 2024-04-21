@@ -38,6 +38,10 @@ public class Bullet : MonoBehaviour
 
 
     }
+    private void Update ()
+    {
+        transform.rotation = Quaternion.LookRotation(Camera.main.transform.position);
+    }
 
     #endregion
 

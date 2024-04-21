@@ -32,6 +32,7 @@ public class Flyingenemy : MonoBehaviour,IDamageable
     private AudioSource audioSource;
     GameManager gameManager;
     SoundManager audio;
+    ItemSpawn itemSpawn;
     #endregion
 
 
@@ -46,6 +47,8 @@ public class Flyingenemy : MonoBehaviour,IDamageable
         animator = GetComponent<Animator>(); 
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         audio = GameObject.Find("Sound manager").GetComponent<SoundManager>();
+        itemSpawn = GameObject.Find("Boosters").GetComponent<ItemSpawn>();
+
     }
     private void Update ()
     {
@@ -70,6 +73,8 @@ public class Flyingenemy : MonoBehaviour,IDamageable
                 gameManager.addDeathForEnemy();
                 animator.SetTrigger("Death");
                 StartCoroutine("Death");
+                itemSpawn.getRandomBuster(transform.position);
+                
             }
         }
 

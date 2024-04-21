@@ -62,7 +62,7 @@ public class Boosters : MonoBehaviour
     IEnumerator MoveSpeed (Player player)
     {
         movespeed = player.PlayerSpeed;
-        player.PlayerSpeed = 0;
+        player.PlayerSpeed = player.PlayerSpeed*1.5f;
 
         yield return new WaitForSeconds(5);
         player.PlayerSpeed = movespeed;

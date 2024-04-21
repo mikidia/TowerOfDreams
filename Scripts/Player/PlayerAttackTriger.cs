@@ -4,6 +4,8 @@ using System.Runtime.Serialization;
 using UnityEngine;
 using UnityEngine;
 using System.Collections;
+using System.Reflection;
+using System;
 
 
 public class PlayerAttackTriger : MonoBehaviour
@@ -39,15 +41,11 @@ public class PlayerAttackTriger : MonoBehaviour
         if (other.TryGetComponent(out IDamageable hit) && attack)
         {
             
-           if ( other.gameObject.TryGetComponent(out SpriteRenderer sprite)) 
+           if ( other.gameObject.TryGetComponent(out SpriteRenderer sprite)&& other.gameObject.name != "Bear Small") 
             {
-                if (other.gameObject.name != "Bear Small") 
-                {
 
                 StartCoroutine("damageEffect",sprite);
-                
-                }
-
+               
                 
             }
             hit.GetDamage(1);
@@ -67,10 +65,16 @@ public class PlayerAttackTriger : MonoBehaviour
         sprite.color = Color.red;
 
         yield return new WaitForSeconds(0.1f);
-                sprite.color = Color.white;
+        try
+        {
+            sprite.color = Color.white;
 
 
-    }
+        }catch (MissingReferenceException ex) { }
+
+
+
+}
     public void OnTriggerExit (Collider other)
     {
                

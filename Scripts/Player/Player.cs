@@ -151,7 +151,7 @@ public class Player : MonoBehaviour
         }
         UpdateStamina();
         
-        Debugs();
+        
     }
 
     void GetInputs ()
@@ -209,6 +209,7 @@ public class Player : MonoBehaviour
                 isDeath = true;
                 audio.PlayerDeathSound();
                 Dead();
+                gameManager.loose();
 
             }
 
@@ -313,16 +314,7 @@ public class Player : MonoBehaviour
 
 
 
-#if UNITY_EDITOR
-    void Debugs ()
-    {
-        
-        //Debug.Log(attackDirection);
-        //Debug.DrawRay(transform.position, facingDirection * 2f, Color.green); //not correctly draw size of attack direction ray
-    }
 
-
-#endif
     void UpdateStamina ()
     {
 

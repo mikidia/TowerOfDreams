@@ -65,13 +65,14 @@ public class hugeBear : MonoBehaviour, IDamageable
 
             _hp -= damage;
 
-            if (_hp < 0)
+            if (_hp <= 0)
             {
 
                 animator.SetTrigger("Death");
                 audio.HugeBearDeathSound();
                 isDeath = true;
                 StartCoroutine("Death");
+                gameManager.win();
             }
         }
     }

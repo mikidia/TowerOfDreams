@@ -10,11 +10,15 @@ public class ItemSpawn : MonoBehaviour
 
     public void getRandomBuster ( Vector3 enemyPos) 
     {
+        if (Random.Range(0,4)==2) 
+        {
+            GameObject booster = Instantiate(items[Random.Range(0,items.Length)],boosterParent);
+            booster.transform.position = enemyPos;
+            booster.SetActive(true);
+            Destroy(booster, 7);
+        }
 
-        GameObject booster = Instantiate(items[Random.Range(0,items.Length)],boosterParent);
-        booster.transform.position = enemyPos;
-        booster.SetActive(true);
-        Destroy(booster,7);
+
 
     
     }

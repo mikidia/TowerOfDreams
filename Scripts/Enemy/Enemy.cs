@@ -19,6 +19,7 @@ public class Enemy : MonoBehaviour, IDamageable
     [SerializeField] private AudioClip damageSoundClip;
     [SerializeField] private AudioClip deathSoundClip;
     LevelGenerator levelGenerator;
+    ItemSpawn itemSpawn;
     [SerializeField]GameObject BearPrefab;
     Animator animator;
     GameManager gameManager;
@@ -43,39 +44,41 @@ public class Enemy : MonoBehaviour, IDamageable
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         animator = gameObject.GetComponent<Animator>();
         audio = GameObject.Find("Sound manager").GetComponent<SoundManager>();
+        itemSpawn = GameObject.Find("Boosters").GetComponent<ItemSpawn>();
 
     }
     #endregion
     private void Start ()
     {
 
-        spawnBear ();
+        spawnBear();
         audioSource = GetComponent<AudioSource>();
         Player player = Player.instance;
 
     }
     private void Update ()
     {
-        if (!isDeath) 
+        if (!isDeath)
         {
             Move();
         }
-        
-        
 
-        
+
+
+
     }
     public void GetDamage (int damage)
     {
         _hp -= damage;
 
-        if (_hp < 0 && !isDeath)
+        if (_hp <= 0 && !isDeath)
         {
             isDeath = true;
             animator.SetTrigger("death");
             audio.FrogDeathSound();
             StartCoroutine("Death");
             gameManager.addDeathForEnemy();
+            itemSpawn.getRandomBuster(transform.position);
         }
     }
     IEnumerator Death ()
@@ -96,7 +99,7 @@ public class Enemy : MonoBehaviour, IDamageable
     void Move ()
     {
 
-        if (Vector3.Distance(transform.position, _player.transform.position) < 2&& !IsTeleporting)
+        if (Vector3.Distance(transform.position, _player.transform.position) < 2 && !IsTeleporting)
         {
             StartCoroutine("teleport");
 
@@ -111,11 +114,15 @@ public class Enemy : MonoBehaviour, IDamageable
 
     void GenerateNewPos ()
     {
-        _newPos = new Vector3(_player.transform.position.x - Random.Range(2, maxTpRange), transform.position.y, _player.transform.position.z - Random.Range(2, maxTpRange));
-        if (_newPos.x < levelGenerator.FloorSize[0].x && _newPos.x > levelGenerator.FloorSize[1].x || _newPos.z < levelGenerator.FloorSize[0].z&&_newPos.x > levelGenerator.FloorSize[1].z) 
-        {
-            GenerateNewPos();
-        }
+        _newPos = new Vector3(_player.transform.position.x + Random.Range(1, maxTpRange), transform.position.y, _player.transform.position.z - Random.Range(1, maxTpRange));
+
+        //// Check if the new position is outside of the level boundaries
+        //if (_newPos.x < levelGenerator.FloorSize[0].x || _newPos.x > levelGenerator.FloorSize[1].x ||
+        //    _newPos.z < levelGenerator.FloorSize[0].z || _newPos.z > levelGenerator.FloorSize[1].z)
+        //{
+        //    // Regenerate new position until it's within boundaries
+        //    GenerateNewPos();
+        //}
     }
 
 
