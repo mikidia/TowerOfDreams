@@ -28,6 +28,20 @@
   
 </div >
 <div id="header" >
+<div id="header" >
+<h2>Description</h2>
+<text>
+This project was carried out as part of Fnac New Talents 2024 by
+three students from the Algarve School of Technology, Innovation and Creation (ETIC) and
+a programmer who is a software engineer.
+It should also be mentioned that it is one of the pilot projects that created the
+Hambee Studio.
+In short, Dreamrush is an uninhibited game with 2D and 3D elements
+elements that is designed to integrate the player into a different visual, auditory and gameplay experience.
+
+    
+</text>
+</div>
 
 <h2> Our Team </h2> 
 
