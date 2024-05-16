@@ -48,6 +48,8 @@ public class Player : MonoBehaviour
 
 
 
+
+
     [SerializeField] UImanager ui;
 
 
@@ -204,13 +206,14 @@ public class Player : MonoBehaviour
 
             }
         }
-        //if (Input.GetKeyDown(attackButton) && _isAttackAvailable == true)
-        //{
-        //    //animator.SetTrigger("Attack");
-        //    audio.PlayerAttackSound();
+        if (Input.GetKeyDown(attackButton))
+        {
+            LevelingScr._instance.AddExp(5);
+            //animator.SetTrigger("Attack");
+            //audio.PlayerAttackSound();
 
-        //    StartCoroutine("AttackCd");
-        //}
+            //StartCoroutine("AttackCd");
+        }
         //if (Input.GetKeyDown(inventoryButton))
         //{
 

@@ -3,8 +3,17 @@ using UnityEngine.UI;
 
 public class UImanager : MonoBehaviour
 {
+    [Header("Bars")]
     [SerializeField] Image staminaBar;
     [SerializeField] GameObject staminaBarParent;
+
+    [SerializeField] Image hpBar;
+    [SerializeField] GameObject hpBarParent;
+
+    [SerializeField] Image expBar;
+    [SerializeField] GameObject expBarParent;
+
+
     [SerializeField] GameObject[] inventory;
     [SerializeField] GameObject[] reloadObjects;
     [SerializeField] Image[] skillImages;
@@ -35,6 +44,7 @@ public class UImanager : MonoBehaviour
     {
         StaminaBarFill();
         HideStamina();
+        ExpBar();
 
 
 
@@ -59,6 +69,13 @@ public class UImanager : MonoBehaviour
     public void StaminaBarFill()
     {
         staminaBar.fillAmount = player.Stamina / player.MaxStamina;
+    }
+    public void ExpBar()
+    {
+
+        print("asdsad");
+        expBar.fillAmount = LevelingScr._instance.Exp / LevelingScr._instance.MaxExp;
+
     }
     public void SelectNextSlot()
     {

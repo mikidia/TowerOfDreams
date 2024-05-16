@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 2
   duration: 5
-  cd: 2
+  cd: 5
   typeOfDamage: 6
   sprite: {fileID: 0}
   skillEffect: {fileID: 10089973008422779, guid: b82295eef9e74cb488465b1291d67182, type: 3}
