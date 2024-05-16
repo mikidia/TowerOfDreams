@@ -1,65 +1,60 @@
-using System;
 using System.Collections;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
+
+
 
 
 public class Player : MonoBehaviour
 {
+
+
+#if UNITY_EDITOR
     #region Declarations
 
-    [Header("Player settings")]
-    [SerializeField] float _playerSpeed;
-    [SerializeField] float _playerDamage;
-    public HealthBar healthBar;
+    [Header("DEBUG INFO")]
+    [SerializeField] Vector3 _input;
+    [SerializeField] PlayerMovementScript movement;
+    [SerializeField] Rigidbody _rb;
 
-    [SerializeField] int _maxHp;
-    [SerializeField] int _playerHp;
-    [SerializeField] bool _playerControlIsEnable;
+    [SerializeField] Vector3 facingDirection;
+    public static Player _instance;
 
-    [Header("Player attack settings")]
-    [SerializeField] float _attackDistance;
-    [SerializeField] float _attackSpeed;
-    [SerializeField] Vector3 attackOffset;
-
-
-
-    [Header("Roll settings")]
-    [SerializeField] float _rollCd;
-    [SerializeField] float _rollDistance;
-    [SerializeField] float _rollSpeed;
-    [SerializeField] bool _rollIsPossible;
-    [SerializeField]float _rollSpendStamina;
-    
-
-    [Header("Stamina settings")]
-    [SerializeField] float _stamina=100;
-    [SerializeField]float _maxStamina;
-    [SerializeField]float _staminaRegeneration;
-    public static Player instance;
-    [Header("sound settings")]
-    [SerializeField] GameObject stepsAudio;
+    [Header("Player Settings")]
+    [SerializeField] float _stamina;
+    [SerializeField] float _maxStamina;
+    [SerializeField] float staminaRegeneration;
+    [SerializeField] float _hp;
+    [SerializeField] float _maxHp;
+    [SerializeField] float hpRegeneration;
 
 
-    #region Nonserialized
+    [SerializeField] bool _controlIsEnable = true;
+    [SerializeField] bool _scrollIsEnable = true;
 
-    [NonSerialized] Vector3 facingDirection;
-    [NonSerialized] Vector3 offset;
-    [NonSerialized] Vector3 input;
-    [NonSerialized] bool _isAttackAvailable = true;
-    [NonSerialized] bool _playerDamageable;
-    [NonSerialized] Animator animator;
-    [NonSerialized] Rigidbody rb;
-    [SerializeField]PlayerAttackTriger attackTriger;
-    [SerializeField]Vector3 attackDirection;
-    [NonSerialized]UiManager uiManager;
-    SpriteRenderer sprite;
-    GameManager gameManager;
-    SoundManager audio;
-    bool paused;
-    bool isDeath =false;
+    [SerializeField] bool _isPlayerAlive = true;
 
-    #endregion
+    //inventory settings
+    [SerializeField] int sellectedSlot = 0;
+    [SerializeField] Skills[] skillPrefabs;
+    [SerializeField] GameObject[] skills;
+    [SerializeField] bool[] activeSkills = new bool[4];
+
+
+
+
+
+
+
+
+    [SerializeField] UImanager ui;
+
+
+
+
+
+
 
 
     #region Input Buttons
@@ -70,96 +65,125 @@ public class Player : MonoBehaviour
     KeyCode pause = KeyCode.Escape;
 
 
+    KeyCode firstSlot = KeyCode.Alpha1;
+    KeyCode secondSlot = KeyCode.Alpha2;
+    KeyCode thirdSlot = KeyCode.Alpha3;
+    KeyCode fourSlot = KeyCode.Alpha4;
+    KeyCode[] slots;
 
 
 
 
 
 
-    #endregion
-
-    #region Getters
-    
-    public float MaxStamina { get => _maxStamina; }
-    public bool RollIsPossible { get => _rollIsPossible; set => _rollIsPossible = value; }
-    public int PlayerHp { get => _playerHp; set => _playerHp = value; }
     public float Stamina { get => _stamina; set => _stamina = value; }
-    public float RollSpendStamina { get => _rollSpendStamina; set => _rollSpendStamina = value; }
-    public float PlayerSpeed { get => _playerSpeed; set => _playerSpeed = value; }
-    public int MaxHp { get => _maxHp; set => _maxHp = value; }
+    public float MaxStamina { get => _maxStamina; set => _maxStamina = value; }
+    public int SellectedSlot { get => sellectedSlot; set => sellectedSlot = value; }
+    public bool[] ActiveSkills { get => activeSkills; set => activeSkills = value; }
+
+    #endregion
 
     #endregion
 
 
+#else
 
-    #endregion
 
+
+
+#endif
 
     #region MonoBehaviour
-
-    private void Awake ()
+    private void Awake()
     {
-        if (instance == null)
+
+
+
+        KeyCode[] slots = new KeyCode[] { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4 };
+        if (_instance == null)
         {
 
-            instance = this;
+            _instance = this;
 
         }
         else
         {
             Destroy(gameObject);
         }
-        rb = GetComponent<Rigidbody>();
-        _playerControlIsEnable = true;
-        _rollIsPossible = true;
-        attackTriger = GetComponentInChildren<PlayerAttackTriger>();
-        animator = GetComponent<Animator>();
-        animator.SetFloat("Hp", PlayerHp);
-        sprite = GetComponent<SpriteRenderer>();
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        audio = GameObject.Find("Sound manager").GetComponent<SoundManager>();
-
-
-
-
-        //uiManager = UiManager.instance;
-
-
     }
-    private void Start ()
+    private void Start()
     {
-        PlayerHp = _maxHp;
-        healthBar.SetMaxHealth(_maxHp);
-        
+
+        skills = new GameObject[skillPrefabs.Length]; // Создаем массив skills такой же длины, как и skillPrefabs
+        _rb = GetComponent<Rigidbody>();
+        movement = GetComponent<PlayerMovementScript>();
+        ui = GameObject.Find("UiManager").GetComponent<UImanager>();
+
+        for (int i = 0; i < skillPrefabs.Length; i++)
+        {
+            if (skillPrefabs[i] != null) // Проверяем, что объект префаба существует
+            {
+                skills[i] = skillPrefabs[i].skillEffect; // Присваиваем GameObject из skillPrefabs.skillEffect в skills
+            }
+            else
+            {
+                Debug.LogWarning("Skill prefab at index " + i + " is null.");
+            }
+
+            activeSkills[i] = false;
+        }
     }
 
     #endregion
-
-
-    void Update ()
+    private void Update()
     {
 
-
-        if (_playerControlIsEnable&&!isDeath)
+        if (_controlIsEnable == true && _isPlayerAlive == true)
         {
+            movement.Movement(_input);
             GetInputs();
-            SetDirection();
-            Movement();
-            healthBar.SetHealth(PlayerHp);
-
+            AddStamina();
+            AddHp();
 
         }
-        UpdateStamina();
-        
-        
+#if UNITY_EDITOR
+        //Debugging();
+        Debug.Log(sellectedSlot);
+#endif
     }
 
-    void GetInputs ()
+
+
+
+
+
+    void GetInputs()
     {
 
-        if (Input.GetKeyDown(rollButton) &&  (math.abs(input.x) >= 0.1 || math.abs(input.z) >= 0.1))
+        if (Input.GetAxis("Mouse ScrollWheel") > 0f && _scrollIsEnable == true) // forward
         {
-            StartCoroutine("Roll");
+            if (sellectedSlot + 1 < 4)
+            {
+                sellectedSlot += 1;
+            }
+            else { sellectedSlot = 0; }
+            ui.SelectNextSlot();
+            StartCoroutine("Scrollcd");
+        }
+        if (Input.GetAxis("Mouse ScrollWheel") < 0f && _scrollIsEnable == true) // backwards
+        {
+            if (sellectedSlot - 1 >= 0)
+            {
+                sellectedSlot -= 1;
+            }
+            else { sellectedSlot = 3; }
+            ui.SelectPreviouslySlot();
+            StartCoroutine("Scrollcd");
+        }
+
+        if (Input.GetKeyDown(rollButton) && (math.abs(_input.x) != 0 || math.abs(_input.z) != 0))
+        {
+            movement.Dash();
             //animator.SetTrigger("Roll");
 
         }
@@ -168,189 +192,114 @@ public class Player : MonoBehaviour
             //Interract
             //animator.SetTrigger("Interract");
 
-
-        }
-        if (Input.GetKeyDown(attackButton) && _isAttackAvailable == true)
-        {
-            animator.SetTrigger("Attack");
-            audio.PlayerAttackSound();
-
-            StartCoroutine("AttackCd");
-        }
-        if (Input.GetKeyDown(inventoryButton) )
-        {
-            
-        }
-        if (Input.GetKeyDown(pause)&& !paused) 
-        {
-             paused = true;
-             gameManager.Pause();
-        }else if (Input.GetKeyDown(pause) && paused) 
-        {
-            gameManager.UpPause();
-            paused = false;
-
-        }
-    }
-
-     public void TakeDamage (int damage)
-    {
-        if (!isDeath) 
-        {
-            
-            audio.PlayerGetHitSound();
-            PlayerHp -= damage;
-            animator.SetFloat("Hp", PlayerHp);
-            healthBar.SetHealth(PlayerHp);
-            animator.SetTrigger("GetDamage");
-            StartCoroutine("damageEffect");
-            if (PlayerHp < 0)
+            if (!activeSkills[sellectedSlot])
             {
-                isDeath = true;
-                audio.PlayerDeathSound();
-                Dead();
-                gameManager.loose();
+                activeSkills[sellectedSlot] = true;
+                StartCoroutine(SkillsCd(sellectedSlot));
+                var skill = Instantiate(skills[sellectedSlot]);
+                skill.transform.SetParent(transform);
+                skill.transform.position = transform.position - new Vector3(0, 0.3f, 0);
+                skills[sellectedSlot].GetComponent<SkillPrefab>().ApplySlot(sellectedSlot);
+                //activeSkills[sellectedSlot] = true;
 
             }
-
-
         }
+        //if (Input.GetKeyDown(attackButton) && _isAttackAvailable == true)
+        //{
+        //    //animator.SetTrigger("Attack");
+        //    audio.PlayerAttackSound();
 
+        //    StartCoroutine("AttackCd");
+        //}
+        //if (Input.GetKeyDown(inventoryButton))
+        //{
 
-    }
-    IEnumerator damageEffect ()
-    {
-        
-        
-        sprite.color = Color.red;
-        yield return new WaitForSeconds(0.1f);
-        sprite.color = Color.white;
+        //}
+        //if (Input.GetKeyDown(pause) && !paused)
+        //{
+        //    paused = true;
+        //    gameManager.Pause();
+        //}
+        //else if (Input.GetKeyDown(pause) && paused)
+        //{
+        //    gameManager.UpPause();
+        //    paused = false;
 
-
-    }
-    //bool  ColliderCheck () 
-    //{
-
-
-
-    //}
-    #region Movement,animations
-    void Movement ()
-    {
-
-
-        input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
-        if (input.x == 0 && input.z == 0) 
-        { 
-            animator.SetBool("IsStay", true); 
-            rb.velocity = Vector3.zero;
-              
-            
-                stepsAudio.SetActive(false);
-
-        }
-        else
-        { 
-
-            animator.SetBool("IsStay", false);
-
-
-            stepsAudio.SetActive(true);
-
-            Vector3 newPos =rb.position+(input.normalized*_playerSpeed*Time.deltaTime);
-            
-            rb.MovePosition(newPos);
-        }
-        
-
+        //}
+        _input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+        SetDirection();
     }
 
 
-
-
-    
-    
-    
-
-    void SetDirection ()
+    private void SetDirection()
     {
-
-        if (math.abs(input.x) >= 0.3 || math.abs(input.z) >= 0.3)
+        if (_input.x != 0 || _input.z != 0)
         {
-            facingDirection = Vector3.ClampMagnitude(new Vector3(input.x, 0, input.z), 1);
-
-
+            facingDirection = new Vector3(_input.x, 0, _input.z);
         }
 
-        attackDirection = new Vector3(facingDirection.x, transform.position.y, facingDirection.z);
+
+        //attackDirection = new Vector3(facingDirection.x, transform.position.y, facingDirection.z);
 
 
-
-       
-        attackTriger.transform.position = new Vector3(transform.position.x + facingDirection.x, attackTriger.transform.position.y, transform.position.z + facingDirection.z) + attackOffset;
-        if (attackDirection.x > 0) { animator.SetFloat("MoveX", 1); }
-
-        if (attackDirection.x < 0) { animator.SetFloat("MoveX", -1); }
-
-        if (attackDirection.x == 0) { animator.SetFloat("MoveX", 0); }
-
-        if (attackDirection.z > 0) { animator.SetFloat("MoveY", 1); }
-
-        if (attackDirection.z < 0) { animator.SetFloat("MoveY", -1); }
-
-        if (attackDirection.z == 0) { animator.SetFloat("MoveY", 0); }
 
     }
 
-    
-
-    void Dead ()
+#if UNITY_EDITOR
+    void Debugging()
     {
-        animator.SetTrigger("PlayerDead");
-        
+
+        Debug.DrawRay(_rb.position, facingDirection * 2, Color.green);
+
     }
 
-    #endregion
 
-
-
-
-    void UpdateStamina ()
+#endif
+    void AddStamina()
     {
 
         if (_stamina < _maxStamina)
         {
-            _stamina += Time.deltaTime * _staminaRegeneration;
+
+            _stamina += staminaRegeneration * Time.deltaTime;
+
+
         }
 
     }
-
-
-    #region Enumerators
-    IEnumerator AttackCd ()
+    void AddHp()
     {
 
-        _isAttackAvailable = false;
-        attackTriger.Attack();
-        yield return new WaitForSeconds(_attackSpeed);
-        _isAttackAvailable = true;
-
-    }
-    IEnumerator Roll ()
-    {
-
-        if (_stamina >= _rollSpendStamina&& _rollIsPossible)
+        if (_hp < _maxHp)
         {
-            _rollIsPossible = false;
-            _playerSpeed += _rollSpeed;
-            _stamina -= _rollSpendStamina;
-            yield return new WaitForSeconds(_rollCd);
-            _playerSpeed -= _rollSpeed;
-            _rollIsPossible = true;
-        }
-    }
-    
 
+            _hp += hpRegeneration * Time.deltaTime;
+
+
+        }
+
+    }
+    IEnumerator Scrollcd()
+    {
+        _scrollIsEnable = false;
+        yield return new WaitForSeconds(0.08f);
+        _scrollIsEnable = true;
+
+    }
+
+
+    IEnumerator SkillsCd(int slotWhichWasSelected)
+    {
+
+        yield return new WaitForSeconds(skillPrefabs[slotWhichWasSelected].duration);
+        ui.ReloadScripts[slotWhichWasSelected].ChangeCD(skillPrefabs[slotWhichWasSelected].cd);
+
+        yield return new WaitForSeconds(skillPrefabs[slotWhichWasSelected].cd);
+        activeSkills[slotWhichWasSelected] = false;
+
+    }
+
+    #region skilltimers
 
 
     #endregion
