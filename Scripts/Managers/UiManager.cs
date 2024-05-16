@@ -72,9 +72,11 @@ public class UImanager : MonoBehaviour
     }
     public void ExpBar()
     {
+        float xpProgress = LevelingScr._instance.Exp / LevelingScr._instance.MaxExp;
+        print(xpProgress);
+        expBar.fillAmount = xpProgress;
+        //expBar.fillAmount = player.Stamina / player.MaxStamina;
 
-        print("asdsad");
-        expBar.fillAmount = LevelingScr._instance.Exp / LevelingScr._instance.MaxExp;
 
     }
     public void SelectNextSlot()

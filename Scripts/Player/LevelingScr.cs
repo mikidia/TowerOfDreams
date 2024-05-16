@@ -2,20 +2,18 @@ using UnityEngine;
 
 public class LevelingScr : MonoBehaviour
 {
-    [SerializeField] int exp;
-    [SerializeField] int totalExp;
+    [SerializeField] float exp;
+    [SerializeField] float totalExp;
 
 
-    [SerializeField] int maxExp;
-    [SerializeField] int level;
+    [SerializeField] float maxExp;
+    [SerializeField] float level;
     public static LevelingScr _instance;
 
-    public int Exp { get => exp; }
-    public int Level { get => level; }
-    public int MaxExp { get => maxExp; }
-
-
-
+    public float Exp { get => exp; set => exp = value; }
+    public float TotalExp { get => totalExp; set => totalExp = value; }
+    public float MaxExp { get => maxExp; set => maxExp = value; }
+    public float Level { get => level; set => level = value; }
 
     private void Awake()
     {
@@ -30,7 +28,7 @@ public class LevelingScr : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    public void AddExp(int experience)
+    public void AddExp(float experience)
     {
         exp += experience;
         totalExp += experience;
@@ -49,7 +47,7 @@ public class LevelingScr : MonoBehaviour
 
         }
     }
-    void LevelUp(int experience)
+    void LevelUp(float experience)
     {
         switch (totalExp)
         {
