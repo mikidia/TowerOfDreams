@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class LevelingScr : MonoBehaviour
@@ -8,12 +9,18 @@ public class LevelingScr : MonoBehaviour
 
     [SerializeField] float maxExp;
     [SerializeField] float level;
+
+    [SerializeField] Dictionary<string, int> skillLevels;
+    [SerializeField] Skills[] allSkills;
+    [SerializeField] int skillInLvlMenu;
+
     public static LevelingScr _instance;
 
     public float Exp { get => exp; set => exp = value; }
     public float TotalExp { get => totalExp; set => totalExp = value; }
     public float MaxExp { get => maxExp; set => maxExp = value; }
     public float Level { get => level; set => level = value; }
+    public Dictionary<string, int> SkillLevels { get => skillLevels; set => skillLevels = value; }
 
     private void Awake()
     {
@@ -27,26 +34,48 @@ public class LevelingScr : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        skillLevels = new Dictionary<string, int>();
+        foreach (var item in Player._instance.SkillPrefabs)
+        {
+            skillLevels.Add(item.name, 1);
+        }
+
     }
+
     public void AddExp(float experience)
     {
+        int loopChecker = 0;
         exp += experience;
         totalExp += experience;
         if (exp >= maxExp)
         {
 
             exp -= maxExp;
+            List<int> usedIndex = new List<int>();
+
+            Skills[] selectedSkillsForLevelUp = new Skills[4];
+            for (int i = 0; i < skillInLvlMenu; i++)
+            {
+                loopChecker = 0;
+                int tempNumber = Random.Range(0, allSkills.Length);
+                while (usedIndex.Contains(tempNumber))
+                {
+                    loopChecker++;
+                    if (loopChecker > 200) { break; }
+                    tempNumber = Random.Range(0, allSkills.Length);
+                }
+
+                usedIndex.Add(tempNumber);
+                selectedSkillsForLevelUp[i] = allSkills[tempNumber];
+
+            }
+            UImanager._instance.ShowLevelUpMenu(skillInLvlMenu, selectedSkillsForLevelUp);
             LevelUp(totalExp);
-            //GameObject.Find("UiManager").GetComponent<UImanager>().ExpBar();
-
-
-
-
-
-
-
         }
     }
+
+
+
     void LevelUp(float experience)
     {
         switch (totalExp)

@@ -82,6 +82,15 @@ public class Player : MonoBehaviour
     public float MaxStamina { get => _maxStamina; set => _maxStamina = value; }
     public int SellectedSlot { get => sellectedSlot; set => sellectedSlot = value; }
     public bool[] ActiveSkills { get => activeSkills; set => activeSkills = value; }
+    public Skills[] SkillPrefabs
+    {
+        get
+        {
+            return skillPrefabs;
+        }
+        set => skillPrefabs = value;
+
+    }
 
     #endregion
 
@@ -116,20 +125,20 @@ public class Player : MonoBehaviour
     private void Start()
     {
 
-        skills = new GameObject[skillPrefabs.Length]; // Создаем массив skills такой же длины, как и skillPrefabs
+        skills = new GameObject[skillPrefabs.Length];
         _rb = GetComponent<Rigidbody>();
         movement = GetComponent<PlayerMovementScript>();
         ui = GameObject.Find("UiManager").GetComponent<UImanager>();
 
         for (int i = 0; i < skillPrefabs.Length; i++)
         {
-            if (skillPrefabs[i] != null) // Проверяем, что объект префаба существует
+            if (skillPrefabs[i] != null) // 
             {
-                skills[i] = skillPrefabs[i].skillEffect; // Присваиваем GameObject из skillPrefabs.skillEffect в skills
+                skills[i] = skillPrefabs[i].skillEffect;
             }
             else
             {
-                Debug.LogWarning("Skill prefab at index " + i + " is null.");
+                //Debug.LogWarning("Skill prefab at index " + i + " is null.");
             }
 
             activeSkills[i] = false;
@@ -150,7 +159,7 @@ public class Player : MonoBehaviour
         }
 #if UNITY_EDITOR
         //Debugging();
-        Debug.Log(sellectedSlot);
+        //Debug.Log(sellectedSlot);
 #endif
     }
 
