@@ -10,12 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9dde6ae5741e51b46802b78dbb8a5910, type: 3}
-  m_Name: Aura
+  m_Name: Schield
   m_EditorClassIdentifier: 
-  name: aura
-  damage: 2
-  duration: 5
+  name: Diamond Schield
+  damage: 0
+  duration: 10
   cd: 5
-  typeOfDamage: 6
-  sprite: {fileID: 21300000, guid: d6147f5691ba2bb48872bc48f620b9e3, type: 3}
-  skillEffect: {fileID: 10089973008422779, guid: b82295eef9e74cb488465b1291d67182, type: 3}
+  typeOfDamage: 0
+  sprite: {fileID: 21300000, guid: 5d4b3eaf0c87d774db68c926fbf45d7f, type: 3}
+  skillEffect: {fileID: 1424568132791530, guid: 4665ecf6f17ffd74bbd03e120ac8a1d5, type: 3}
+  _intelect: 0
+  _stamina: 100
+  _strength: 0
+  _agility: 0
+  _vitality: 0

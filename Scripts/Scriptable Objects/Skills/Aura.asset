@@ -10,12 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9dde6ae5741e51b46802b78dbb8a5910, type: 3}
-  m_Name: Schield
+  m_Name: Aura
   m_EditorClassIdentifier: 
-  name: 
-  damage: 0
-  duration: 0
-  cd: 0
-  typeOfDamage: 0
-  sprite: {fileID: 0}
-  skillEffect: {fileID: 0}
+  name: aura
+  damage: 2
+  duration: 5
+  cd: 5
+  typeOfDamage: 6
+  sprite: {fileID: 21300000, guid: d6147f5691ba2bb48872bc48f620b9e3, type: 3}
+  skillEffect: {fileID: 10089973008422779, guid: b82295eef9e74cb488465b1291d67182, type: 3}
+  _intelect: 10
+  _stamina: 7
+  _strength: 0
+  _agility: 2
+  _vitality: 2

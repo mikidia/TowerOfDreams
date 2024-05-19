@@ -22,8 +22,8 @@ public class Player : MonoBehaviour
     public static Player _instance;
 
     [Header("Player Settings")]
-    [SerializeField] float _stamina;
-    [SerializeField] float _maxStamina;
+    [SerializeField] float _energy;
+    [SerializeField] float _maxEnergy;
     [SerializeField] float staminaRegeneration;
     [SerializeField] float _hp;
     [SerializeField] float _maxHp;
@@ -41,7 +41,12 @@ public class Player : MonoBehaviour
     [SerializeField] GameObject[] skills;
     [SerializeField] bool[] activeSkills = new bool[4];
 
-
+    [Header("Player stats")]
+    [SerializeField] float _intelect;
+    [SerializeField] float _stamina;
+    [SerializeField] float _strength;
+    [SerializeField] float _agility;
+    [SerializeField] float _vitality;
 
 
 
@@ -78,8 +83,7 @@ public class Player : MonoBehaviour
 
 
 
-    public float Stamina { get => _stamina; set => _stamina = value; }
-    public float MaxStamina { get => _maxStamina; set => _maxStamina = value; }
+
     public int SellectedSlot { get => sellectedSlot; set => sellectedSlot = value; }
     public bool[] ActiveSkills { get => activeSkills; set => activeSkills = value; }
     public Skills[] SkillPrefabs
@@ -91,6 +95,14 @@ public class Player : MonoBehaviour
         set => skillPrefabs = value;
 
     }
+
+    public float Energy { get => _energy; set => _energy = value; }
+    public float MaxEnergy { get => _maxEnergy; set => _maxEnergy = value; }
+    public float Intelect { get => _intelect; set => _intelect = value; }
+    public float Stamina { get => _stamina; set => _stamina = value; }
+    public float Strength { get => _strength; set => _strength = value; }
+    public float Agility { get => _agility; set => _agility = value; }
+    public float Vitality { get => _vitality; set => _vitality = value; }
 
     #endregion
 
@@ -217,7 +229,7 @@ public class Player : MonoBehaviour
         }
         if (Input.GetKeyDown(attackButton))
         {
-            LevelingScr._instance.AddExp(5);
+            //LevelingScr._instance.AddExp(5);
             //animator.SetTrigger("Attack");
             //audio.PlayerAttackSound();
 
@@ -270,10 +282,10 @@ public class Player : MonoBehaviour
     void AddStamina()
     {
 
-        if (_stamina < _maxStamina)
+        if (_energy < _maxEnergy)
         {
 
-            _stamina += staminaRegeneration * Time.deltaTime;
+            _energy += staminaRegeneration * Time.deltaTime;
 
 
         }

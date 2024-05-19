@@ -35,10 +35,10 @@ public class PlayerMovementScript : MonoBehaviour
     }
     public void Dash()
     {
-        if (!_isDashAnvaliable && player.Stamina - dashUseStamina < 0) { return; }
+        if (!_isDashAnvaliable && player.Energy - dashUseStamina < 0) { return; }
         else
         {
-            player.Stamina -= dashUseStamina;
+            player.Energy -= dashUseStamina;
             StartCoroutine("DashAddSpeed");
         }
 

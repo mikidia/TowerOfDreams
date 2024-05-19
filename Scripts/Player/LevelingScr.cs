@@ -56,6 +56,7 @@ public class LevelingScr : MonoBehaviour
             Skills[] selectedSkillsForLevelUp = new Skills[4];
             for (int i = 0; i < skillInLvlMenu; i++)
             {
+
                 loopChecker = 0;
                 int tempNumber = Random.Range(0, allSkills.Length);
                 while (usedIndex.Contains(tempNumber))

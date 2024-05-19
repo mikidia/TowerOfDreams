@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class UImanager : MonoBehaviour
 {
     [Header("Bars")]
@@ -15,18 +16,17 @@ public class UImanager : MonoBehaviour
     [SerializeField] GameObject expBarParent;
 
     [SerializeField] GameObject[] inventory;
+    [Header("LvlUp Menu")]
     [SerializeField] GameObject[] placeHolderForImages;
     [SerializeField] GameObject[] buttons;
     [SerializeField] Image[] skillImagesforLvlmenu;
-
-
-
     [SerializeField] GameObject levelUpMenu;
-
-
     [SerializeField] GameObject[] reloadObjects;
     [SerializeField] Image[] skillImages;
     [SerializeField] SkillPrefab skillPrefab;
+    [SerializeField] TextMeshProUGUI[] playerSkillNumbers;
+    [SerializeField] TextMeshProUGUI[] playerAfterLvlUpSkillNumbers;
+
     Reload[] reloadScripts;
     [SerializeField] GameObject reloadParent;
 
@@ -55,12 +55,12 @@ public class UImanager : MonoBehaviour
 
     void HideStamina()
     {
-        staminaBarParent.SetActive(player.Stamina < player.MaxStamina);
+        staminaBarParent.SetActive(player.Energy < player.MaxEnergy);
     }
 
     public void StaminaBarFill()
     {
-        staminaBar.fillAmount = player.Stamina / player.MaxStamina;
+        staminaBar.fillAmount = player.Energy / player.MaxEnergy;
     }
 
     public void ExpBar()
@@ -121,13 +121,21 @@ public class UImanager : MonoBehaviour
     }
     public void ShowLevelUpMenu(int skillsNumber, Skills[] skillsToLvLUp)
     {
-
+        ChangePlayerSkillsNumbers();
 
         levelUpMenu.SetActive(true);
         for (int i = 0; i < skillsNumber; i++)
         {
+
             skillImagesforLvlmenu[i].gameObject.SetActive(true);
             buttons[i].SetActive(true);
+            if (!CheckPlayerStatsLvl(skillsToLvLUp, player, i))
+            {
+                buttons[i].GetComponent<Button>().interactable = false;
+            }
+
+
+
             skillImagesforLvlmenu[i].sprite = skillsToLvLUp[i].sprite;
 
             buttons[i].GetComponentInChildren<TextMeshProUGUI>().text = skillsToLvLUp[i].name;
@@ -140,6 +148,26 @@ public class UImanager : MonoBehaviour
 
 
     }
+
+    bool CheckPlayerStatsLvl(Skills[] SkilsMinLvl, Player playerSkils, int i)
+    {
+
+        if (SkilsMinLvl[i]._stamina > playerSkils.Energy)
+        {
+            return false;
+
+        }
+        return true;
+
+
+
+
+
+
+
+    }
+
+
     public void HideLevelUpMenu()
     {
         levelUpMenu.SetActive(false);
@@ -155,6 +183,26 @@ public class UImanager : MonoBehaviour
 
 
     }
+
+    public void ChangePlayerSkillsNumbers()
+    {
+
+        playerSkillNumbers[0].text = player.Intelect.ToString();
+        playerSkillNumbers[1].text = player.Stamina.ToString();
+        playerSkillNumbers[2].text = player.Strength.ToString();
+        playerSkillNumbers[3].text = player.Agility.ToString();
+        playerSkillNumbers[4].text = player.Vitality.ToString();
+
+        playerAfterLvlUpSkillNumbers[0].text = (player.Intelect + 2).ToString();
+        playerAfterLvlUpSkillNumbers[1].text = (player.Stamina + 2).ToString();
+        playerAfterLvlUpSkillNumbers[2].text = (player.Strength + 2).ToString();
+        playerAfterLvlUpSkillNumbers[3].text = (player.Agility + 2).ToString();
+        playerAfterLvlUpSkillNumbers[4].text = (player.Vitality + 2).ToString();
+
+
+    }
+
+
 
 
 

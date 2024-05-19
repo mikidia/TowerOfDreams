@@ -12,4 +12,18 @@ public class Skills : ScriptableObject
     [SerializeField] public GameObject skillEffect;
 
 
+    [Tooltip("Minimum lvl of characteristic to open skill")]
+    [SerializeField] public float _intelect;
+    [Tooltip("Minimum lvl of characteristic to open skill")]
+    [SerializeField] public float _stamina;
+    [Tooltip("Minimum lvl of characteristic to open skill")]
+    [SerializeField] public float _strength;
+    [Tooltip("Minimum lvl of characteristic to open skill")]
+    [SerializeField] public float _agility;
+    [Tooltip("Minimum lvl of characteristic to open skill")]
+    [SerializeField] public float _vitality;
+
+
+
+
 }
