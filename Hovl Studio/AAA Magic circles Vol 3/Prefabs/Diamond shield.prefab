@@ -19695,9 +19695,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd16daaff69caf54ea038ee9cdc8710f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skillTime: 0
-  skillCd: 0
-  slot: 0
+  skillTime: 10
+  skillCd: 5
+  slot: 2
   player: {fileID: 0}
 --- !u!1 &1572578245689814
 GameObject:

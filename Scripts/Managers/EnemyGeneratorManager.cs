@@ -37,6 +37,7 @@ public class EnemyGeneratorManager : MonoBehaviour
                 enemys[i].Agility = Random.Range((int)enemyScrObjests[j].Agility[0], (int)enemyScrObjests[j].Agility[1] + 1);
                 enemys[i].Vitality = Random.Range((int)enemyScrObjests[j].Vitality[0], (int)enemyScrObjests[j].Vitality[1] + 1);
                 enemys[i].Agressive = Random.Range((int)enemyScrObjests[j].Agressive[0], (int)enemyScrObjests[j].Agressive[1] + 1);
+
             }
         }
     }

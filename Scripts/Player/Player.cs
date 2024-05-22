@@ -1,15 +1,9 @@
 using System.Collections;
 using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
-
-
-
 
 public class Player : MonoBehaviour
 {
-
-
 #if UNITY_EDITOR
     #region Declarations
 
@@ -29,13 +23,11 @@ public class Player : MonoBehaviour
     [SerializeField] float _maxHp;
     [SerializeField] float hpRegeneration;
 
-
     [SerializeField] bool _controlIsEnable = true;
     [SerializeField] bool _scrollIsEnable = true;
-
     [SerializeField] bool _isPlayerAlive = true;
 
-    //inventory settings
+    // Inventory settings
     [SerializeField] int sellectedSlot = 0;
     [SerializeField] Skills[] skillPrefabs;
     [SerializeField] GameObject[] skills;
@@ -48,21 +40,10 @@ public class Player : MonoBehaviour
     [SerializeField] float _agility;
     [SerializeField] float _vitality;
 
-
-
-
-
-
-
-
     [SerializeField] UImanager ui;
 
-
-
-
-
-
-
+    [Header("FOV Controller")]
+    [SerializeField] FOVController fovController;
 
     #region Input Buttons
     KeyCode interractButton = KeyCode.E;
@@ -71,29 +52,18 @@ public class Player : MonoBehaviour
     KeyCode inventoryButton = KeyCode.I;
     KeyCode pause = KeyCode.Escape;
 
-
     KeyCode firstSlot = KeyCode.Alpha1;
     KeyCode secondSlot = KeyCode.Alpha2;
     KeyCode thirdSlot = KeyCode.Alpha3;
     KeyCode fourSlot = KeyCode.Alpha4;
     KeyCode[] slots;
 
-
-
-
-
-
-
     public int SellectedSlot { get => sellectedSlot; set => sellectedSlot = value; }
     public bool[] ActiveSkills { get => activeSkills; set => activeSkills = value; }
     public Skills[] SkillPrefabs
     {
-        get
-        {
-            return skillPrefabs;
-        }
-        set => skillPrefabs = value;
-
+        get { return skillPrefabs; }
+        set { skillPrefabs = value; }
     }
 
     public float Energy { get => _energy; set => _energy = value; }
@@ -108,35 +78,20 @@ public class Player : MonoBehaviour
 
     #endregion
 
-
 #else
-
-
-
 
 #endif
 
     #region MonoBehaviour
     private void Awake()
     {
-
-
-
         KeyCode[] slots = new KeyCode[] { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4 };
-        if (_instance == null)
-        {
-
-            _instance = this;
-
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        _instance = this;
+        fovController = GetComponent<FOVController>();
     }
+
     private void Start()
     {
-
         skills = new GameObject[skillPrefabs.Length];
         _rb = GetComponent<Rigidbody>();
         movement = GetComponent<PlayerMovementScript>();
@@ -144,46 +99,39 @@ public class Player : MonoBehaviour
 
         for (int i = 0; i < skillPrefabs.Length; i++)
         {
-            if (skillPrefabs[i] != null) // 
+            if (skillPrefabs[i] != null)
             {
                 skills[i] = skillPrefabs[i].skillEffect;
             }
             else
             {
-                //Debug.LogWarning("Skill prefab at index " + i + " is null.");
+                // Debug.LogWarning("Skill prefab at index " + i + " is null.");
             }
 
             activeSkills[i] = false;
         }
     }
-
     #endregion
+
     private void Update()
     {
-
-        if (_controlIsEnable == true && _isPlayerAlive == true)
+        if (_controlIsEnable && _isPlayerAlive)
         {
             movement.Movement(_input);
             GetInputs();
             AddStamina();
             AddHp();
-
+            fovController.SetInput(_input);
         }
 #if UNITY_EDITOR
-        //Debugging();
-        //Debug.Log(sellectedSlot);
+        // Debugging();
+        // Debug.Log(sellectedSlot);
 #endif
     }
 
-
-
-
-
-
     void GetInputs()
     {
-
-        if (Input.GetAxis("Mouse ScrollWheel") > 0f && _scrollIsEnable == true) // forward
+        if (Input.GetAxis("Mouse ScrollWheel") > 0f && _scrollIsEnable) // forward
         {
             if (sellectedSlot + 1 < 4)
             {
@@ -193,7 +141,7 @@ public class Player : MonoBehaviour
             ui.SelectNextSlot();
             StartCoroutine("Scrollcd");
         }
-        if (Input.GetAxis("Mouse ScrollWheel") < 0f && _scrollIsEnable == true) // backwards
+        if (Input.GetAxis("Mouse ScrollWheel") < 0f && _scrollIsEnable) // backwards
         {
             if (sellectedSlot - 1 >= 0)
             {
@@ -207,13 +155,12 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(rollButton) && (math.abs(_input.x) != 0 || math.abs(_input.z) != 0))
         {
             movement.Dash();
-            //animator.SetTrigger("Roll");
-
+            // animator.SetTrigger("Roll");
         }
         if (Input.GetKeyDown(interractButton))
         {
-            //Interract
-            //animator.SetTrigger("Interract");
+            // Interract
+            // animator.SetTrigger("Interract");
 
             if (!activeSkills[sellectedSlot])
             {
@@ -221,39 +168,40 @@ public class Player : MonoBehaviour
                 StartCoroutine(SkillsCd(sellectedSlot));
                 var skill = Instantiate(skills[sellectedSlot]);
                 skill.transform.SetParent(transform);
+                if (!skill.active)
+                {
+                    skill.SetActive(true);
+
+                }
                 skill.transform.position = transform.position - new Vector3(0, 0.3f, 0);
                 skills[sellectedSlot].GetComponent<SkillPrefab>().ApplySlot(sellectedSlot);
-                //activeSkills[sellectedSlot] = true;
-
+                // activeSkills[sellectedSlot] = true;
             }
         }
-        if (Input.GetKeyDown(attackButton))
+        if (Input.GetKeyDown(firstSlot))
         {
-            //LevelingScr._instance.AddExp(5);
-            //animator.SetTrigger("Attack");
-            //audio.PlayerAttackSound();
-
-            //StartCoroutine("AttackCd");
+            LevelingScr._instance.AddExp(5);
+            // animator.SetTrigger("Attack");
+            // audio.PlayerAttackSound();
+            // StartCoroutine("AttackCd");
         }
-        //if (Input.GetKeyDown(inventoryButton))
-        //{
+        // if (Input.GetKeyDown(inventoryButton))
+        // {
+        // }
+        // if (Input.GetKeyDown(pause) && !paused)
+        // {
+        //     paused = true;
+        //     gameManager.Pause();
+        // }
+        // else if (Input.GetKeyDown(pause) && paused)
+        // {
+        //     gameManager.UpPause();
+        //     paused = false;
+        // }
 
-        //}
-        //if (Input.GetKeyDown(pause) && !paused)
-        //{
-        //    paused = true;
-        //    gameManager.Pause();
-        //}
-        //else if (Input.GetKeyDown(pause) && paused)
-        //{
-        //    gameManager.UpPause();
-        //    paused = false;
-
-        //}
         _input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
         SetDirection();
     }
-
 
     private void SetDirection()
     {
@@ -261,72 +209,44 @@ public class Player : MonoBehaviour
         {
             facingDirection = new Vector3(_input.x, 0, _input.z);
         }
-
-
-        //attackDirection = new Vector3(facingDirection.x, transform.position.y, facingDirection.z);
-
-
-
+        // attackDirection = new Vector3(facingDirection.x, transform.position.y, facingDirection.z);
     }
 
 #if UNITY_EDITOR
     void Debugging()
     {
-
         Debug.DrawRay(_rb.position, facingDirection * 2, Color.green);
-
     }
-
-
 #endif
+
     void AddStamina()
     {
-
         if (_energy < _maxEnergy)
         {
-
             _energy += staminaRegeneration * Time.deltaTime;
-
-
         }
-
     }
+
     void AddHp()
     {
-
         if (_hp < _maxHp)
         {
-
             _hp += hpRegeneration * Time.deltaTime;
-
-
         }
-
     }
+
     IEnumerator Scrollcd()
     {
         _scrollIsEnable = false;
         yield return new WaitForSeconds(0.08f);
         _scrollIsEnable = true;
-
     }
-
 
     IEnumerator SkillsCd(int slotWhichWasSelected)
     {
-
         yield return new WaitForSeconds(skillPrefabs[slotWhichWasSelected].duration);
         ui.ReloadScripts[slotWhichWasSelected].ChangeCD(skillPrefabs[slotWhichWasSelected].cd);
-
         yield return new WaitForSeconds(skillPrefabs[slotWhichWasSelected].cd);
         activeSkills[slotWhichWasSelected] = false;
-
     }
-
-    #region skilltimers
-
-
-    #endregion
-
-
 }

@@ -170,15 +170,18 @@ public class UImanager : MonoBehaviour
 
     public void HideLevelUpMenu()
     {
+
+        GameManager._instance.ReturnTimeScale();
+
         levelUpMenu.SetActive(false);
         for (int i = 0; i < 2; i++)
         {
             skillImagesforLvlmenu[i].gameObject.SetActive(false);
             buttons[i].SetActive(false);
         }
+
         GameManager._instance.HideCursor();
 
-        GameManager._instance.ReturnTimeScale();
 
 
 

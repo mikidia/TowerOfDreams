@@ -7,28 +7,32 @@ public class ButtonScript : MonoBehaviour
     public void Button1()
     {
         LevelingScr._instance.SkillLevels[this.gameObject.GetComponentInChildren<TextMeshProUGUI>().text] += 1;
-        GameObject.Find("Level Up Screen").gameObject.SetActive(false);
+        UImanager._instance.HideLevelUpMenu();
 
 
     }
     public void Button2()
     {
         LevelingScr._instance.SkillLevels[this.gameObject.GetComponentInChildren<TextMeshProUGUI>().text] += 1;
-        GameObject.Find("Level Up Screen").gameObject.SetActive(false);
+
+        UImanager._instance.HideLevelUpMenu();
+
 
 
     }
     public void Button3()
     {
         LevelingScr._instance.SkillLevels[this.gameObject.GetComponentInChildren<TextMeshProUGUI>().text] += 1;
-        GameObject.Find("Level Up Screen").gameObject.SetActive(false);
+        UImanager._instance.HideLevelUpMenu();
+
 
 
     }
     public void Button4()
     {
         LevelingScr._instance.SkillLevels[this.gameObject.GetComponentInChildren<TextMeshProUGUI>().text] += 1;
-        GameObject.Find("Level Up Screen").gameObject.SetActive(false);
+        UImanager._instance.HideLevelUpMenu();
+
 
 
     }
@@ -36,35 +40,40 @@ public class ButtonScript : MonoBehaviour
     {
 
         Player._instance.Intelect += 2;
-        GameObject.Find("Level Up Screen").gameObject.SetActive(false);
+        UImanager._instance.HideLevelUpMenu();
+
 
     }
     public void AddStamina()
     {
 
         Player._instance.Stamina += 2;
-        GameObject.Find("Level Up Screen").gameObject.SetActive(false);
+        UImanager._instance.HideLevelUpMenu();
+
 
     }
     public void AddStrenght()
     {
 
         Player._instance.Strength += 2;
-        GameObject.Find("Level Up Screen").gameObject.SetActive(false);
+        UImanager._instance.HideLevelUpMenu();
+
 
     }
     public void AddAgility()
     {
 
         Player._instance.Agility += 2;
-        GameObject.Find("Level Up Screen").gameObject.SetActive(false);
+        UImanager._instance.HideLevelUpMenu();
+
 
     }
     public void AddViatlity()
     {
 
         Player._instance.Vitality += 2;
-        GameObject.Find("Level Up Screen").gameObject.SetActive(false);
+        UImanager._instance.HideLevelUpMenu();
+
 
     }
 }
