@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isBoss: 0
   isEliteMob: 0
-  isRegularMob: 1
+  isRegularMob: 0
   _name: Rat
   _intelect:
   - 1
@@ -35,9 +35,28 @@ MonoBehaviour:
   - 1
   - 3
   _eliteName: Elite Rat
-  _eliteIntelect: []
-  _eliteStamina: []
-  _eliteStrength: []
-  _eliteAgility: []
-  _eliteVitality: []
-  _eliteAgressive: []
+  _eliteIntelect:
+  - 1
+  - 3
+  _eliteStamina:
+  - 3
+  - 5
+  _eliteStrength:
+  - 2
+  - 4
+  _eliteAgility:
+  - 3
+  - 5
+  _eliteVitality:
+  - 3
+  - 5
+  _eliteAgressive:
+  - 2
+  - 4
+  _bossName: 
+  _bossIntelect: []
+  _bossStamina: []
+  _bossStrength: []
+  _bossAgility: []
+  _bossVitality: []
+  _bossAgressive: []

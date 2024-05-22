@@ -23,13 +23,14 @@ public class EnemyStateMachine : MonoBehaviour
     public float attackRadius = 2f;
     public float attackCooldown = 1.5f;
     private bool isAttacking;
-    public float moveSpeed = 3.0f;
-    public float sprintMultiplier = 1.3f;
+    [SerializeField] private float moveSpeed;
+
     public float sprintEnergyCost = 10f;
     public static EnemyStateMachine _instance;
 
     // FOV variables
     public float fieldOfView = 120f;  // FOV in degrees
+    private Vector3 initialForward;
 
     // Serialized stats with properties
     float intellect;
@@ -51,7 +52,7 @@ public class EnemyStateMachine : MonoBehaviour
         set
         {
             _agility = value;
-            UpdateEnemySpeed();
+
         }
     }
 
@@ -74,14 +75,17 @@ public class EnemyStateMachine : MonoBehaviour
         _instance = this;
     }
 
+
+
     void Start()
     {
         player = Player._instance.transform;
         currentPatrolIndex = 0;
         currentState = State.Patrol;
 
-        // Initialize stats
         SetStats();
+
+        initialForward = transform.forward; // Store the initial forward direction
 
         StartCoroutine(FSM());
     }
@@ -93,11 +97,7 @@ public class EnemyStateMachine : MonoBehaviour
         detectionRadius = baseDetectionRadius * aggressionLevel;
     }
 
-    // Method to update enemy speed based on agility
-    void UpdateEnemySpeed()
-    {
-        moveSpeed = _agility * 1.5f;
-    }
+
 
     IEnumerator FSM()
     {
@@ -185,7 +185,7 @@ public class EnemyStateMachine : MonoBehaviour
         }
 
         Vector3 targetPosition = player.position;
-        MoveTowards(targetPosition, sprintMultiplier);
+        MoveTowards(targetPosition);
         energy -= sprintEnergyCost * Time.deltaTime;
 
         if (Vector3.Distance(transform.position, player.position) < attackRadius)
@@ -276,7 +276,8 @@ public class EnemyStateMachine : MonoBehaviour
     bool IsPlayerInFOV()
     {
         Vector3 directionToPlayer = (player.position - transform.position).normalized;
-        float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+        float angleToPlayer = Vector3.Angle(initialForward, directionToPlayer);
+
         if (angleToPlayer < fieldOfView / 2 && Vector3.Distance(transform.position, player.position) < detectionRadius)
         {
             return true;
@@ -300,33 +301,36 @@ public class EnemyStateMachine : MonoBehaviour
     }
 
     // Method to move the enemy towards a target point, avoiding other enemies
-    void MoveTowards(Vector3 target, float speedMultiplier = 1.0f)
+    void MoveTowards(Vector3 target)
     {
         Vector3 direction = (target - transform.position).normalized;
 
-        // Apply repulsion from other enemies
-        Vector3 repulsion = Vector3.zero;
-        foreach (var otherEnemy in FindObjectsOfType<EnemyStateMachine>())
-        {
-            if (otherEnemy != this)
-            {
-                float distance = Vector3.Distance(transform.position, otherEnemy.transform.position);
-                if (distance < 2.0f) // Threshold distance to start repulsion
-                {
-                    Vector3 awayFromOtherEnemy = transform.position - otherEnemy.transform.position;
-                    repulsion += awayFromOtherEnemy.normalized / distance;
-                }
-            }
-        }
+        // Commented out the repulsion from other enemies
+        // Vector3 repulsion = Vector3.zero;
+        // foreach (var otherEnemy in FindObjectsOfType<EnemyStateMachine>())
+        // {
+        //     if (otherEnemy != this)
+        //     {
+        //         float distance = Vector3.Distance(transform.position, otherEnemy.transform.position);
+        //         if (distance < 2.0f) // Threshold distance to start repulsion
+        //         {
+        //             Vector3 awayFromOtherEnemy = transform.position - otherEnemy.transform.position;
+        //             repulsion += awayFromOtherEnemy.normalized / distance;
+        //         }
+        //     }
+        // }
 
-        Vector3 moveDirection = direction + repulsion;
-        transform.position += moveDirection.normalized * moveSpeed * speedMultiplier * Time.deltaTime;
+        // Vector3 moveDirection = direction + repulsion;dire
+        Vector3 moveDirection = direction; // Use only the direction towards the target
+        transform.position += moveDirection.normalized * moveSpeed / 5 * Time.deltaTime;
     }
+
 
     // Method to change stats (called based on game events)
     public void SetStats()
     {
         // Assume EnemyMain has these properties defined
+
         var enemyMain = GetComponent<EnemyMain>();
 
         aggressionLevel = enemyMain.Agressive;
@@ -341,7 +345,7 @@ public class EnemyStateMachine : MonoBehaviour
 
         // Update detection radius and move speed based on new stats
         UpdateDetectionRadius();
-        UpdateEnemySpeed();
+
     }
 
 

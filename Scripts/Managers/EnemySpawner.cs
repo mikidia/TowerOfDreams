@@ -114,6 +114,7 @@ public class EnemySpawner : MonoBehaviour
 
         // Spawn the enemy and set enemyParent as its parent
         GameObject enemy = Instantiate(enemyPrefab, position, Quaternion.identity, enemyParent);
+        enemy.SetActive(true);
         enemy.GetComponent<MobType>().SelectType(_chanseToSpawnRegular, _chanseToSpawnElite, _chanseToSpawnBoss);
 
 

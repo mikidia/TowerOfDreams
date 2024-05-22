@@ -9,12 +9,6 @@ public class EnemyAbility
 public class EnemyMain : MonoBehaviour, IEnemy
 {
     [Header("Base Stats")]
-    [SerializeField] private float baseIntelect = 1f;
-    [SerializeField] private float baseStamina = 1f;
-    [SerializeField] private float baseStrength = 1f;
-    [SerializeField] private float baseAgility = 1f;
-    [SerializeField] private float baseVitality = 1f;
-    [SerializeField] private float baseAgressive = 1f;
 
     [SerializeField] private float baseHp = 10f;
     [SerializeField] private float baseDamage = 1f;
@@ -50,12 +44,6 @@ public class EnemyMain : MonoBehaviour, IEnemy
     void SetupCharacteristics()
     {
         // Устанавливаем базовые значения
-        intelect = baseIntelect;
-        stamina = baseStamina;
-        strength = baseStrength;
-        agility = baseAgility;
-        vitality = baseVitality;
-        agresive = baseAgressive;
         hp = baseHp;
         damage = baseDamage;
         moveSpeed = baseMoveSpeed;
@@ -75,16 +63,16 @@ public class EnemyMain : MonoBehaviour, IEnemy
             }
             else if (mobType.IsEliteMob)
             {
-                hp += vitality * 3f;
+                hp += vitality * 6f;
                 damage += strength * 2.0f;
-                moveSpeed += agility * 2.0f;
+                moveSpeed += agility * 1.3f;
                 energy += agility * 3.0f;
             }
             else if (mobType.IsBossMob)
             {
-                hp += vitality * 6.0f;
+                hp += vitality * 10.0f;
                 damage += strength * 3.0f;
-                moveSpeed += agility * 1.5f;
+                moveSpeed += agility * 1.2f;
                 energy += agility * 3.0f;
             }
         }
