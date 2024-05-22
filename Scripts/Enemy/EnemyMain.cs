@@ -8,6 +8,7 @@ public class EnemyAbility
 
 public class EnemyMain : MonoBehaviour, IEnemy
 {
+    [Header("Base Stats")]
     [SerializeField] private float baseIntelect = 1f;
     [SerializeField] private float baseStamina = 1f;
     [SerializeField] private float baseStrength = 1f;
@@ -19,17 +20,18 @@ public class EnemyMain : MonoBehaviour, IEnemy
     [SerializeField] private float baseDamage = 1f;
     [SerializeField] private float baseMoveSpeed = 5f;
     [SerializeField] private float baseEnergy = 50f;
+    [Header("Final  Stats")]
 
-    private float intelect;
-    private float stamina;
-    private float strength;
-    private float agility;
-    private float vitality;
-    private float agresive;
-    private float hp;
-    private float damage;
-    private float moveSpeed;
-    private float energy;
+    [SerializeField] private float intelect;
+    [SerializeField] private float stamina;
+    [SerializeField] private float strength;
+    [SerializeField] private float agility;
+    [SerializeField] private float vitality;
+    [SerializeField] private float agresive;
+    [SerializeField] private float hp;
+    [SerializeField] private float damage;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float energy;
 
     private MobType mobType;
 
@@ -63,7 +65,7 @@ public class EnemyMain : MonoBehaviour, IEnemy
 
         if (mobType != null)
         {
-            // Добавляем модификаторы в зависимости от типа моба
+
             if (mobType.IsRegularMob)
             {
                 hp += vitality * 1.5f;

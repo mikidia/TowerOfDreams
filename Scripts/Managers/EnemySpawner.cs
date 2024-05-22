@@ -18,6 +18,17 @@ public class EnemySpawner : MonoBehaviour
     public float spawnMargin = 1.0f; // Minimum distance from the spawn area's edges
     public LayerMask environmentLayer; // Layer for objects implementing IEnvironment interface
 
+    [Header("Spawn chanse")]
+    [Range(0, 1000)]
+
+    [SerializeField] private int _chanseToSpawnRegular;
+    [Range(0, 1000)]
+
+    [SerializeField] private int _chanseToSpawnElite;
+    [Range(0, 1000)]
+    [SerializeField] private int _chanseToSpawnBoss;
+
+
     private Bounds spawnBounds;
     [SerializeField] Transform enemyParent;
 
@@ -103,6 +114,8 @@ public class EnemySpawner : MonoBehaviour
 
         // Spawn the enemy and set enemyParent as its parent
         GameObject enemy = Instantiate(enemyPrefab, position, Quaternion.identity, enemyParent);
+        enemy.GetComponent<MobType>().SelectType(_chanseToSpawnRegular, _chanseToSpawnElite, _chanseToSpawnBoss);
+
 
         // Assign the tag to the enemy if shouldAssignTag is true
         if (shouldAssignTag)

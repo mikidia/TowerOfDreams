@@ -42,8 +42,6 @@ public class Player : MonoBehaviour
 
     [SerializeField] UImanager ui;
 
-    [Header("FOV Controller")]
-    [SerializeField] FOVController fovController;
 
     #region Input Buttons
     KeyCode interractButton = KeyCode.E;
@@ -87,7 +85,6 @@ public class Player : MonoBehaviour
     {
         KeyCode[] slots = new KeyCode[] { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4 };
         _instance = this;
-        fovController = GetComponent<FOVController>();
     }
 
     private void Start()
@@ -121,7 +118,6 @@ public class Player : MonoBehaviour
             GetInputs();
             AddStamina();
             AddHp();
-            fovController.SetInput(_input);
         }
 #if UNITY_EDITOR
         // Debugging();
@@ -246,7 +242,9 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(skillPrefabs[slotWhichWasSelected].duration);
         ui.ReloadScripts[slotWhichWasSelected].ChangeCD(skillPrefabs[slotWhichWasSelected].cd);
+
         yield return new WaitForSeconds(skillPrefabs[slotWhichWasSelected].cd);
         activeSkills[slotWhichWasSelected] = false;
+
     }
 }

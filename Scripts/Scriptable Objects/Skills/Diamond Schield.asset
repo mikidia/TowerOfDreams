@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9dde6ae5741e51b46802b78dbb8a5910, type: 3}
-  m_Name: Schield
+  m_Name: Diamond Schield
   m_EditorClassIdentifier: 
   name: Diamond Schield
   damage: 0

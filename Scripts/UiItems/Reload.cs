@@ -14,6 +14,7 @@ public class Reload : MonoBehaviour
     public void ChangeCD(float cd)
     {
         image = GetComponent<Image>();
+        print("start");
         duration = cd;
         this.gameObject.SetActive(true);
         StartCoroutine("Reloading");
@@ -28,7 +29,7 @@ public class Reload : MonoBehaviour
         {
             // Увеличиваем прошедшее время
             elapsedTime += Time.deltaTime;
-            print(elapsedTime);
+            //print(elapsedTime);
 
             // Рассчитываем уменьшение fillAmount на основе прошедшего времени и общей длительности
             float fillDecrease = elapsedTime / duration;
