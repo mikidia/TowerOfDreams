@@ -8,8 +8,7 @@ public class EnemyStateMachine : MonoBehaviour
         Patrol,
         Chase,
         Attack,
-        Rest,
-        Sprint
+        Rest
     }
 
     public State currentState;
@@ -25,12 +24,14 @@ public class EnemyStateMachine : MonoBehaviour
     private bool isAttacking;
     [SerializeField] private float moveSpeed;
 
-    public float sprintEnergyCost = 10f;
     public static EnemyStateMachine _instance;
 
     // FOV variables
     public float fieldOfView = 120f;  // FOV in degrees
     private Vector3 initialForward;
+    private bool isTrackingPlayer;
+    private Vector3 lastKnownPlayerPosition;
+    private float detectionDelay = 2f;  // Time to wait before detecting player outside FOV
 
     // Serialized stats with properties
     float intellect;
@@ -44,15 +45,13 @@ public class EnemyStateMachine : MonoBehaviour
     public float aggressionLevel = 1f;
     private float detectionRadius;
 
-    // Property for agility with spee
-    // d update
+    // Property for agility with speed update
     public float agility
     {
         get => _agility;
         set
         {
             _agility = value;
-
         }
     }
 
@@ -75,8 +74,6 @@ public class EnemyStateMachine : MonoBehaviour
         _instance = this;
     }
 
-
-
     void Start()
     {
         player = Player._instance.transform;
@@ -90,14 +87,11 @@ public class EnemyStateMachine : MonoBehaviour
         StartCoroutine(FSM());
     }
 
-
     // Method to update detection radius
     void UpdateDetectionRadius()
     {
         detectionRadius = baseDetectionRadius * aggressionLevel;
     }
-
-
 
     IEnumerator FSM()
     {
@@ -110,9 +104,6 @@ public class EnemyStateMachine : MonoBehaviour
                     break;
                 case State.Chase:
                     Chase();
-                    break;
-                case State.Sprint:
-                    Sprint();
                     break;
                 case State.Attack:
                     Attack();
@@ -149,7 +140,7 @@ public class EnemyStateMachine : MonoBehaviour
             currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
         }
 
-        if (IsPlayerInFOV())
+        if (IsPlayerInFOV() || IsPlayerInDetectionRadius())
         {
             currentState = State.Chase;
         }
@@ -157,44 +148,40 @@ public class EnemyStateMachine : MonoBehaviour
 
     void Chase()
     {
-        if (!IsPlayerInFOV())
+        if (!IsPlayerInFOV() && !IsPlayerInDetectionRadius())
         {
             currentState = State.Patrol;
             EnterPatrolState(); // Reset patrol points when returning to patrol
             return;
         }
 
-        MoveTowards(player.position);
+        if (IsPlayerInFOV())
+        {
+            lastKnownPlayerPosition = player.position;
+            isTrackingPlayer = false; // Reset tracking state if player is in FOV
+        }
+        else if (IsPlayerInDetectionRadius() && !isTrackingPlayer)
+        {
+            StartCoroutine(DelayedPlayerDetection());
+        }
+
+        MoveTowards(lastKnownPlayerPosition);
 
         if (Vector3.Distance(transform.position, player.position) < attackRadius)
         {
             currentState = State.Attack;
-        }
-        else if (Vector3.Distance(transform.position, player.position) < detectionRadius / 2 && energy >= sprintEnergyCost)
-        {
-            currentState = State.Sprint;
         }
     }
 
-    void Sprint()
+    IEnumerator DelayedPlayerDetection()
     {
-        if (energy < sprintEnergyCost || !IsPlayerInFOV())
-        {
-            currentState = State.Chase;
-            return;
-        }
+        isTrackingPlayer = true; // Set tracking state to avoid multiple coroutine calls
+        yield return new WaitForSeconds(detectionDelay);
 
-        Vector3 targetPosition = player.position;
-        MoveTowards(targetPosition);
-        energy -= sprintEnergyCost * Time.deltaTime;
-
-        if (Vector3.Distance(transform.position, player.position) < attackRadius)
+        if (IsPlayerInDetectionRadius() && !IsPlayerInFOV())
         {
-            currentState = State.Attack;
-        }
-        else if (energy < sprintEnergyCost)
-        {
-            currentState = State.Chase;
+            lastKnownPlayerPosition = player.position; // Update last known player position
+            initialForward = (lastKnownPlayerPosition - transform.position).normalized; // Update FOV direction
         }
     }
 
@@ -231,15 +218,11 @@ public class EnemyStateMachine : MonoBehaviour
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, attackRadius);
 
-
         // Draw detection and attack spheres
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, attackRadius);
-
-
-
 
         // Draw FOV arc
         float halfFOV = fieldOfView / 2.0f;
@@ -266,8 +249,8 @@ public class EnemyStateMachine : MonoBehaviour
 
         // Draw FOV
         Gizmos.color = Color.yellow;
-        Vector3 fovLine1 = Quaternion.AngleAxis(fieldOfView / 2, transform.up) * transform.forward * detectionRadius;
-        Vector3 fovLine2 = Quaternion.AngleAxis(-fieldOfView / 2, transform.up) * transform.forward * detectionRadius;
+        Vector3 fovLine1 = Quaternion.AngleAxis(fieldOfView / 2, transform.up) * initialForward * detectionRadius;
+        Vector3 fovLine2 = Quaternion.AngleAxis(-fieldOfView / 2, transform.up) * initialForward * detectionRadius;
         Gizmos.DrawRay(transform.position, fovLine1);
         Gizmos.DrawRay(transform.position, fovLine2);
     }
@@ -285,6 +268,11 @@ public class EnemyStateMachine : MonoBehaviour
         return false;
     }
 
+    bool IsPlayerInDetectionRadius()
+    {
+        return Vector3.Distance(transform.position, player.position) < detectionRadius;
+    }
+
     // Method to calculate patrol points around a circle
     Vector3[] CalculatePatrolPoints(Vector3 center, float radius, int points)
     {
@@ -300,37 +288,18 @@ public class EnemyStateMachine : MonoBehaviour
         return result;
     }
 
-    // Method to move the enemy towards a target point, avoiding other enemies
-    void MoveTowards(Vector3 target)
+    // Method to move the enemy towards a target point
+    void MoveTowards(Vector3 target, float speedMultiplier = 0.5f)
     {
         Vector3 direction = (target - transform.position).normalized;
-
-        // Commented out the repulsion from other enemies
-        // Vector3 repulsion = Vector3.zero;
-        // foreach (var otherEnemy in FindObjectsOfType<EnemyStateMachine>())
-        // {
-        //     if (otherEnemy != this)
-        //     {
-        //         float distance = Vector3.Distance(transform.position, otherEnemy.transform.position);
-        //         if (distance < 2.0f) // Threshold distance to start repulsion
-        //         {
-        //             Vector3 awayFromOtherEnemy = transform.position - otherEnemy.transform.position;
-        //             repulsion += awayFromOtherEnemy.normalized / distance;
-        //         }
-        //     }
-        // }
-
-        // Vector3 moveDirection = direction + repulsion;dire
-        Vector3 moveDirection = direction; // Use only the direction towards the target
-        transform.position += moveDirection.normalized * moveSpeed / 5 * Time.deltaTime;
+        Vector3 moveDirection = direction; // Use only the direction towards the targets
+        transform.position += moveDirection * moveSpeed * speedMultiplier * Time.deltaTime;
     }
-
 
     // Method to change stats (called based on game events)
     public void SetStats()
     {
         // Assume EnemyMain has these properties defined
-
         var enemyMain = GetComponent<EnemyMain>();
 
         aggressionLevel = enemyMain.Agressive;
@@ -345,8 +314,5 @@ public class EnemyStateMachine : MonoBehaviour
 
         // Update detection radius and move speed based on new stats
         UpdateDetectionRadius();
-
     }
-
-
 }

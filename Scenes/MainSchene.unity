@@ -10841,7 +10841,6 @@ MonoBehaviour:
   attackRadius: 2
   attackCooldown: 1.5
   moveSpeed: 0
-  sprintEnergyCost: 10
   fieldOfView: 120
   aggressionLevel: 1
 --- !u!114 &1667586653
