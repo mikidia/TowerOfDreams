@@ -55,12 +55,12 @@ public class UImanager : MonoBehaviour
 
     void HideStamina()
     {
-        staminaBarParent.SetActive(player.Energy < player.MaxEnergy);
+        staminaBarParent.SetActive(PlayerMovementScript.instance.Energy < PlayerMovementScript.instance.MaxEnergy);
     }
 
     public void StaminaBarFill()
     {
-        staminaBar.fillAmount = player.Energy / player.MaxEnergy;
+        staminaBar.fillAmount = PlayerMovementScript.instance.Energy / PlayerMovementScript.instance.MaxEnergy;
     }
 
     public void ExpBar()
@@ -152,7 +152,7 @@ public class UImanager : MonoBehaviour
     bool CheckPlayerStatsLvl(Skills[] SkilsMinLvl, Player playerSkils, int i)
     {
 
-        if (SkilsMinLvl[i]._stamina > playerSkils.Energy)
+        if (SkilsMinLvl[i]._stamina > playerSkils.Stamina)
         {
             return false;
 

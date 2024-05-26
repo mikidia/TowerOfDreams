@@ -13,8 +13,8 @@ public class EnemyStateMachine : MonoBehaviour
 
     public State currentState;
     private Transform player;
-    public int numberOfPatrolPoints = 8;  // Number of points in the patrol circle
-    public float patrolRadius = 5f;       // Radius of the patrol circle
+    public int numberOfPatrolPoints = 8;
+    public float patrolRadius = 5f;
     private Vector3 patrolCenter;
     private Vector3[] patrolPoints;
     private int currentPatrolIndex;
@@ -24,21 +24,21 @@ public class EnemyStateMachine : MonoBehaviour
     private bool isAttacking;
     [SerializeField] private float moveSpeed;
 
-    public static EnemyStateMachine _instance;
+    public static EnemyStateMachine Instance;
 
     // FOV variables
-    public float fieldOfView = 120f;  // FOV in degrees
+    public float fieldOfView = 120f;
     private Vector3 initialForward;
     private bool isTrackingPlayer;
     private Vector3 lastKnownPlayerPosition;
-    private float detectionDelay = 2f;  // Time to wait before detecting player outside FOV
+    private float detectionDelay = 2f;
 
     // Serialized stats with properties
-    float intellect;
-    float stamina;
-    float strength;
+    private float intellect;
+    private float stamina;
+    private float strength;
     private float _agility;
-    float vitality;
+    private float vitality;
     private float _energy;
 
     // Aggression level
@@ -71,7 +71,7 @@ public class EnemyStateMachine : MonoBehaviour
 
     private void Awake()
     {
-        _instance = this;
+        Instance = this;
     }
 
     void Start()
@@ -82,7 +82,7 @@ public class EnemyStateMachine : MonoBehaviour
 
         SetStats();
 
-        initialForward = transform.forward; // Store the initial forward direction
+        initialForward = transform.forward;
 
         StartCoroutine(FSM());
     }
@@ -118,9 +118,7 @@ public class EnemyStateMachine : MonoBehaviour
 
     void EnterPatrolState()
     {
-        // Save the current position as the center of the patrol circle
         patrolCenter = transform.position;
-        // Calculate patrol points around the circle
         patrolPoints = CalculatePatrolPoints(patrolCenter, patrolRadius, numberOfPatrolPoints);
         currentPatrolIndex = 0;
     }
@@ -151,14 +149,14 @@ public class EnemyStateMachine : MonoBehaviour
         if (!IsPlayerInFOV() && !IsPlayerInDetectionRadius())
         {
             currentState = State.Patrol;
-            EnterPatrolState(); // Reset patrol points when returning to patrol
+            EnterPatrolState();
             return;
         }
 
         if (IsPlayerInFOV())
         {
             lastKnownPlayerPosition = player.position;
-            isTrackingPlayer = false; // Reset tracking state if player is in FOV
+            isTrackingPlayer = false;
         }
         else if (IsPlayerInDetectionRadius() && !isTrackingPlayer)
         {
@@ -175,13 +173,13 @@ public class EnemyStateMachine : MonoBehaviour
 
     IEnumerator DelayedPlayerDetection()
     {
-        isTrackingPlayer = true; // Set tracking state to avoid multiple coroutine calls
+        isTrackingPlayer = true;
         yield return new WaitForSeconds(detectionDelay);
 
         if (IsPlayerInDetectionRadius() && !IsPlayerInFOV())
         {
-            lastKnownPlayerPosition = player.position; // Update last known player position
-            initialForward = (lastKnownPlayerPosition - transform.position).normalized; // Update FOV direction
+            lastKnownPlayerPosition = player.position;
+            initialForward = (lastKnownPlayerPosition - transform.position).normalized;
         }
     }
 
@@ -196,6 +194,7 @@ public class EnemyStateMachine : MonoBehaviour
     IEnumerator AttackCooldown()
     {
         isAttacking = true;
+        // Call your attack method here
         yield return new WaitForSeconds(attackCooldown);
         isAttacking = false;
 
@@ -208,7 +207,7 @@ public class EnemyStateMachine : MonoBehaviour
     void Rest()
     {
         currentState = State.Patrol;
-        EnterPatrolState(); // Reset patrol points when resting
+        EnterPatrolState();
     }
 
     private void OnDrawGizmosSelected()
@@ -216,12 +215,6 @@ public class EnemyStateMachine : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, attackRadius);
-
-        // Draw detection and attack spheres
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, detectionRadius);
-        Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, attackRadius);
 
         // Draw FOV arc
@@ -233,10 +226,6 @@ public class EnemyStateMachine : MonoBehaviour
         Gizmos.DrawRay(transform.position, leftRayDirection * detectionRadius);
         Gizmos.DrawRay(transform.position, rightRayDirection * detectionRadius);
 
-        // Draw a sphere to represent the maximum detection radius
-        Gizmos.color = new Color(1f, 0.5f, 0f, 0.2f); // Orange color with transparency
-        Gizmos.DrawSphere(transform.position, detectionRadius);
-
         // Draw patrol points
         if (patrolPoints != null)
         {
@@ -246,13 +235,6 @@ public class EnemyStateMachine : MonoBehaviour
                 Gizmos.DrawSphere(point, 0.2f);
             }
         }
-
-        // Draw FOV
-        Gizmos.color = Color.yellow;
-        Vector3 fovLine1 = Quaternion.AngleAxis(fieldOfView / 2, transform.up) * initialForward * detectionRadius;
-        Vector3 fovLine2 = Quaternion.AngleAxis(-fieldOfView / 2, transform.up) * initialForward * detectionRadius;
-        Gizmos.DrawRay(transform.position, fovLine1);
-        Gizmos.DrawRay(transform.position, fovLine2);
     }
 
     // Method to check if the player is in the enemy's FOV
@@ -289,17 +271,15 @@ public class EnemyStateMachine : MonoBehaviour
     }
 
     // Method to move the enemy towards a target point
-    void MoveTowards(Vector3 target, float speedMultiplier = 0.5f)
+    void MoveTowards(Vector3 target, float speedMultiplier = 1f)
     {
         Vector3 direction = (target - transform.position).normalized;
-        Vector3 moveDirection = direction; // Use only the direction towards the targets
-        transform.position += moveDirection * moveSpeed * speedMultiplier * Time.deltaTime;
+        transform.position += direction * moveSpeed * speedMultiplier * Time.deltaTime;
     }
 
     // Method to change stats (called based on game events)
     public void SetStats()
     {
-        // Assume EnemyMain has these properties defined
         var enemyMain = GetComponent<EnemyMain>();
 
         aggressionLevel = enemyMain.Agressive;
@@ -308,11 +288,10 @@ public class EnemyStateMachine : MonoBehaviour
         strength = enemyMain.Strength;
         agility = enemyMain.Agility;
         vitality = enemyMain.Vitality;
-        energy = enemyMain.Energy;  // Assuming EnemyMain has an energy property
+        energy = enemyMain.Energy;
 
         moveSpeed = enemyMain.MoveSpeed;
 
-        // Update detection radius and move speed based on new stats
         UpdateDetectionRadius();
     }
 }

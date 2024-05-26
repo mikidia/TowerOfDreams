@@ -1,5 +1,6 @@
 using System.Collections;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -16,9 +17,7 @@ public class Player : MonoBehaviour
     public static Player _instance;
 
     [Header("Player Settings")]
-    [SerializeField] float _energy;
-    [SerializeField] float _maxEnergy;
-    [SerializeField] float staminaRegeneration;
+
     [SerializeField] float _hp;
     [SerializeField] float _maxHp;
     [SerializeField] float hpRegeneration;
@@ -29,8 +28,10 @@ public class Player : MonoBehaviour
 
     // Inventory settings
     [SerializeField] int sellectedSlot = 0;
+    [Header("Skills setings ")]
     [SerializeField] Skills[] skillPrefabs;
     [SerializeField] GameObject[] skills;
+
     [SerializeField] bool[] activeSkills = new bool[4];
 
     [Header("Player stats")]
@@ -40,7 +41,19 @@ public class Player : MonoBehaviour
     [SerializeField] float _agility;
     [SerializeField] float _vitality;
 
+    [SerializeField] int playerBaseDamage;
+    [SerializeField] int _playerDamage;
+
     [SerializeField] UImanager ui;
+    [SerializeField] FOVController fovController;
+    [SerializeField] PlayerAttack attackZone;
+
+
+    [Header("Child Objects")]
+    [SerializeField] Transform childObjectToRotate;
+
+    [SerializeField] Transform secondChildObjectToRotate;
+
 
 
     #region Input Buttons
@@ -50,7 +63,7 @@ public class Player : MonoBehaviour
     KeyCode inventoryButton = KeyCode.I;
     KeyCode pause = KeyCode.Escape;
 
-    KeyCode firstSlot = KeyCode.Alpha1;
+    KeyCode firstSlot = KeyCode.LeftShift;
     KeyCode secondSlot = KeyCode.Alpha2;
     KeyCode thirdSlot = KeyCode.Alpha3;
     KeyCode fourSlot = KeyCode.Alpha4;
@@ -64,13 +77,13 @@ public class Player : MonoBehaviour
         set { skillPrefabs = value; }
     }
 
-    public float Energy { get => _energy; set => _energy = value; }
-    public float MaxEnergy { get => _maxEnergy; set => _maxEnergy = value; }
+
     public float Intelect { get => _intelect; set => _intelect = value; }
     public float Stamina { get => _stamina; set => _stamina = value; }
     public float Strength { get => _strength; set => _strength = value; }
     public float Agility { get => _agility; set => _agility = value; }
     public float Vitality { get => _vitality; set => _vitality = value; }
+    public int PlayerDamage { get => _playerDamage; set => _playerDamage = value; }
 
     #endregion
 
@@ -83,12 +96,15 @@ public class Player : MonoBehaviour
     #region MonoBehaviour
     private void Awake()
     {
-        KeyCode[] slots = new KeyCode[] { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4 };
+        slots = new KeyCode[] { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4 };
         _instance = this;
     }
 
     private void Start()
     {
+        UpdatePlayerDamage();
+        fovController = GetComponent<FOVController>();
+        attackZone = GetComponentInChildren<PlayerAttack>();
         skills = new GameObject[skillPrefabs.Length];
         _rb = GetComponent<Rigidbody>();
         movement = GetComponent<PlayerMovementScript>();
@@ -114,10 +130,11 @@ public class Player : MonoBehaviour
     {
         if (_controlIsEnable && _isPlayerAlive)
         {
+            RotateTowardsMouse();
             movement.Movement(_input);
             GetInputs();
-            AddStamina();
             AddHp();
+
         }
 #if UNITY_EDITOR
         // Debugging();
@@ -125,8 +142,11 @@ public class Player : MonoBehaviour
 #endif
     }
 
+
     void GetInputs()
     {
+
+        fovController.SetInput(_input);
         if (Input.GetAxis("Mouse ScrollWheel") > 0f && _scrollIsEnable) // forward
         {
             if (sellectedSlot + 1 < 4)
@@ -148,9 +168,10 @@ public class Player : MonoBehaviour
             StartCoroutine("Scrollcd");
         }
 
+
         if (Input.GetKeyDown(rollButton) && (math.abs(_input.x) != 0 || math.abs(_input.z) != 0))
         {
-            movement.Dash();
+            PlayerMovementScript.instance.UseDash();
             // animator.SetTrigger("Roll");
         }
         if (Input.GetKeyDown(interractButton))
@@ -167,14 +188,13 @@ public class Player : MonoBehaviour
                 if (!skill.active)
                 {
                     skill.SetActive(true);
-
                 }
                 skill.transform.position = transform.position - new Vector3(0, 0.3f, 0);
                 skills[sellectedSlot].GetComponent<SkillPrefab>().ApplySlot(sellectedSlot);
                 // activeSkills[sellectedSlot] = true;
             }
         }
-        if (Input.GetKeyDown(firstSlot))
+        if (Input.GetKeyDown(secondSlot))
         {
             LevelingScr._instance.AddExp(5);
             // animator.SetTrigger("Attack");
@@ -194,18 +214,46 @@ public class Player : MonoBehaviour
         //     gameManager.UpPause();
         //     paused = false;
         // }
+        if (Input.GetKeyDown(attackButton) && !_attackIsOnCooldown)
+        {
+
+            StartCoroutine(Attack());
+        }
 
         _input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
-        SetDirection();
     }
 
-    private void SetDirection()
+    private void RotateTowardsMouse()
     {
-        if (_input.x != 0 || _input.z != 0)
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Plane plane = new Plane(Vector3.up, transform.position);
+        float distance;
+
+        if (plane.Raycast(ray, out distance))
         {
-            facingDirection = new Vector3(_input.x, 0, _input.z);
+            Vector3 targetPosition = ray.GetPoint(distance);
+
+            Vector3 facingDirection = targetPosition - transform.position;
+            facingDirection.y = 0; // ”бедимс€, что направление параллельно земле
+
+            facingDirection.Normalize();
+            RotateChildObjects(facingDirection);
         }
-        // attackDirection = new Vector3(facingDirection.x, transform.position.y, facingDirection.z);
+    }
+
+    private void RotateChildObjects(Vector3 direction)
+    {
+        if (childObjectToRotate != null)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            childObjectToRotate.transform.rotation = targetRotation;
+        }
+
+        if (secondChildObjectToRotate != null)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            secondChildObjectToRotate.transform.rotation = targetRotation;
+        }
     }
 
 #if UNITY_EDITOR
@@ -215,13 +263,7 @@ public class Player : MonoBehaviour
     }
 #endif
 
-    void AddStamina()
-    {
-        if (_energy < _maxEnergy)
-        {
-            _energy += staminaRegeneration * Time.deltaTime;
-        }
-    }
+
 
     void AddHp()
     {
@@ -245,6 +287,28 @@ public class Player : MonoBehaviour
 
         yield return new WaitForSeconds(skillPrefabs[slotWhichWasSelected].cd);
         activeSkills[slotWhichWasSelected] = false;
+    }
 
+    public void UpdatePlayerDamage()
+    {
+        _playerDamage = playerBaseDamage + (int)(_strength * 1.5);
+    }
+
+    private bool _attackIsOnCooldown = false;
+    [SerializeField] private float attackCooldown = 0.5f; // Set your desired cooldown time here
+
+    IEnumerator Attack()
+    {
+        attackZone.gameObject.SetActive(true);
+        yield return new WaitForSeconds(0.1f); // Attack duration
+        attackZone.gameObject.SetActive(false);
+        StartCoroutine(AttackCooldown());
+    }
+
+    IEnumerator AttackCooldown()
+    {
+        _attackIsOnCooldown = true;
+        yield return new WaitForSeconds(attackCooldown); // Cooldown duration
+        _attackIsOnCooldown = false;
     }
 }

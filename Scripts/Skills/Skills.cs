@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 [CreateAssetMenu(fileName = "new Skill", menuName = "skills/Create New Skill")]
 public class Skills : ScriptableObject
@@ -23,7 +24,10 @@ public class Skills : ScriptableObject
     [Tooltip("Minimum lvl of characteristic to open skill")]
     [SerializeField] public float _vitality;
 
+    [Tooltip("Skill Script left empty if dont use or assigt script from ASSETS FOLDER not from HIERARCHY ")]
 
+    [SerializeField] MonoScript scripts;
 
+    public virtual void UseSkill() { }
 
 }

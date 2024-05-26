@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [System.Serializable]
@@ -26,6 +27,7 @@ public class EnemyMain : MonoBehaviour, IEnemy
     [SerializeField] private float damage;
     [SerializeField] private float moveSpeed;
     [SerializeField] private float energy;
+    [SerializeField] private bool isDeath = false;
 
     private MobType mobType;
 
@@ -137,5 +139,39 @@ public class EnemyMain : MonoBehaviour, IEnemy
     {
         get { return energy; }
         set { energy = value; }
+    }
+
+
+
+
+    public void GetDamage(int damage)
+    {
+        if (hp - damage <= 0)
+        {
+
+            Destroy(gameObject);
+            isDeath = true;
+
+        }
+        else
+        {
+            hp -= damage;
+            StartCoroutine("DamageEffect");
+
+
+
+        }
+
+
+    }
+    IEnumerator DamageEffect()
+    {
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.color = Color.red;
+        yield return new WaitForSeconds(0.1f);
+        spriteRenderer.color = Color.black;
+
+
+
     }
 }
