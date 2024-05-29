@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class StatusEffect : MonoBehaviour
 {
-    public enum EffectType { Fire, Ice, Poison, Stun, }
-    public enum DamageType { Fire, Ice, Poison, None }
+    public enum EffectType { Bleeding, Fire, Ice, Poison, Stun }
+    public enum DamageType { Bleeding, Fire, Ice, Poison, None }
 
     [System.Serializable]
     public class Effect
@@ -14,11 +14,47 @@ public class StatusEffect : MonoBehaviour
         public float damagePerSecond;
     }
 
-    public List<Effect> activeEffects = new List<Effect>();
+    [System.Serializable]
+    public class EffectSettings
+    {
+        public EffectType effectType;
+        public float defaultDuration;
+        public float defaultDamagePerSecond;
+    }
+
+    [SerializeField] private List<EffectSettings> effectSettings = new List<EffectSettings>();
+
+    private Dictionary<EffectType, float> effectFloatValues = new Dictionary<EffectType, float>()
+    {
+        { EffectType.Bleeding, 6f },
+        { EffectType.Fire, 10f },
+        { EffectType.Ice, 10f },
+        { EffectType.Poison, 10f },
+        { EffectType.Stun, 5f }
+    };
+
+    [SerializeField] private List<Effect> activeEffects = new List<Effect>();
+    public List<EffectType> selectedStatusEffects = new List<EffectType>();
+
+    public Dictionary<EffectType, float> EffectFloatValues { get => effectFloatValues; set => effectFloatValues = value; }
+    public List<Effect> ActiveEffects { get => activeEffects; set => activeEffects = value; }
+
+    void Awake()
+    {
+        InitializeEffectFloatValues();
+    }
 
     void Update()
     {
         ApplyEffects();
+    }
+
+    void InitializeEffectFloatValues()
+    {
+        foreach (var setting in effectSettings)
+        {
+            effectFloatValues[setting.effectType] = setting.defaultDuration;
+        }
     }
 
     void ApplyEffects()
@@ -61,19 +97,33 @@ public class StatusEffect : MonoBehaviour
                 // Пример обработки оглушения
                 // Оглушение может просто замедлить или остановить персонажа
                 break;
-
         }
     }
 
     void ApplyDamage(DamageType damageType, float amount)
     {
         // Логика применения урона
-        //Debug.Log($"Applying {amount} {damageType} damage.");
+        Debug.Log($"Applying {amount} {damageType} damage.");
     }
 
     public void AddEffect(Effect newEffect)
     {
         activeEffects.Add(newEffect);
     }
-}
 
+    public void AddEffectByType(EffectType effectType)
+    {
+        var effectSetting = effectSettings.Find(es => es.effectType == effectType);
+        if (effectSetting != null)
+        {
+            Effect newEffect = new Effect
+            {
+                effectType = effectType,
+                duration = effectSetting.defaultDuration,
+                damagePerSecond = effectSetting.defaultDamagePerSecond
+            };
+
+            AddEffect(newEffect);
+        }
+    }
+}

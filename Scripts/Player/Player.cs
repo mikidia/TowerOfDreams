@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -45,8 +46,12 @@ public class Player : MonoBehaviour
     [SerializeField] int _playerDamage;
 
     [SerializeField] UImanager ui;
+    [SerializeField] StatusEffect _statusEffect;
     [SerializeField] FOVController fovController;
     [SerializeField] PlayerAttack attackZone;
+
+    public List<StatusEffect.EffectType> effectsToApply = new List<StatusEffect.EffectType>();
+
 
 
     [Header("Child Objects")]
@@ -103,6 +108,14 @@ public class Player : MonoBehaviour
     private void Start()
     {
         UpdatePlayerDamage();
+        _statusEffect = GetComponent<StatusEffect>();
+
+        UpdatePlayerDamage();
+
+        // Установка стандартных эффектов
+        SetDefaultEffects();
+
+
         fovController = GetComponent<FOVController>();
         attackZone = GetComponentInChildren<PlayerAttack>();
         skills = new GameObject[skillPrefabs.Length];
@@ -271,6 +284,12 @@ public class Player : MonoBehaviour
         {
             _hp += hpRegeneration * Time.deltaTime;
         }
+    }
+    private void SetDefaultEffects()
+    {
+        effectsToApply.Add(StatusEffect.EffectType.Bleeding);
+        effectsToApply.Add(StatusEffect.EffectType.Stun);
+
     }
 
     IEnumerator Scrollcd()

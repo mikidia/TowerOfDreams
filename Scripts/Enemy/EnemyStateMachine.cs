@@ -31,7 +31,7 @@ public class EnemyStateMachine : MonoBehaviour
     private Vector3 initialForward;
     private bool isTrackingPlayer;
     private Vector3 lastKnownPlayerPosition;
-    private float detectionDelay = 2f;
+    private float detectionDelay = 1f;
 
     // Serialized stats with properties
     private float intellect;
@@ -39,11 +39,24 @@ public class EnemyStateMachine : MonoBehaviour
     private float strength;
     private float _agility;
     private float vitality;
-    private float _energy;
+    [SerializeField] private float _energy = 0;
+    [Header("Dash Settings")]
+    [SerializeField] private float _maxEnergy = 50;
+    [SerializeField] private float _energyRegen;
 
     // Aggression level
     public float aggressionLevel = 1f;
     private float detectionRadius;
+
+    // Dash variables
+    [SerializeField] private bool _isDashAvailable = true;
+    [SerializeField] private float dashUseStamina = 50f;
+    [SerializeField] private float _dashSpeed = 20f;
+    [SerializeField] private float _dashCd = 5f;
+    [SerializeField] private float _returnBasicSpeed = 1f;
+    private Vector3 dashDirection;
+
+    private Rigidbody rb;
 
     // Property for agility with speed update
     public float agility
@@ -54,24 +67,30 @@ public class EnemyStateMachine : MonoBehaviour
             _agility = value;
         }
     }
+    private void Update()
+    {
+        regenEnergy();
+    }
+
+    void regenEnergy()
+    {
+        if (_energy < _maxEnergy)
+        {
+
+            _energy += _energyRegen * Time.deltaTime;
+
+
+        }
+
+    }
 
     // Property for energy
-    public float energy
-    {
-        get => _energy;
-        set
-        {
-            _energy = value;
-            if (_energy < 0)
-            {
-                _energy = 0;
-            }
-        }
-    }
+
 
     private void Awake()
     {
         Instance = this;
+        rb = GetComponent<Rigidbody>();
     }
 
     void Start()
@@ -161,6 +180,11 @@ public class EnemyStateMachine : MonoBehaviour
         else if (IsPlayerInDetectionRadius() && !isTrackingPlayer)
         {
             StartCoroutine(DelayedPlayerDetection());
+        }
+
+        if (IsPlayerInFOV() && _isDashAvailable && _energy - dashUseStamina >= 0)
+        {
+            UseDash();
         }
 
         MoveTowards(lastKnownPlayerPosition);
@@ -288,10 +312,44 @@ public class EnemyStateMachine : MonoBehaviour
         strength = enemyMain.Strength;
         agility = enemyMain.Agility;
         vitality = enemyMain.Vitality;
-        energy = enemyMain.Energy;
+        _energy = enemyMain.Energy;
 
         moveSpeed = enemyMain.MoveSpeed;
 
         UpdateDetectionRadius();
+    }
+
+    // Method to use dash when the player is in FOV
+    public void UseDash()
+    {
+        if (_isDashAvailable && _energy - dashUseStamina >= 0)
+        {
+            DetermineDashDirection();
+            _energy -= dashUseStamina;
+            StartCoroutine(DashAddSpeed());
+        }
+    }
+
+    void DetermineDashDirection()
+    {
+        dashDirection = (player.position - transform.position).normalized;
+    }
+
+    IEnumerator DashAddSpeed()
+    {
+        _isDashAvailable = false;
+        float originalMoveSpeed = moveSpeed;
+        moveSpeed += _dashSpeed;
+        rb.AddForce(dashDirection * _dashSpeed, ForceMode.VelocityChange);
+        yield return new WaitForSeconds(_returnBasicSpeed);
+        moveSpeed = originalMoveSpeed;
+        rb.velocity = Vector3.zero;
+        StartCoroutine(DashCd());
+    }
+
+    IEnumerator DashCd()
+    {
+        yield return new WaitForSeconds(_dashCd);
+        _isDashAvailable = true;
     }
 }

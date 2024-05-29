@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fda5cfe758fd55d40b171b62548b41d2, type: 3}
+  m_Name: Woolf
+  m_EditorClassIdentifier: 
+  isBoss: 0
+  isEliteMob: 0
+  isRegularMob: 0
+  _name: Woolf
+  _intelect:
+  - 2
+  - 4
+  _stamina:
+  - 2
+  - 5
+  _strength:
+  - 2
+  - 5
+  _agility:
+  - 4
+  - 6
+  _vitality:
+  - 2
+  - 4
+  _agressive:
+  - 2
+  - 4
+  _eliteName: Elite Woolf
+  _eliteIntelect:
+  - 3
+  - 5
+  _eliteStamina:
+  - 4
+  - 6
+  _eliteStrength:
+  - 4
+  - 8
+  _eliteAgility:
+  - 6
+  - 8
+  _eliteVitality:
+  - 4
+  - 9
+  _eliteAgressive:
+  - 3
+  - 5
+  _bossName: Boss woolf
+  _bossIntelect: []
+  _bossStamina: []
+  _bossStrength: []
+  _bossAgility: []
+  _bossVitality: []
+  _bossAgressive: []

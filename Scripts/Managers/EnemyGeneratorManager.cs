@@ -40,6 +40,8 @@ public class EnemyGeneratorManager : MonoBehaviour
             {
                 if (enemysTypes[i].IsRegularMob)
                 {
+
+
                     enemys[i].Intelect = Random.Range((int)enemyScrObjests[j].Intelect[0], (int)enemyScrObjests[j].Intelect[1] + 1);
                     enemys[i].Stamina = Random.Range((int)enemyScrObjests[j].Stamina[0], (int)enemyScrObjests[j].Stamina[1] + 1);
                     enemys[i].Strength = Random.Range((int)enemyScrObjests[j].Strength[0], (int)enemyScrObjests[j].Strength[1] + 1);
@@ -63,12 +65,12 @@ public class EnemyGeneratorManager : MonoBehaviour
                 }
                 if (enemysTypes[i].IsBossMob)
                 {
-                    enemys[i].Intelect = Random.Range((int)enemyScrObjests[j].BossIntelect[0], (int)enemyScrObjests[j].BossIntelect[1] + 1);
-                    enemys[i].Stamina = Random.Range((int)enemyScrObjests[j].BossStamina[0], (int)enemyScrObjests[j].BossStamina[1] + 1);
-                    enemys[i].Strength = Random.Range((int)enemyScrObjests[j].BossStrength[0], (int)enemyScrObjests[j].BossStrength[1] + 1);
-                    enemys[i].Agility = Random.Range((int)enemyScrObjests[j].BossAgility[0], (int)enemyScrObjests[j].BossAgility[1] + 1);
-                    enemys[i].Vitality = Random.Range((int)enemyScrObjests[j].BossVitality[0], (int)enemyScrObjests[j].BossVitality[1] + 1);
-                    enemys[i].Agressive = Random.Range((int)enemyScrObjests[j].BossAgressive[0], (int)enemyScrObjests[j].BossAgressive[1] + 1);
+                    //enemys[i].Intelect = Random.Range((int)enemyScrObjests[j].BossIntelect[0], (int)enemyScrObjests[j].BossIntelect[1] + 1);
+                    //enemys[i].Stamina = Random.Range((int)enemyScrObjests[j].BossStamina[0], (int)enemyScrObjests[j].BossStamina[1] + 1);
+                    //enemys[i].Strength = Random.Range((int)enemyScrObjests[j].BossStrength[0], (int)enemyScrObjests[j].BossStrength[1] + 1);
+                    //enemys[i].Agility = Random.Range((int)enemyScrObjests[j].BossAgility[0], (int)enemyScrObjests[j].BossAgility[1] + 1);
+                    //enemys[i].Vitality = Random.Range((int)enemyScrObjests[j].BossVitality[0], (int)enemyScrObjests[j].BossVitality[1] + 1);
+                    //enemys[i].Agressive = Random.Range((int)enemyScrObjests[j].BossAgressive[0], (int)enemyScrObjests[j].BossAgressive[1] + 1);
 
 
 
