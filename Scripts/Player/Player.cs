@@ -118,6 +118,7 @@ public class Player : MonoBehaviour
 
         fovController = GetComponent<FOVController>();
         attackZone = GetComponentInChildren<PlayerAttack>();
+        attackZone.gameObject.SetActive(false);
         skills = new GameObject[skillPrefabs.Length];
         _rb = GetComponent<Rigidbody>();
         movement = GetComponent<PlayerMovementScript>();
@@ -319,6 +320,7 @@ public class Player : MonoBehaviour
     IEnumerator Attack()
     {
         attackZone.gameObject.SetActive(true);
+
         yield return new WaitForSeconds(0.1f); // Attack duration
         attackZone.gameObject.SetActive(false);
         StartCoroutine(AttackCooldown());

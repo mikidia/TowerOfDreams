@@ -1,68 +1,43 @@
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
-
     private void Awake()
     {
-
+        // Здесь можно выполнить инициализацию, если потребуется
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        List<EnemyMain> enemy = new List<EnemyMain>();
-        List<StatusEffect> statusEffect = new List<StatusEffect>();
+        // Получаем компоненты EnemyMain и StatusEffect у столкнувшегося объекта
+        EnemyMain enemy = other.GetComponent<EnemyMain>();
+        StatusEffect statusEffect = other.GetComponent<StatusEffect>();
 
-
-        foreach (var i in other.GetComponents<EnemyMain>())
+        // Проверяем, что враг действительно имеет компоненты EnemyMain и StatusEffect
+        if (enemy != null && statusEffect != null)
         {
-            enemy.Add(i);
-
-        }
-        foreach (var i in other.GetComponents<StatusEffect>())
-        {
-
-            statusEffect.Add(i);
-        }
-
-
-        if (enemy.Count > 0)
-        {
-            // Кешируем необходимые данные
+            // Кешируем необходимые данные игрока
             var playerInstance = Player._instance;
             var playerDamage = playerInstance.PlayerDamage;
             var effectsToApply = playerInstance.effectsToApply;
 
-            // Перебираем врагов
-            for (int i = 0; i < enemy.Count; i++)
+            // Наносим урон врагу
+            enemy.GetDamage(playerDamage);
+
+            // Применяем эффекты к врагу
+            foreach (var effectType in effectsToApply)
             {
-
-                enemy[i].GetDamage(playerDamage);
-                // Проверяем, что индекс j находится в пределах списка эффектов
-                for (int j = 0; j < effectsToApply.Count; j++)
+                if (statusEffect.EffectFloatValues.TryGetValue(effectType, out int chance))
                 {
-                    var effectType = effectsToApply[j];
-                    // Проверяем, что индекс j находится в пределах списка statusEffect
-                    if (statusEffect[j].EffectFloatValues.TryGetValue(effectType, out float chance))
+                    // Проверка шанса на добавление эффекта
+                    int randomizeNumber = Random.Range(0, chance);
+                    Debug.Log(randomizeNumber);
+                    if (randomizeNumber == 0)
                     {
-                        // Проверка шанса на добавление эффекта
-                        if (Random.Range(0f, chance) == 0)
-                        {
-                            statusEffect[j].AddEffectByType(effectType);
-                        }
-
+                        statusEffect.AddEffectByType(effectType);
                     }
-
                 }
-
             }
-
         }
-
     }
-
 }
-
-
