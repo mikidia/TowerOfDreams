@@ -2,26 +2,23 @@ using UnityEngine;
 
 public class ExitTrigger : MonoBehaviour
 {
-    private int roomIndex;
-    private LevelGeneratorManager levelGeneratorManager;
-
-    public void Initialize(int index, LevelGeneratorManager generator)
-    {
-        roomIndex = index;
-        levelGeneratorManager = generator;
-    }
+    [SerializeField] int type;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        Player player = other.GetComponent<Player>();
+        if (player != null)
         {
-            if (levelGeneratorManager != null)
+            LevelGeneratorManager manager = GameObject.Find("LevelGenerator").GetComponent<LevelGeneratorManager>();
+            if (manager != null)
             {
-                levelGeneratorManager.SwitchRoom(roomIndex);
-            }
-            else
-            {
-                Debug.LogError("LevelGeneratorManager не инициализирован для ExitTrigger на объекте " + gameObject.name);
+                manager.SetLastExitType(type); // Store the exit type in the manager
+
+                manager.GenerateRoom(false);
+
+
+                // Use Invoke to delay the position setting
+                manager.Invoke("DelayedSetPlayerPosition", 0.1f);
             }
         }
     }

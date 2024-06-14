@@ -52,9 +52,15 @@ public class EnemyStateMachine : MonoBehaviour
     [SerializeField] private bool _isDashAvailable = true;
     [SerializeField] private float dashUseStamina = 50f;
     [SerializeField] private float _dashSpeed = 20f;
-    [SerializeField] private float _dashCd = 5f;
+    [SerializeField] private float _dashCd = 10f; // Changed to 10 seconds
     [SerializeField] private float _returnBasicSpeed = 1f;
     private Vector3 dashDirection;
+
+    // Raycast check variables
+    public LayerMask validLayers; // Valid ground layers
+    public float rayDistance = 1.0f; // Ray distance downwards
+    public Vector3 rayOffset = Vector3.zero; // Ray offset
+    private Vector3 lastValidPosition; // Last valid position
 
     private Rigidbody rb;
 
@@ -67,6 +73,7 @@ public class EnemyStateMachine : MonoBehaviour
             _agility = value;
         }
     }
+
     private void Update()
     {
         regenEnergy();
@@ -76,16 +83,9 @@ public class EnemyStateMachine : MonoBehaviour
     {
         if (_energy < _maxEnergy)
         {
-
             _energy += _energyRegen * Time.deltaTime;
-
-
         }
-
     }
-
-    // Property for energy
-
 
     private void Awake()
     {
@@ -103,7 +103,38 @@ public class EnemyStateMachine : MonoBehaviour
 
         initialForward = transform.forward;
 
+        lastValidPosition = transform.position; // Initialize last valid position
+
         StartCoroutine(FSM());
+    }
+
+    void FixedUpdate()
+    {
+        CheckGround();
+    }
+
+    // Method to check if the enemy is on valid ground
+    void CheckGround()
+    {
+        Vector3 rayOrigin = transform.position + rayOffset;
+        Ray ray = new Ray(rayOrigin, Vector3.down);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, rayDistance))
+        {
+            if (((1 << hit.collider.gameObject.layer) & validLayers) != 0)
+            {
+                lastValidPosition = transform.position;
+            }
+            else
+            {
+                transform.position = lastValidPosition;
+            }
+        }
+        else
+        {
+            transform.position = lastValidPosition;
+        }
     }
 
     // Method to update detection radius
@@ -259,6 +290,11 @@ public class EnemyStateMachine : MonoBehaviour
                 Gizmos.DrawSphere(point, 0.2f);
             }
         }
+
+        // Draw ray for ground check
+        Vector3 rayOrigin = transform.position + rayOffset;
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(rayOrigin, rayOrigin + Vector3.down * rayDistance);
     }
 
     // Method to check if the player is in the enemy's FOV

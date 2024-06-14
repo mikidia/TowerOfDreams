@@ -149,8 +149,8 @@ public class EnemyMain : MonoBehaviour, IEnemy
         if (hp - damage <= 0)
         {
 
-            //Destroy(gameObject);
-            //isDeath = true;
+            Destroy(gameObject);
+            isDeath = true;
 
         }
         else

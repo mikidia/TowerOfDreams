@@ -1,133 +1,220 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class LevelGeneratorManager : MonoBehaviour
 {
-    public List<GameObject> roomPrefabs; // Список префабов комнат
-    public GameObject exitPrefab; // Префаб выхода
-    public int numberOfRooms = 10; // Количество комнат для генерации
-    public float roomSpacing = 10f; // Расстояние между комнатами
-    public Transform player; // Ссылка на игрока
+    [SerializeField] List<GameObject> roomPrefabs; // List of room prefabs
+    [SerializeField] List<GameObject> exitPrefabs; // List of exit prefabs
+    [SerializeField] List<GameObject> corridors; // List of corridor rooms 
+    [SerializeField] Vector3 exitOffsets; // Offsets for exit positions
+    [SerializeField] Transform roomParent; // Parent transform for rooms
+    [SerializeField] Transform exitParent; // Parent transform for exits
+    [SerializeField] int maxExitCount; // Maximum number of exits
+    [SerializeField] float yPosition; // Y position for room placement
+    [SerializeField] Transform playerPos; // Player's position transform
 
-    public Vector3 roomOffset = Vector3.zero; // Оффсет для позиции комнат
-    public Vector3 exitOffset = Vector3.zero; // Оффсет для позиции выходов
+    List<int> exitNumber; // List of exit numbers
+    Bounds roomBounds; // Bounds of the current room
+    private int lastExitType; // Store the last exit type
 
-    private Vector3 nextRoomPosition; // Позиция для следующей комнаты
-    private Vector3[] directions = new Vector3[] { Vector3.forward, Vector3.back, Vector3.left, Vector3.right };
-    private List<GameObject> generatedRooms = new List<GameObject>();
-    private Dictionary<Vector3, GameObject> roomPositions = new Dictionary<Vector3, GameObject>();
-    private Dictionary<GameObject, Vector3> roomOriginalPositions = new Dictionary<GameObject, Vector3>();
+    public Bounds RoomBounds { get => roomBounds; set => roomBounds = value; }
 
-    void Start()
+    private void Start()
     {
-        GenerateLevel();
+        GenerateRoom(true);
+        StartCoroutine(CleanExitPrefabsList());
     }
 
-    void Update()
+    IEnumerator CleanExitPrefabsList()
     {
-        UpdateRoomPositions();
-    }
-
-    void GenerateLevel()
-    {
-        Vector3 startPosition = player.position + roomOffset; // Начальная позиция с учетом оффсета
-        nextRoomPosition = startPosition;
-
-        for (int i = 0; i < numberOfRooms; i++)
+        while (true)
         {
-            // Выбираем случайный префаб комнаты
-            GameObject roomPrefab = roomPrefabs[Random.Range(0, roomPrefabs.Count)];
-
-            // Создаем экземпляр комнаты в заданной позиции с учетом оффсета
-            GameObject roomInstance = Instantiate(roomPrefab, nextRoomPosition, Quaternion.identity);
-            roomInstance.SetActive(i == 0); // Включаем только первую комнату
-
-            // Запоминаем оригинальную позицию комнаты
-            roomOriginalPositions[roomInstance] = nextRoomPosition;
-
-            // Создаем триггеры выхода
-            CreateExits(roomInstance, i);
-
-            // Добавляем комнату в список и словарь
-            generatedRooms.Add(roomInstance);
-            roomPositions[nextRoomPosition] = roomInstance;
-
-            // Обновляем позицию для следующей комнаты
-            nextRoomPosition = GetNextRoomPosition();
+            for (int index = exitPrefabs.Count - 1; index >= 0; index--)
+            {
+                if (exitPrefabs[index] == null)
+                {
+                    exitPrefabs.RemoveAt(index);
+                }
+            }
+            yield return new WaitForSeconds(0.5f);
         }
     }
 
-    void CreateExits(GameObject room, int roomIndex)
+    public void SetLastExitType(int type)
     {
-        List<Transform> exitPoints = new List<Transform>();
-        foreach (Transform child in room.transform)
+        lastExitType = type;
+    }
+
+    public void SetPlayerPosition(int type, Bounds bounds)
+    {
+        Vector3 position = Vector3.zero;
+
+        // Adjust the player position based on the exit type and room bounds
+        switch (type)
         {
-            if (child.CompareTag("ExitPoint"))
-            {
-                exitPoints.Add(child);
-            }
+            case 0: // Bottom center -> Top center
+                position = new Vector3(bounds.center.x, yPosition + exitOffsets.y, bounds.max.z - exitOffsets.z);
+                break;
+            case 1: // Bottom left -> Top left
+                position = new Vector3(bounds.min.x + exitOffsets.x, yPosition + exitOffsets.y, bounds.max.z - exitOffsets.z);
+                break;
+            case 2: // Bottom right -> Top right
+                position = new Vector3(bounds.max.x - exitOffsets.x, yPosition + exitOffsets.y, bounds.max.z - exitOffsets.z);
+                break;
+            case 3: // Top center -> Bottom center
+                position = new Vector3(bounds.center.x, yPosition + exitOffsets.y, bounds.min.z + exitOffsets.z);
+                break;
+            case 4: // Top left -> Bottom left
+                position = new Vector3(bounds.min.x + exitOffsets.x, yPosition + exitOffsets.y, bounds.min.z + exitOffsets.z);
+                break;
+            case 5: // Top right -> Bottom right
+                position = new Vector3(bounds.max.x - exitOffsets.x, yPosition + exitOffsets.y, bounds.min.z + exitOffsets.z);
+                break;
+            case 6: // Center left -> Center right
+                position = new Vector3(bounds.max.x - exitOffsets.x, yPosition + exitOffsets.y, bounds.center.z);
+                break;
+            case 7: // Center right -> Center left
+                position = new Vector3(bounds.min.x + exitOffsets.x, yPosition + exitOffsets.y, bounds.center.z);
+                break;
+            default:
+                Debug.LogWarning("Invalid position type specified.");
+                return;
         }
 
-        if (exitPoints.Count > 0)
+        // Ensure the player position is within the bounds
+        position.x = Mathf.Clamp(position.x, bounds.min.x, bounds.max.x);
+        position.z = Mathf.Clamp(position.z, bounds.min.z, bounds.max.z);
+
+        playerPos.transform.position = position;
+    }
+
+    public void DelayedSetPlayerPosition()
+    {
+        SetPlayerPosition(lastExitType, roomBounds);
+    }
+
+    public void GenerateRoom(bool itsFirstRoom)
+    {
+        DeleteAllRooms();
+        DeactivateAllCorridors();
+
+        var roomInstance = Instantiate(roomPrefabs[Random.Range(0, roomPrefabs.Count)], roomParent);
+        var roomCollider = roomInstance.GetComponent<Collider>();
+        roomBounds = roomCollider.bounds;
+
+        roomInstance.transform.position = new Vector3(0, yPosition, 0);
+
+        if (!roomInstance.activeSelf)
         {
-            foreach (var exitPoint in exitPoints)
-            {
-                Vector3 exitPosition = exitPoint.position + exitOffset;
-                GameObject exitInstance = Instantiate(exitPrefab, exitPosition, exitPoint.rotation);
-                exitInstance.SetActive(roomIndex == 0); // Делаем активным только выход для первой комнаты
+            roomInstance.SetActive(true);
+        }
 
-                ExitTrigger exitTrigger = exitInstance.AddComponent<ExitTrigger>();
-                exitTrigger.Initialize(roomIndex, this);
-
-                exitInstance.transform.parent = room.transform;
-            }
+        if (itsFirstRoom)
+        {
+            SetPlayerPosition(0, roomBounds);
         }
         else
         {
-            Debug.LogWarning("ExitPoint не найден в комнате " + room.name);
+            SetPlayerPosition(lastExitType, roomBounds);
+        }
+
+        GetExitPoints();
+        GenerateExits();
+
+        // Ensure at least one exit is active
+        if (!CheckExits())
+        {
+            exitPrefabs[Random.Range(0, exitPrefabs.Count)].SetActive(true);
         }
     }
 
-    Vector3 GetNextRoomPosition()
+    void GenerateExits()
     {
-        Vector3 candidatePosition;
-        do
-        {
-            Vector3 direction = directions[Random.Range(0, directions.Length)];
-            candidatePosition = nextRoomPosition + direction * roomSpacing + roomOffset;
-        } while (roomPositions.ContainsKey(candidatePosition));
-
-        return candidatePosition;
+        int numberOfExits = Random.Range(1, maxExitCount + 1);
+        exitNumber = GenerateUniqueNumbers(numberOfExits, 1, exitPrefabs.Count - 1);
+        ActivateExits();
     }
 
-    void UpdateRoomPositions()
+    List<int> GenerateUniqueNumbers(int count, int minValue, int maxValue)
     {
-        foreach (var kvp in roomOriginalPositions)
+        HashSet<int> uniqueNumbers = new HashSet<int>();
+
+        if (maxValue - minValue + 1 < count)
         {
-            GameObject room = kvp.Key;
-            Vector3 originalPosition = kvp.Value;
-            room.transform.position = originalPosition + roomOffset;
+            Debug.LogError("Range is too small to generate the requested number of unique numbers.");
+            return new List<int>();
         }
+
+        while (uniqueNumbers.Count < count)
+        {
+            int randomNumber = Random.Range(minValue, maxValue + 1);
+            uniqueNumbers.Add(randomNumber);
+        }
+
+        return new List<int>(uniqueNumbers);
     }
 
-    public void SwitchRoom(int currentRoomIndex)
+    void GetExitPoints()
     {
-        if (currentRoomIndex >= 0 && currentRoomIndex < generatedRooms.Count)
-        {
-            generatedRooms[currentRoomIndex].SetActive(false);
+        exitPrefabs.Clear();
 
-            int nextRoomIndex = currentRoomIndex + 1;
-            if (nextRoomIndex < generatedRooms.Count)
+        foreach (Transform child in roomParent)
+        {
+            if (child.gameObject.activeSelf)
             {
-                generatedRooms[nextRoomIndex].SetActive(true);
-
-                foreach (Transform child in generatedRooms[nextRoomIndex].transform)
+                foreach (Transform exit in child)
                 {
-                    if (child.CompareTag("ExitPoint"))
-                    {
-                        child.gameObject.SetActive(true);
-                    }
+                    exitPrefabs.Add(exit.gameObject);
                 }
+            }
+        }
+    }
+
+    void ActivateExits()
+    {
+        foreach (int index in exitNumber)
+        {
+            if (index < exitPrefabs.Count)
+            {
+                exitPrefabs[index].SetActive(true);
+            }
+        }
+    }
+
+
+
+    bool CheckExits()
+    {
+        foreach (var exit in exitPrefabs)
+        {
+            if (exit.activeSelf)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void DeleteAllRooms()
+    {
+        foreach (Transform room in roomParent)
+        {
+            if (room != roomParent)
+            {
+                Destroy(room.gameObject);
+            }
+        }
+    }
+
+
+    void DeactivateAllCorridors()
+    {
+        foreach (var item in corridors)
+        {
+            if (item.activeSelf)
+            {
+                item.SetActive(false);
             }
         }
     }

@@ -18,19 +18,19 @@ public class EnemySpawner : MonoBehaviour
     public float spawnMargin = 1.0f; // Minimum distance from the spawn area's edges
     public LayerMask environmentLayer; // Layer for objects implementing IEnvironment interface
 
-    [Header("Spawn chanse")]
+    [Header("Spawn chance")]
     [Range(0, 1000)]
-
-    [SerializeField] private int _chanseToSpawnRegular;
+    [SerializeField] private int _chanceToSpawnRegular;
     [Range(0, 1000)]
-
-    [SerializeField] private int _chanseToSpawnElite;
+    [SerializeField] private int _chanceToSpawnElite;
     [Range(0, 1000)]
-    [SerializeField] private int _chanseToSpawnBoss;
+    [SerializeField] private int _chanceToSpawnBoss;
 
+    [SerializeField] private Transform roomParent; // Room parent
+    [SerializeField] private Transform corridorParent; // Corridor parent
 
     private Bounds spawnBounds;
-    [SerializeField] Transform enemyParent;
+    [SerializeField] private Transform enemyParent;
 
     void Start()
     {
@@ -41,14 +41,6 @@ public class EnemySpawner : MonoBehaviour
             return;
         }
 
-        // Get the bounds of the spawn area
-        if (spawnArea == null || spawnArea.GetComponent<Renderer>() == null)
-        {
-            Debug.LogError("SpawnArea is not assigned or does not have a Renderer component.");
-            return;
-        }
-        spawnBounds = spawnArea.GetComponent<Renderer>().bounds;
-
         // Check if player is assigned
         if (player == null)
         {
@@ -58,11 +50,25 @@ public class EnemySpawner : MonoBehaviour
 
         // Spawn enemies at the start
         SpawnAllEnemies();
-
     }
 
     void SpawnAllEnemies()
     {
+        // Check for active game objects in roomParent first, then in corridorParent
+        if (CheckForActiveObjects(roomParent))
+        {
+            spawnBounds = GetCombinedBounds(roomParent);
+        }
+        else if (CheckForActiveObjects(corridorParent))
+        {
+            spawnBounds = GetCombinedBounds(corridorParent);
+        }
+        else
+        {
+            Debug.LogError("No active objects found in roomParent or corridorParent.");
+            return;
+        }
+
         foreach (var enemyType in enemyTypes)
         {
             for (int i = 0; i < enemyType.count; i++)
@@ -76,7 +82,45 @@ public class EnemySpawner : MonoBehaviour
                 SpawnEnemy(spawnPosition, enemyType.enemyPrefab, enemyType.tag, enemyType.shouldAssignTag);
             }
         }
+    }
 
+    bool CheckForActiveObjects(Transform parent)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.gameObject.activeSelf)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    Bounds GetCombinedBounds(Transform parent)
+    {
+        Bounds combinedBounds = new Bounds();
+        bool hasBounds = false;
+
+        foreach (Transform child in parent)
+        {
+            if (child.gameObject.activeSelf)
+            {
+                Renderer renderer = child.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+                    if (!hasBounds)
+                    {
+                        combinedBounds = renderer.bounds;
+                        hasBounds = true;
+                    }
+                    else
+                    {
+                        combinedBounds.Encapsulate(renderer.bounds);
+                    }
+                }
+            }
+        }
+        return combinedBounds;
     }
 
     Vector3 GetRandomSpawnPosition()
@@ -115,8 +159,7 @@ public class EnemySpawner : MonoBehaviour
         // Spawn the enemy and set enemyParent as its parent
         GameObject enemy = Instantiate(enemyPrefab, position, Quaternion.identity, enemyParent);
         enemy.SetActive(true);
-        enemy.GetComponent<MobType>().SelectType(_chanseToSpawnRegular, _chanseToSpawnElite, _chanseToSpawnBoss);
-
+        enemy.GetComponent<MobType>().SelectType(_chanceToSpawnRegular, _chanceToSpawnElite, _chanceToSpawnBoss);
 
         // Assign the tag to the enemy if shouldAssignTag is true
         if (shouldAssignTag)

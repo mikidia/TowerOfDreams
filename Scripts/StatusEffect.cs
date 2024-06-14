@@ -36,7 +36,7 @@ public class StatusEffect : MonoBehaviour
 
     private void InitializeEffectFloatValues()
     {
-        var effectSettings = EffectSettingsManager.Instance.effectSettings;
+        var effectSettings = GameObject.Find("StatusEffectManager").GetComponent<EffectSettingsManager>().effectSettings;
         foreach (var setting in effectSettings)
         {
             EffectFloatValues[setting.effectType] = setting.defaultChance;
