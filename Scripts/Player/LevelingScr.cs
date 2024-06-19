@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class LevelingScr : MonoBehaviour
@@ -40,7 +41,34 @@ public class LevelingScr : MonoBehaviour
             skillLevels.Add(item.name, 1);
         }
 
+
     }
+
+    public void AddSkill(string name)
+    {
+        // Check if the skill already exists in skillLevels
+        if (!skillLevels.ContainsKey(name))
+        {
+            skillLevels.Add(name, 1);
+
+            foreach (var item in allSkills)
+            {
+                if (item.name == name)
+                {
+                    // Convert SkillPrefabs to a list, add the new skill, and convert back to an array
+                    var skillPrefabsList = Player._instance.SkillPrefabs.ToList();
+                    skillPrefabsList.Add(item);
+                    Player._instance.SkillPrefabs = skillPrefabsList.ToArray();
+
+                    // Since we found the skill and added it, we can break out of the loop
+                    break;
+                }
+            }
+        }
+    }
+
+
+
 
     public void AddExp(float experience)
     {
@@ -72,10 +100,27 @@ public class LevelingScr : MonoBehaviour
             }
             UImanager._instance.ShowLevelUpMenu(skillInLvlMenu, selectedSkillsForLevelUp);
             LevelUp(totalExp);
+
         }
+
     }
 
+    public void updatePlayerStats()
+    {
 
+        var playerMovementScript = GameObject.Find("Player").GetComponent<PlayerMovementScript>();
+        var playerMain = GameObject.Find("Player").GetComponent<Player>();
+        if (playerMovementScript != null)
+        {
+            playerMovementScript.MaxEnergy = playerMain.Stamina * 10;
+        }
+        playerMain.HpAndStaminaMax();
+        Player._instance.UpdatePlayerSkillList();
+
+
+
+
+    }
 
     void LevelUp(float experience)
     {
@@ -86,6 +131,7 @@ public class LevelingScr : MonoBehaviour
             case <= 7:
                 level = 1;
                 maxExp = 7;
+
                 break;
             case <= 16:
                 level = 2;

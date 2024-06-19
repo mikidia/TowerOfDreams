@@ -6,73 +6,75 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-#if UNITY_EDITOR
-    #region Declarations
+    #region Fields
 
     [Header("DEBUG INFO")]
-    [SerializeField] Vector3 _input;
-    [SerializeField] PlayerMovementScript movement;
-    [SerializeField] Rigidbody _rb;
+    [SerializeField] private Vector3 _input;
+    [SerializeField] private PlayerMovementScript movement;
+    [SerializeField] private Rigidbody _rb;
 
-    [SerializeField] Vector3 facingDirection;
+    [SerializeField] private Vector3 facingDirection;
     public static Player _instance;
 
     [Header("Player Settings")]
+    [SerializeField] private float _hp;
+    [SerializeField] private float _maxHp;
+    [SerializeField] private float hpRegeneration;
 
-    [SerializeField] float _hp;
-    [SerializeField] float _maxHp;
-    [SerializeField] float hpRegeneration;
-
-    [SerializeField] bool _controlIsEnable = true;
-    [SerializeField] bool _scrollIsEnable = true;
-    [SerializeField] bool _isPlayerAlive = true;
+    [SerializeField] private bool _controlIsEnable = true;
+    [SerializeField] private bool _scrollIsEnable = true;
+    [SerializeField] private bool _isPlayerAlive = true;
 
     // Inventory settings
-    [SerializeField] int sellectedSlot = 0;
-    [Header("Skills setings ")]
-    [SerializeField] Skills[] skillPrefabs;
-    [SerializeField] GameObject[] skills;
+    [SerializeField] private int sellectedSlot = 0;
 
-    [SerializeField] bool[] activeSkills = new bool[4];
+    [Header("Skills settings")]
+    [SerializeField] private Skills[] skillPrefabs;
+    [SerializeField] private GameObject[] skills;
+
+    [SerializeField] private bool[] activeSkills = new bool[4];
 
     [Header("Player stats")]
-    [SerializeField] float _intelect;
-    [SerializeField] float _stamina;
-    [SerializeField] float _strength;
-    [SerializeField] float _agility;
-    [SerializeField] float _vitality;
+    [SerializeField] private float _intelect;
+    [SerializeField] private float _stamina;
+    [SerializeField] private float _strength;
+    [SerializeField] private float _agility;
+    [SerializeField] private float _vitality;
 
-    [SerializeField] int playerBaseDamage;
-    [SerializeField] int _playerDamage;
+    [SerializeField] private int playerBaseDamage;
+    [SerializeField] private int _playerDamage;
 
-    [SerializeField] UImanager ui;
-    [SerializeField] StatusEffect _statusEffect;
-    [SerializeField] FOVController fovController;
-    [SerializeField] PlayerAttack attackZone;
+    [SerializeField] private UImanager ui;
+    [SerializeField] private StatusEffect _statusEffect;
+    [SerializeField] private FOVController fovController;
+    [SerializeField] private PlayerAttack attackZone;
 
     public List<StatusEffect.EffectType> effectsToApply = new List<StatusEffect.EffectType>();
 
-
-
     [Header("Child Objects")]
-    [SerializeField] Transform childObjectToRotate;
-
-    [SerializeField] Transform secondChildObjectToRotate;
-
-
+    [SerializeField] private Transform childObjectToRotate;
+    [SerializeField] private Transform secondChildObjectToRotate;
 
     #region Input Buttons
-    KeyCode interractButton = KeyCode.E;
-    KeyCode attackButton = KeyCode.Mouse0;
-    KeyCode rollButton = KeyCode.LeftShift;
-    KeyCode inventoryButton = KeyCode.I;
-    KeyCode pause = KeyCode.Escape;
+    private KeyCode interractButton = KeyCode.E;
+    private KeyCode attackButton = KeyCode.Mouse0;
+    private KeyCode rollButton = KeyCode.LeftShift;
+    private KeyCode inventoryButton = KeyCode.I;
+    private KeyCode pause = KeyCode.Escape;
 
-    KeyCode firstSlot = KeyCode.LeftShift;
-    KeyCode secondSlot = KeyCode.Alpha2;
-    KeyCode thirdSlot = KeyCode.Alpha3;
-    KeyCode fourSlot = KeyCode.Alpha4;
-    KeyCode[] slots;
+    private KeyCode firstSlot = KeyCode.LeftShift;
+    private KeyCode secondSlot = KeyCode.Alpha2;
+    private KeyCode thirdSlot = KeyCode.Alpha3;
+    private KeyCode fourSlot = KeyCode.Alpha4;
+    private KeyCode[] slots;
+    #endregion
+
+    private bool _attackIsOnCooldown = false;
+    [SerializeField] private float attackCooldown = 0.5f; // Set your desired cooldown time here
+
+    #endregion
+
+    #region Properties
 
     public int SellectedSlot { get => sellectedSlot; set => sellectedSlot = value; }
     public bool[] ActiveSkills { get => activeSkills; set => activeSkills = value; }
@@ -81,8 +83,6 @@ public class Player : MonoBehaviour
         get { return skillPrefabs; }
         set { skillPrefabs = value; }
     }
-
-
     public float Intelect { get => _intelect; set => _intelect = value; }
     public float Stamina { get => _stamina; set => _stamina = value; }
     public float Strength { get => _strength; set => _strength = value; }
@@ -92,13 +92,8 @@ public class Player : MonoBehaviour
 
     #endregion
 
-    #endregion
+    #region MonoBehaviour Methods
 
-#else
-
-#endif
-
-    #region MonoBehaviour
     private void Awake()
     {
         slots = new KeyCode[] { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4 };
@@ -111,10 +106,7 @@ public class Player : MonoBehaviour
         _statusEffect = GetComponent<StatusEffect>();
 
         UpdatePlayerDamage();
-
-        // Установка стандартных эффектов
         SetDefaultEffects();
-
 
         fovController = GetComponent<FOVController>();
         attackZone = GetComponentInChildren<PlayerAttack>();
@@ -130,15 +122,9 @@ public class Player : MonoBehaviour
             {
                 skills[i] = skillPrefabs[i].skillEffect;
             }
-            else
-            {
-                // Debug.LogWarning("Skill prefab at index " + i + " is null.");
-            }
-
             activeSkills[i] = false;
         }
     }
-    #endregion
 
     private void Update()
     {
@@ -148,7 +134,6 @@ public class Player : MonoBehaviour
             movement.Movement(_input);
             GetInputs();
             AddHp();
-
         }
 #if UNITY_EDITOR
         // Debugging();
@@ -156,100 +141,64 @@ public class Player : MonoBehaviour
 #endif
     }
 
+    #endregion
 
-    void GetInputs()
+    #region Private Methods
+
+    private void GetInputs()
     {
-
         fovController.SetInput(_input);
+        HandleScrollInput();
+        HandleKeyPresses();
+        _input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+    }
+
+    private void HandleScrollInput()
+    {
         if (Input.GetAxis("Mouse ScrollWheel") > 0f && _scrollIsEnable) // forward
         {
-            if (sellectedSlot + 1 < 4)
-            {
-                sellectedSlot += 1;
-            }
-            else { sellectedSlot = 0; }
+            sellectedSlot = (sellectedSlot + 1) % 4;
             ui.SelectNextSlot();
-            StartCoroutine("Scrollcd");
+            StartCoroutine(Scrollcd());
         }
         if (Input.GetAxis("Mouse ScrollWheel") < 0f && _scrollIsEnable) // backwards
         {
-            if (sellectedSlot - 1 >= 0)
-            {
-                sellectedSlot -= 1;
-            }
-            else { sellectedSlot = 3; }
+            sellectedSlot = (sellectedSlot - 1 + 4) % 4;
             ui.SelectPreviouslySlot();
-            StartCoroutine("Scrollcd");
+            StartCoroutine(Scrollcd());
         }
+    }
 
-
+    private void HandleKeyPresses()
+    {
         if (Input.GetKeyDown(rollButton) && (math.abs(_input.x) != 0 || math.abs(_input.z) != 0))
         {
             PlayerMovementScript.instance.UseDash();
-            // animator.SetTrigger("Roll");
         }
-        if (Input.GetKeyDown(interractButton))
+        if (Input.GetKeyDown(interractButton) && !activeSkills[sellectedSlot])
         {
-            // Interract
-            // animator.SetTrigger("Interract");
-
-            if (!activeSkills[sellectedSlot])
-            {
-                activeSkills[sellectedSlot] = true;
-                StartCoroutine(SkillsCd(sellectedSlot));
-                var skill = Instantiate(skills[sellectedSlot]);
-                skill.transform.SetParent(transform);
-                if (!skill.active)
-                {
-                    skill.SetActive(true);
-                }
-                skill.transform.position = transform.position - new Vector3(0, 0.3f, 0);
-                skills[sellectedSlot].GetComponent<SkillPrefab>().ApplySlot(sellectedSlot);
-                // activeSkills[sellectedSlot] = true;
-            }
+            activeSkills[sellectedSlot] = true;
+            StartCoroutine(CastSkill());
         }
         if (Input.GetKeyDown(secondSlot))
         {
             LevelingScr._instance.AddExp(5);
-            // animator.SetTrigger("Attack");
-            // audio.PlayerAttackSound();
-            // StartCoroutine("AttackCd");
         }
-        // if (Input.GetKeyDown(inventoryButton))
-        // {
-        // }
-        // if (Input.GetKeyDown(pause) && !paused)
-        // {
-        //     paused = true;
-        //     gameManager.Pause();
-        // }
-        // else if (Input.GetKeyDown(pause) && paused)
-        // {
-        //     gameManager.UpPause();
-        //     paused = false;
-        // }
         if (Input.GetKeyDown(attackButton) && !_attackIsOnCooldown)
         {
-
             StartCoroutine(Attack());
         }
-
-        _input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
     }
 
     private void RotateTowardsMouse()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Plane plane = new Plane(Vector3.up, transform.position);
-        float distance;
-
-        if (plane.Raycast(ray, out distance))
+        if (plane.Raycast(ray, out float distance))
         {
             Vector3 targetPosition = ray.GetPoint(distance);
-
-            Vector3 facingDirection = targetPosition - transform.position;
-            facingDirection.y = 0; // Убедимся, что направление параллельно земле
-
+            facingDirection = targetPosition - transform.position;
+            facingDirection.y = 0;
             facingDirection.Normalize();
             RotateChildObjects(facingDirection);
         }
@@ -257,50 +206,57 @@ public class Player : MonoBehaviour
 
     private void RotateChildObjects(Vector3 direction)
     {
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
         if (childObjectToRotate != null)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
             childObjectToRotate.transform.rotation = targetRotation;
         }
-
         if (secondChildObjectToRotate != null)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
             secondChildObjectToRotate.transform.rotation = targetRotation;
         }
     }
 
-#if UNITY_EDITOR
-    void Debugging()
-    {
-        Debug.DrawRay(_rb.position, facingDirection * 2, Color.green);
-    }
-#endif
-
-
-
-    void AddHp()
+    private void AddHp()
     {
         if (_hp < _maxHp)
         {
             _hp += hpRegeneration * Time.deltaTime;
         }
     }
+
     private void SetDefaultEffects()
     {
-        effectsToApply.Add(StatusEffect.EffectType.Bleeding);
-        effectsToApply.Add(StatusEffect.EffectType.Stun);
-
+        // Initialize default effects if necessary
     }
 
-    IEnumerator Scrollcd()
+    private IEnumerator Scrollcd()
     {
         _scrollIsEnable = false;
         yield return new WaitForSeconds(0.08f);
         _scrollIsEnable = true;
     }
 
-    IEnumerator SkillsCd(int slotWhichWasSelected)
+    private IEnumerator CastSkill()
+    {
+        UpdatePlayerSkillList();
+        var tempSpeed = movement.PlayerMoveSpeed;
+        movement.PlayerMoveSpeed = tempSpeed / 2;
+
+        yield return new WaitForSeconds(skills[sellectedSlot].GetComponent<SkillPrefab>().CastTime);
+        movement.PlayerMoveSpeed = tempSpeed;
+
+        var skill = Instantiate(skills[sellectedSlot]);
+        skill.transform.SetParent(transform);
+        if (!skill.active)
+        {
+            skill.SetActive(true);
+        }
+        skill.transform.position = transform.position - new Vector3(0, 0.3f, 0);
+        StartCoroutine(SkillsCd(sellectedSlot));
+    }
+
+    private IEnumerator SkillsCd(int slotWhichWasSelected)
     {
         yield return new WaitForSeconds(skillPrefabs[slotWhichWasSelected].duration);
         ui.ReloadScripts[slotWhichWasSelected].ChangeCD(skillPrefabs[slotWhichWasSelected].cd);
@@ -309,27 +265,45 @@ public class Player : MonoBehaviour
         activeSkills[slotWhichWasSelected] = false;
     }
 
-    public void UpdatePlayerDamage()
-    {
-        _playerDamage = playerBaseDamage + (int)(_strength * 1.5);
-    }
-
-    private bool _attackIsOnCooldown = false;
-    [SerializeField] private float attackCooldown = 0.5f; // Set your desired cooldown time here
-
-    IEnumerator Attack()
+    private IEnumerator Attack()
     {
         attackZone.gameObject.SetActive(true);
-
         yield return new WaitForSeconds(0.1f); // Attack duration
         attackZone.gameObject.SetActive(false);
         StartCoroutine(AttackCooldown());
     }
 
-    IEnumerator AttackCooldown()
+    private IEnumerator AttackCooldown()
     {
         _attackIsOnCooldown = true;
         yield return new WaitForSeconds(attackCooldown); // Cooldown duration
         _attackIsOnCooldown = false;
     }
+
+    public void UpdatePlayerSkillList()
+    {
+        var tempList = new List<GameObject>();
+        foreach (var selectedSkill in skillPrefabs)
+        {
+            tempList.Add(selectedSkill.skillEffect);
+        }
+        skills = tempList.ToArray();
+    }
+
+    #endregion
+
+    #region Public Methods
+
+    public void HpAndStaminaMax()
+    {
+        _hp = _maxHp;
+        movement.Energy = movement.MaxEnergy;
+    }
+
+    public void UpdatePlayerDamage()
+    {
+        _playerDamage = playerBaseDamage + (int)(_strength * 1.5);
+    }
+
+    #endregion
 }

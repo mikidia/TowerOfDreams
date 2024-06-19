@@ -4,7 +4,7 @@ using UnityEngine;
 [System.Serializable]
 public class EnemyAbility
 {
-    // Здесь можно добавить способности врага
+    // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 }
 
 public class EnemyMain : MonoBehaviour, IEnemy
@@ -25,6 +25,8 @@ public class EnemyMain : MonoBehaviour, IEnemy
     [SerializeField] private float agresive;
     [SerializeField] private float hp;
     [SerializeField] private float damage;
+    [SerializeField] private float expAfterDeath;
+
     [SerializeField] private float moveSpeed;
     [SerializeField] private float energy;
     [SerializeField] private bool isDeath = false;
@@ -41,11 +43,11 @@ public class EnemyMain : MonoBehaviour, IEnemy
     private void Start()
     {
         SetupCharacteristics();
-    }
 
+    }
     void SetupCharacteristics()
     {
-        // Устанавливаем базовые значения
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         hp = baseHp;
         damage = baseDamage;
         moveSpeed = baseMoveSpeed;
@@ -77,10 +79,25 @@ public class EnemyMain : MonoBehaviour, IEnemy
                 moveSpeed += agility * 1.2f;
                 energy += agility * 3.0f;
             }
+
         }
+        StatsChecker();
     }
 
-    // Свойства для доступа к характеристикам
+    void StatsChecker()
+    {
+        Debug.Log(intelect);
+
+        if (intelect == 0)
+        {
+            GameObject.Find("EnemyManagers").GetComponent<EnemyGeneratorManager>().startCreatingEnemy();
+
+
+        }
+
+    }
+
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     public float Intelect
     {
         get { return intelect; }
@@ -141,21 +158,21 @@ public class EnemyMain : MonoBehaviour, IEnemy
         set { energy = value; }
     }
 
+    public float Damage1 { get => damage; set => damage = value; }
+    public float ExpAfterDeath { get => expAfterDeath; set => expAfterDeath = value; }
 
-
-
-    public void GetDamage(int damage)
+    public void GetDamage(int damag)
     {
-        if (hp - damage <= 0)
+        if (hp - damag <= 0)
         {
-
+            GameObject.Find("Player").GetComponent<LevelingScr>().AddExp(expAfterDeath);
             Destroy(gameObject);
             isDeath = true;
 
         }
         else
         {
-            hp -= damage;
+            hp -= damag;
             StartCoroutine("DamageEffect");
 
 
@@ -174,4 +191,7 @@ public class EnemyMain : MonoBehaviour, IEnemy
 
 
     }
+
+
+
 }

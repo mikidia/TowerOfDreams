@@ -15,6 +15,7 @@ public class ExitTrigger : MonoBehaviour
                 manager.SetLastExitType(type); // Store the exit type in the manager
 
                 manager.GenerateRoom(false);
+                GameObject.Find("EnemyManagers").GetComponent<EnemySpawner>().SpawnAllEnemies();
 
 
                 // Use Invoke to delay the position setting

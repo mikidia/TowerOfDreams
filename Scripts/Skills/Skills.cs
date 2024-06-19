@@ -28,6 +28,7 @@ public class Skills : ScriptableObject
 
     [SerializeField] MonoScript scripts;
 
+
     public virtual void UseSkill() { }
 
 }

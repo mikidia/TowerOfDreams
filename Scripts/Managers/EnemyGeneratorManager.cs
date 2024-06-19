@@ -18,7 +18,14 @@ public class EnemyGeneratorManager : MonoBehaviour
     private void Start()
     {
         // Allocate memory for the enemies array based on the number of children under enemyParent
+        startCreatingEnemy();
 
+    }
+
+
+
+    public void startCreatingEnemy()
+    {
         enemys = new EnemyMain[enemyParent.transform.childCount];
         enemysTypes = new MobType[enemyParent.transform.childCount];
 
@@ -29,11 +36,15 @@ public class EnemyGeneratorManager : MonoBehaviour
 
         }
         GenerateEnemyStats();
+
+
+
     }
 
     public void GenerateEnemyStats()
     {
 
+        Debug.Log(enemys.Length + "" + enemyScrObjests.Length);
         for (int i = 0; i < enemys.Length; i++)
         {
             for (int j = 0; j < enemyScrObjests.Length; j++)
@@ -48,6 +59,8 @@ public class EnemyGeneratorManager : MonoBehaviour
                     enemys[i].Agility = Random.Range((int)enemyScrObjests[j].Agility[0], (int)enemyScrObjests[j].Agility[1] + 1);
                     enemys[i].Vitality = Random.Range((int)enemyScrObjests[j].Vitality[0], (int)enemyScrObjests[j].Vitality[1] + 1);
                     enemys[i].Agressive = Random.Range((int)enemyScrObjests[j].Agressive[0], (int)enemyScrObjests[j].Agressive[1] + 1);
+                    enemys[i].ExpAfterDeath = Random.Range((int)enemyScrObjests[j].ExpAfterDeath[0], (int)enemyScrObjests[j].ExpAfterDeath[1]);
+
 
 
                 }
@@ -60,17 +73,21 @@ public class EnemyGeneratorManager : MonoBehaviour
                     enemys[i].Agility = Random.Range((int)enemyScrObjests[j].EliteAgility[0], (int)enemyScrObjests[j].EliteAgility[1] + 1);
                     enemys[i].Vitality = Random.Range((int)enemyScrObjests[j].EliteVitality[0], (int)enemyScrObjests[j].EliteVitality[1] + 1);
                     enemys[i].Agressive = Random.Range((int)enemyScrObjests[j].EliteAgressive[0], (int)enemyScrObjests[j].EliteAgressive[1] + 1);
+                    enemys[i].ExpAfterDeath = Random.Range((int)enemyScrObjests[j].EliteExpAfterDeath[0], (int)enemyScrObjests[j].EliteExpAfterDeath[1] + 1);
+
 
 
                 }
                 if (enemysTypes[i].IsBossMob)
                 {
-                    //enemys[i].Intelect = Random.Range((int)enemyScrObjests[j].BossIntelect[0], (int)enemyScrObjests[j].BossIntelect[1] + 1);
-                    //enemys[i].Stamina = Random.Range((int)enemyScrObjests[j].BossStamina[0], (int)enemyScrObjests[j].BossStamina[1] + 1);
-                    //enemys[i].Strength = Random.Range((int)enemyScrObjests[j].BossStrength[0], (int)enemyScrObjests[j].BossStrength[1] + 1);
-                    //enemys[i].Agility = Random.Range((int)enemyScrObjests[j].BossAgility[0], (int)enemyScrObjests[j].BossAgility[1] + 1);
-                    //enemys[i].Vitality = Random.Range((int)enemyScrObjests[j].BossVitality[0], (int)enemyScrObjests[j].BossVitality[1] + 1);
-                    //enemys[i].Agressive = Random.Range((int)enemyScrObjests[j].BossAgressive[0], (int)enemyScrObjests[j].BossAgressive[1] + 1);
+                    enemys[i].Intelect = Random.Range((int)enemyScrObjests[j].BossIntelect[0], (int)enemyScrObjests[j].BossIntelect[1] + 1);
+                    enemys[i].Stamina = Random.Range((int)enemyScrObjests[j].BossStamina[0], (int)enemyScrObjests[j].BossStamina[1] + 1);
+                    enemys[i].Strength = Random.Range((int)enemyScrObjests[j].BossStrength[0], (int)enemyScrObjests[j].BossStrength[1] + 1);
+                    enemys[i].Agility = Random.Range((int)enemyScrObjests[j].BossAgility[0], (int)enemyScrObjests[j].BossAgility[1] + 1);
+                    enemys[i].Vitality = Random.Range((int)enemyScrObjests[j].BossVitality[0], (int)enemyScrObjests[j].BossVitality[1] + 1);
+                    enemys[i].Agressive = Random.Range((int)enemyScrObjests[j].BossAgressive[0], (int)enemyScrObjests[j].BossAgressive[1] + 1);
+                    enemys[i].ExpAfterDeath = Random.Range((int)enemyScrObjests[j].BossExpAfterDeath[0], (int)enemyScrObjests[j].BossExpAfterDeath[1] + 1);
+
 
 
 

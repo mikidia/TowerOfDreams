@@ -6,6 +6,7 @@ public class SkillPrefab : MonoBehaviour
     [SerializeField] float skillTime;
     [SerializeField] float skillCd;
     [SerializeField] int slot;
+    [SerializeField] float castTime;
 
 
 
@@ -14,6 +15,7 @@ public class SkillPrefab : MonoBehaviour
 
     public float SkillTime { get => skillTime; set => skillTime = value; }
     public float SkillCd1 { get => skillCd; set => skillCd = value; }
+    public float CastTime { get => castTime; set => castTime = value; }
 
     private void Start()
     {
@@ -25,6 +27,7 @@ public class SkillPrefab : MonoBehaviour
         slot = numberOfSlot;
 
     }
+
     IEnumerator skillDuration()
     {
 

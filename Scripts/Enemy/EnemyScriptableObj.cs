@@ -37,6 +37,7 @@ public class EnemyScriptableObj : ScriptableObject
     [Min(1)]
 
     [SerializeField] float[] _agressive;
+    [SerializeField] float[] _expAfterDeath;
 
 
 
@@ -57,6 +58,8 @@ public class EnemyScriptableObj : ScriptableObject
     [SerializeField] float[] _eliteVitality;
     [Tooltip("The more agressive is enemy the more them try to attack player and less dodge attacks combine with intelect")]
     [SerializeField] float[] _eliteAgressive;
+    [SerializeField] float[] _eliteExpAfterDeath;
+
 
 
 
@@ -74,6 +77,8 @@ public class EnemyScriptableObj : ScriptableObject
     [SerializeField] float[] _bossVitality;
     [Tooltip("The more agressive is enemy the more them try to attack player and less dodge attacks combine with intelect")]
     [SerializeField] float[] _bossAgressive;
+    [SerializeField] float[] _bossExpAfterDeath;
+
 
     public string Name { get => _name; set => _name = value; }
     public float[] Intelect { get => _intelect; set => _intelect = value; }
@@ -97,4 +102,7 @@ public class EnemyScriptableObj : ScriptableObject
     public float[] BossAgility { get => _bossAgility; set => _bossAgility = value; }
     public float[] BossVitality { get => _bossVitality; set => _bossVitality = value; }
     public float[] BossAgressive { get => _bossAgressive; set => _bossAgressive = value; }
+    public float[] ExpAfterDeath { get => _expAfterDeath; set => _expAfterDeath = value; }
+    public float[] EliteExpAfterDeath { get => _eliteExpAfterDeath; set => _eliteExpAfterDeath = value; }
+    public float[] BossExpAfterDeath { get => _bossExpAfterDeath; set => _bossExpAfterDeath = value; }
 }

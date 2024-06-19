@@ -12,13 +12,13 @@ public class EnemyStateMachine : MonoBehaviour
     }
 
     public State currentState;
-    private Transform player;
+    [SerializeField] private Transform player;
     public int numberOfPatrolPoints = 8;
     public float patrolRadius = 5f;
     private Vector3 patrolCenter;
     private Vector3[] patrolPoints;
     private int currentPatrolIndex;
-    public float baseDetectionRadius = 10f;
+    [SerializeField] public float baseDetectionRadius = 10f;
     public float attackRadius = 2f;
     public float attackCooldown = 1.5f;
     private bool isAttacking;
@@ -64,6 +64,12 @@ public class EnemyStateMachine : MonoBehaviour
 
     private Rigidbody rb;
 
+    // Facing direction
+    private Vector3 facingDirection;
+
+    // Attack trigger
+    private Collider attackTrigger;
+
     // Property for agility with speed update
     public float agility
     {
@@ -77,6 +83,8 @@ public class EnemyStateMachine : MonoBehaviour
     private void Update()
     {
         regenEnergy();
+        // UpdateFacingDirection();
+
     }
 
     void regenEnergy()
@@ -90,7 +98,7 @@ public class EnemyStateMachine : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        rb = GetComponent<Rigidbody>();
+
     }
 
     void Start()
@@ -104,13 +112,23 @@ public class EnemyStateMachine : MonoBehaviour
         initialForward = transform.forward;
 
         lastValidPosition = transform.position; // Initialize last valid position
-
+        rb = GetComponent<Rigidbody>();
+        attackTrigger = transform.Find("AttackTrigger").GetComponent<Collider>();
+        attackTrigger.enabled = false;
         StartCoroutine(FSM());
     }
 
     void FixedUpdate()
     {
         CheckGround();
+        if (player == null)
+        {
+            player = Player._instance.transform;
+        }
+        // Debug.Log(Vector3.Distance(transform.position, player.position) +"  "+ detectionRadius);
+
+
+
     }
 
     // Method to check if the enemy is on valid ground
@@ -175,6 +193,8 @@ public class EnemyStateMachine : MonoBehaviour
 
     void Patrol()
     {
+        // Debug.Log(IsPlayerInFOV() +"player in fov "   + IsPlayerInDetectionRadius()+"player in detection radius" );
+
         if (patrolPoints == null || patrolPoints.Length == 0)
         {
             EnterPatrolState();
@@ -192,10 +212,12 @@ public class EnemyStateMachine : MonoBehaviour
         {
             currentState = State.Chase;
         }
+
     }
 
     void Chase()
     {
+        // Debug.Log(IsPlayerInFOV() +"player in fov "   + IsPlayerInDetectionRadius()+"player in detection radius" );
         if (!IsPlayerInFOV() && !IsPlayerInDetectionRadius())
         {
             currentState = State.Patrol;
@@ -203,17 +225,10 @@ public class EnemyStateMachine : MonoBehaviour
             return;
         }
 
-        if (IsPlayerInFOV())
-        {
-            lastKnownPlayerPosition = player.position;
-            isTrackingPlayer = false;
-        }
-        else if (IsPlayerInDetectionRadius() && !isTrackingPlayer)
-        {
-            StartCoroutine(DelayedPlayerDetection());
-        }
+        lastKnownPlayerPosition = player.position;
+        // Debug.Log(lastKnownPlayerPosition);
 
-        if (IsPlayerInFOV() && _isDashAvailable && _energy - dashUseStamina >= 0)
+        if (_isDashAvailable && _energy - dashUseStamina >= 0)
         {
             UseDash();
         }
@@ -223,18 +238,6 @@ public class EnemyStateMachine : MonoBehaviour
         if (Vector3.Distance(transform.position, player.position) < attackRadius)
         {
             currentState = State.Attack;
-        }
-    }
-
-    IEnumerator DelayedPlayerDetection()
-    {
-        isTrackingPlayer = true;
-        yield return new WaitForSeconds(detectionDelay);
-
-        if (IsPlayerInDetectionRadius() && !IsPlayerInFOV())
-        {
-            lastKnownPlayerPosition = player.position;
-            initialForward = (lastKnownPlayerPosition - transform.position).normalized;
         }
     }
 
@@ -249,8 +252,12 @@ public class EnemyStateMachine : MonoBehaviour
     IEnumerator AttackCooldown()
     {
         isAttacking = true;
+        attackTrigger.enabled = true; // Enable attack trigger
         // Call your attack method here
+        // GetComponent<EnemyAttack>().PerformAttack(player);
+
         yield return new WaitForSeconds(attackCooldown);
+        attackTrigger.enabled = false; // Disable attack trigger
         isAttacking = false;
 
         if (Vector3.Distance(transform.position, player.position) > attackRadius)
@@ -334,7 +341,10 @@ public class EnemyStateMachine : MonoBehaviour
     void MoveTowards(Vector3 target, float speedMultiplier = 1f)
     {
         Vector3 direction = (target - transform.position).normalized;
-        transform.position += direction * moveSpeed * speedMultiplier * Time.deltaTime;
+        Vector3 targetPosition = new Vector3(target.x, transform.position.y, target.z);
+        transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed
+            * speedMultiplier * Time.deltaTime);
+        facingDirection = direction; // Update facing direction
     }
 
     // Method to change stats (called based on game events)
@@ -388,4 +398,21 @@ public class EnemyStateMachine : MonoBehaviour
         yield return new WaitForSeconds(_dashCd);
         _isDashAvailable = true;
     }
+
+    // Method to update facing direction
+    // void UpdateFacingDirection()
+    // {
+    //     // Only update the rotation if the enemy needs to turn left or right
+    //     if (facingDirection != Vector3.zero)
+    //     {
+    //         // Calculate the target rotation based on the facing direction
+    //         // Quaternion targetRotation = Quaternion.LookRotation(facingDirection);
+
+    //         // // Ensure the rotation is only around the Y-axis
+    //         // targetRotation = Quaternion.Euler(0, targetRotation.eulerAngles.y, 0);
+
+    //         // // Smoothly rotate the enemy towards the target direction
+    //         // transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+    //     }
+    // }
 }

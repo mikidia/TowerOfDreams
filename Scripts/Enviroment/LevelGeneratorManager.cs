@@ -13,6 +13,8 @@ public class LevelGeneratorManager : MonoBehaviour
     [SerializeField] int maxExitCount; // Maximum number of exits
     [SerializeField] float yPosition; // Y position for room placement
     [SerializeField] Transform playerPos; // Player's position transform
+    [SerializeField] float spawnMargin; // Margin to avoid getting stuck at edges
+    [SerializeField] float activationDelay = 10f; // Delay before activating exits
 
     List<int> exitNumber; // List of exit numbers
     Bounds roomBounds; // Bounds of the current room
@@ -24,6 +26,15 @@ public class LevelGeneratorManager : MonoBehaviour
     {
         GenerateRoom(true);
         StartCoroutine(CleanExitPrefabsList());
+    }
+    private void FixedUpdate()
+    {
+        if (GameObject.Find("===Enemy===").GetComponent<Transform>().childCount == 0)
+        {
+
+            ActivateExits();
+
+        }
     }
 
     IEnumerator CleanExitPrefabsList()
@@ -46,6 +57,7 @@ public class LevelGeneratorManager : MonoBehaviour
         lastExitType = type;
     }
 
+
     public void SetPlayerPosition(int type, Bounds bounds)
     {
         Vector3 position = Vector3.zero;
@@ -54,37 +66,37 @@ public class LevelGeneratorManager : MonoBehaviour
         switch (type)
         {
             case 0: // Bottom center -> Top center
-                position = new Vector3(bounds.center.x, yPosition + exitOffsets.y, bounds.max.z - exitOffsets.z);
+                position = new Vector3(bounds.center.x, yPosition + 1.5f + exitOffsets.y, bounds.max.z - exitOffsets.z);
                 break;
             case 1: // Bottom left -> Top left
-                position = new Vector3(bounds.min.x + exitOffsets.x, yPosition + exitOffsets.y, bounds.max.z - exitOffsets.z);
+                position = new Vector3(bounds.min.x + exitOffsets.x, yPosition + 1.5f + exitOffsets.y, bounds.max.z - exitOffsets.z);
                 break;
             case 2: // Bottom right -> Top right
-                position = new Vector3(bounds.max.x - exitOffsets.x, yPosition + exitOffsets.y, bounds.max.z - exitOffsets.z);
+                position = new Vector3(bounds.max.x - exitOffsets.x, yPosition + 1.5f + exitOffsets.y, bounds.max.z - exitOffsets.z);
                 break;
             case 3: // Top center -> Bottom center
-                position = new Vector3(bounds.center.x, yPosition + exitOffsets.y, bounds.min.z + exitOffsets.z);
+                position = new Vector3(bounds.center.x, yPosition + 1.5f + exitOffsets.y, bounds.min.z + exitOffsets.z);
                 break;
             case 4: // Top left -> Bottom left
-                position = new Vector3(bounds.min.x + exitOffsets.x, yPosition + exitOffsets.y, bounds.min.z + exitOffsets.z);
+                position = new Vector3(bounds.min.x + exitOffsets.x, yPosition + 1.5f + exitOffsets.y, bounds.min.z + exitOffsets.z);
                 break;
             case 5: // Top right -> Bottom right
-                position = new Vector3(bounds.max.x - exitOffsets.x, yPosition + exitOffsets.y, bounds.min.z + exitOffsets.z);
+                position = new Vector3(bounds.max.x - exitOffsets.x, yPosition + 1.5f + exitOffsets.y, bounds.min.z + exitOffsets.z);
                 break;
             case 6: // Center left -> Center right
-                position = new Vector3(bounds.max.x - exitOffsets.x, yPosition + exitOffsets.y, bounds.center.z);
+                position = new Vector3(bounds.max.x - exitOffsets.x, yPosition + 1.5f + exitOffsets.y, bounds.center.z);
                 break;
             case 7: // Center right -> Center left
-                position = new Vector3(bounds.min.x + exitOffsets.x, yPosition + exitOffsets.y, bounds.center.z);
+                position = new Vector3(bounds.min.x + exitOffsets.x, yPosition + 1.5f + exitOffsets.y, bounds.center.z);
                 break;
             default:
                 Debug.LogWarning("Invalid position type specified.");
                 return;
         }
 
-        // Ensure the player position is within the bounds
-        position.x = Mathf.Clamp(position.x, bounds.min.x, bounds.max.x);
-        position.z = Mathf.Clamp(position.z, bounds.min.z, bounds.max.z);
+        // Ensure the player position is within the bounds with margin
+        position.x = Mathf.Clamp(position.x, bounds.min.x + spawnMargin, bounds.max.x - spawnMargin);
+        position.z = Mathf.Clamp(position.z, bounds.min.z + spawnMargin, bounds.max.z - spawnMargin);
 
         playerPos.transform.position = position;
     }
@@ -97,7 +109,6 @@ public class LevelGeneratorManager : MonoBehaviour
     public void GenerateRoom(bool itsFirstRoom)
     {
         DeleteAllRooms();
-        DeactivateAllCorridors();
 
         var roomInstance = Instantiate(roomPrefabs[Random.Range(0, roomPrefabs.Count)], roomParent);
         var roomCollider = roomInstance.GetComponent<Collider>();
@@ -123,17 +134,14 @@ public class LevelGeneratorManager : MonoBehaviour
         GenerateExits();
 
         // Ensure at least one exit is active
-        if (!CheckExits())
-        {
-            exitPrefabs[Random.Range(0, exitPrefabs.Count)].SetActive(true);
-        }
+
     }
 
     void GenerateExits()
     {
         int numberOfExits = Random.Range(1, maxExitCount + 1);
         exitNumber = GenerateUniqueNumbers(numberOfExits, 1, exitPrefabs.Count - 1);
-        ActivateExits();
+        // StartCoroutine(ActivateExitsAfterCondition());
     }
 
     List<int> GenerateUniqueNumbers(int count, int minValue, int maxValue)
@@ -173,16 +181,20 @@ public class LevelGeneratorManager : MonoBehaviour
 
     void ActivateExits()
     {
+        // Now activate the exits
         foreach (int index in exitNumber)
         {
             if (index < exitPrefabs.Count)
             {
                 exitPrefabs[index].SetActive(true);
             }
+
+        }
+        if (!CheckExits())
+        {
+            exitPrefabs[Random.Range(0, exitPrefabs.Count)].SetActive(true);
         }
     }
-
-
 
     bool CheckExits()
     {
@@ -208,14 +220,4 @@ public class LevelGeneratorManager : MonoBehaviour
     }
 
 
-    void DeactivateAllCorridors()
-    {
-        foreach (var item in corridors)
-        {
-            if (item.activeSelf)
-            {
-                item.SetActive(false);
-            }
-        }
-    }
 }

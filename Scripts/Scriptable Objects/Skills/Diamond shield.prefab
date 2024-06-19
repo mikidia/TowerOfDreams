@@ -19698,6 +19698,7 @@ MonoBehaviour:
   skillTime: 10
   skillCd: 5
   slot: 2
+  castTime: 5
   player: {fileID: 0}
 --- !u!1 &1572578245689814
 GameObject:
