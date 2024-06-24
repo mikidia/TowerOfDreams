@@ -51,6 +51,8 @@ public class UImanager : MonoBehaviour
         StaminaBarFill();
         HideStamina();
         ExpBar();
+        HPBarFill();
+        HideHP();
     }
 
     void HideStamina()
@@ -69,6 +71,16 @@ public class UImanager : MonoBehaviour
         expBar.fillAmount = xpProgress;
     }
 
+    public void HPBarFill()
+    {
+        hpBar.fillAmount = player.Hp / player.MaxHp;
+    }
+
+    void HideHP()
+    {
+        hpBarParent.SetActive(player.Hp < player.MaxHp);
+    }
+
     private void FixedUpdate()
     {
         ChangeInventoryIcons();
@@ -76,7 +88,6 @@ public class UImanager : MonoBehaviour
 
     void ChangeInventoryIcons()
     {
-
         for (int i = 0; i < placeHolderForImages.Length && i < player.SkillPrefabs.Length; i++)
         {
             Image inventoryImage = placeHolderForImages[i].GetComponent<Image>();
@@ -119,6 +130,7 @@ public class UImanager : MonoBehaviour
             inventory[player.SellectedSlot].SetActive(true);
         }
     }
+
     public void ShowLevelUpMenu(int skillsNumber, Skills[] skillsToLvLUp)
     {
         ChangePlayerSkillsNumbers();
@@ -126,7 +138,6 @@ public class UImanager : MonoBehaviour
         levelUpMenu.SetActive(true);
         for (int i = 0; i < skillsNumber; i++)
         {
-
             skillImagesforLvlmenu[i].gameObject.SetActive(true);
             buttons[i].SetActive(true);
             if (!CheckPlayerStatsLvl(skillsToLvLUp, player, i))
@@ -134,62 +145,37 @@ public class UImanager : MonoBehaviour
                 buttons[i].GetComponent<Button>().interactable = false;
             }
 
-
-
             skillImagesforLvlmenu[i].sprite = skillsToLvLUp[i].sprite;
-
             buttons[i].GetComponentInChildren<TextMeshProUGUI>().text = skillsToLvLUp[i].name;
-
         }
 
         GameManager._instance.ShowCursor();
-
         GameManager._instance.PauseTime();
-
-
     }
 
     bool CheckPlayerStatsLvl(Skills[] SkilsMinLvl, Player playerSkils, int i)
     {
-
         if (SkilsMinLvl[i]._stamina > playerSkils.Stamina)
         {
             return false;
-
         }
         return true;
-
-
-
-
-
-
-
     }
-
 
     public void HideLevelUpMenu()
     {
-
         GameManager._instance.ReturnTimeScale();
-
         levelUpMenu.SetActive(false);
         for (int i = 0; i < 2; i++)
         {
             skillImagesforLvlmenu[i].gameObject.SetActive(false);
             buttons[i].SetActive(false);
         }
-
         GameManager._instance.HideCursor();
-
-
-
-
     }
 
     public void ChangePlayerSkillsNumbers()
     {
-
         playerSkillNumbers[0].text = player.Intelect.ToString();
         playerSkillNumbers[1].text = player.Stamina.ToString();
         playerSkillNumbers[2].text = player.Strength.ToString();
@@ -201,14 +187,5 @@ public class UImanager : MonoBehaviour
         playerAfterLvlUpSkillNumbers[2].text = (player.Strength + 2).ToString();
         playerAfterLvlUpSkillNumbers[3].text = (player.Agility + 2).ToString();
         playerAfterLvlUpSkillNumbers[4].text = (player.Vitality + 2).ToString();
-
-
     }
-
-
-
-
-
-
 }
-

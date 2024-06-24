@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dde6ae5741e51b46802b78dbb8a5910, type: 3}
+  m_Name: Vampirism
+  m_EditorClassIdentifier: 
+  name: Vampirism
+  damage: 0
+  duration: 5
+  cd: 15
+  typeOfDamage: 0
+  sprite: {fileID: 21300000, guid: 5e329be6a1c80154e96805af33766b35, type: 3}
+  skillEffect: {fileID: 6357762328325928302, guid: 31898b0d3c774c84b81e3c4f7073110a, type: 3}
+  _intelect: 1
+  _stamina: 1
+  _strength: 1
+  _agility: 1
+  _vitality: 1
+  scripts: {fileID: 0}

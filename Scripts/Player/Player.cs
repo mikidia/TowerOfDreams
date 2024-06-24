@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
@@ -19,7 +20,8 @@ public class Player : MonoBehaviour
     [Header("Player Settings")]
     [SerializeField] private float _hp;
     [SerializeField] private float _maxHp;
-    [SerializeField] private float hpRegeneration;
+    [SerializeField] public float hpRegeneration;
+    [SerializeField] public bool VampirismIsActive = false;
 
     [SerializeField] private bool _controlIsEnable = true;
     [SerializeField] private bool _scrollIsEnable = true;
@@ -48,12 +50,16 @@ public class Player : MonoBehaviour
     [SerializeField] private StatusEffect _statusEffect;
     [SerializeField] private FOVController fovController;
     [SerializeField] private PlayerAttack attackZone;
+    [SerializeField] private GameObject castEffect;
+
 
     public List<StatusEffect.EffectType> effectsToApply = new List<StatusEffect.EffectType>();
 
     [Header("Child Objects")]
     [SerializeField] private Transform childObjectToRotate;
     [SerializeField] private Transform secondChildObjectToRotate;
+
+    private string currentAnimation;
 
     #region Input Buttons
     private KeyCode interractButton = KeyCode.E;
@@ -89,7 +95,11 @@ public class Player : MonoBehaviour
     public float Agility { get => _agility; set => _agility = value; }
     public float Vitality { get => _vitality; set => _vitality = value; }
     public int PlayerDamage { get => _playerDamage; set => _playerDamage = value; }
+    public float Hp { get => _hp; set => _hp = value; }
+    public float MaxHp { get => _maxHp; set => _maxHp = value; }
 
+    Animator animator;
+    [SerializeField] GameObject attackEffectPrefab;
     #endregion
 
     #region MonoBehaviour Methods
@@ -115,7 +125,7 @@ public class Player : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         movement = GetComponent<PlayerMovementScript>();
         ui = GameObject.Find("UiManager").GetComponent<UImanager>();
-
+        animator = GetComponent<Animator>();
         for (int i = 0; i < skillPrefabs.Length; i++)
         {
             if (skillPrefabs[i] != null)
@@ -124,6 +134,25 @@ public class Player : MonoBehaviour
             }
             activeSkills[i] = false;
         }
+    }
+    public void ChangeAnimation(string animationName)
+    {
+        if (animationName == currentAnimation)
+        {
+
+            return;
+        }
+        else
+        {
+
+
+            animator.Play(animationName);
+            currentAnimation = animationName;
+        }
+
+
+
+
     }
 
     private void Update()
@@ -151,6 +180,16 @@ public class Player : MonoBehaviour
         HandleScrollInput();
         HandleKeyPresses();
         _input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+        if (_input.x > 0)
+
+        {
+
+            ChangeAnimation("Walk Right");
+
+
+        }
+        else if (_input.x < 0 || _input.z != 0) { ChangeAnimation("Walk  Left"); }
+        else if (_input.x == 0) { ChangeAnimation("idle"); }
     }
 
     private void HandleScrollInput()
@@ -174,11 +213,22 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(rollButton) && (math.abs(_input.x) != 0 || math.abs(_input.z) != 0))
         {
             PlayerMovementScript.instance.UseDash();
+            // ChangeAnimation("Dash");
         }
         if (Input.GetKeyDown(interractButton) && !activeSkills[sellectedSlot])
         {
             activeSkills[sellectedSlot] = true;
-            StartCoroutine(CastSkill());
+            // ChangeAnimation("Cast");
+            try
+            {
+                StartCoroutine(CastSkill());
+
+            }
+            catch (IndexOutOfRangeException)
+            {
+
+                throw;
+            }
         }
         if (Input.GetKeyDown(secondSlot))
         {
@@ -186,6 +236,7 @@ public class Player : MonoBehaviour
         }
         if (Input.GetKeyDown(attackButton) && !_attackIsOnCooldown)
         {
+            // ChangeAnimation("Attack");
             StartCoroutine(Attack());
         }
     }
@@ -214,6 +265,7 @@ public class Player : MonoBehaviour
         if (secondChildObjectToRotate != null)
         {
             secondChildObjectToRotate.transform.rotation = targetRotation;
+
         }
     }
 
@@ -240,11 +292,14 @@ public class Player : MonoBehaviour
     private IEnumerator CastSkill()
     {
         UpdatePlayerSkillList();
+        castEffect.SetActive(true);
+
         var tempSpeed = movement.PlayerMoveSpeed;
         movement.PlayerMoveSpeed = tempSpeed / 2;
 
         yield return new WaitForSeconds(skills[sellectedSlot].GetComponent<SkillPrefab>().CastTime);
         movement.PlayerMoveSpeed = tempSpeed;
+        castEffect.SetActive(false);
 
         var skill = Instantiate(skills[sellectedSlot]);
         skill.transform.SetParent(transform);
@@ -268,8 +323,30 @@ public class Player : MonoBehaviour
     private IEnumerator Attack()
     {
         attackZone.gameObject.SetActive(true);
+        attackEffectPrefab.SetActive(true);
+        if (_input.x > 0)
+        {
+            attackEffectPrefab.gameObject.transform.localScale = new Vector3(
+                attackEffectPrefab.transform.lossyScale.x * -1,
+                attackEffectPrefab.transform.localScale.y,
+                attackEffectPrefab.transform.localScale.z
+            );
+
+
+        }
+        else
+        {
+            attackEffectPrefab.gameObject.transform.localScale = new Vector3(
+    math.abs(attackEffectPrefab.transform.lossyScale.x),
+    attackEffectPrefab.transform.localScale.y,
+    attackEffectPrefab.transform.localScale.z
+);
+
+        }
+
         yield return new WaitForSeconds(0.1f); // Attack duration
         attackZone.gameObject.SetActive(false);
+        attackEffectPrefab.SetActive(false);
         StartCoroutine(AttackCooldown());
     }
 

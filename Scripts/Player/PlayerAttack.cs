@@ -4,32 +4,47 @@ public class PlayerAttack : MonoBehaviour
 {
     private void Awake()
     {
-        // Здесь можно выполнить инициализацию, если потребуется
+        // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        // Получаем компоненты EnemyMain и StatusEffect у столкнувшегося объекта
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ EnemyMain пїЅ StatusEffect пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         EnemyMain enemy = other.GetComponent<EnemyMain>();
         StatusEffect statusEffect = other.GetComponent<StatusEffect>();
 
-        // Проверяем, что враг действительно имеет компоненты EnemyMain и StatusEffect
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ EnemyMain пїЅ StatusEffect
         if (enemy != null && statusEffect != null)
         {
-            // Кешируем необходимые данные игрока
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
             var playerInstance = Player._instance;
             var playerDamage = playerInstance.PlayerDamage;
             var effectsToApply = playerInstance.effectsToApply;
 
-            // Наносим урон врагу
+            other.GetComponent<EnemyStateMachine>().SlowDown(0.15f);
+            
+            if (playerInstance != null && playerInstance.VampirismIsActive)
+            {
+                playerInstance.Hp += playerDamage;
+                if (playerInstance.Hp > playerInstance.MaxHp)
+                {
+
+                    playerInstance.Hp = playerInstance.MaxHp;
+
+                }
+
+            }
+
+
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
             enemy.GetDamage(playerDamage);
 
-            // Применяем эффекты к врагу
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
             foreach (var effectType in effectsToApply)
             {
                 if (statusEffect.EffectFloatValues.TryGetValue(effectType, out int chance))
                 {
-                    // Проверка шанса на добавление эффекта
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                     int randomizeNumber = Random.Range(0, chance);
                     Debug.Log(randomizeNumber);
                     if (randomizeNumber == 0)

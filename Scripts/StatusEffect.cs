@@ -14,6 +14,7 @@ public class StatusEffect : MonoBehaviour
         public int duration;
         public int damagePerSecond;
         public int defaultChance;
+        public float slowPercentage; // Add slowPercentage to handle slowing effect
     }
 
     [SerializeField] private List<Effect> activeEffects = new List<Effect>();
@@ -56,7 +57,10 @@ public class StatusEffect : MonoBehaviour
             }
             else
             {
-                ApplyEffect(effect);
+                if (CheckEffectChance(effect.defaultChance))
+                {
+                    ApplyEffect(effect);
+                }
             }
         }
 
@@ -64,6 +68,11 @@ public class StatusEffect : MonoBehaviour
         {
             activeEffects.Remove(effect);
         }
+    }
+
+    private bool CheckEffectChance(int chance)
+    {
+        return Random.Range(0, 100) < chance;
     }
 
     private void ApplyEffect(Effect effect)
@@ -79,17 +88,23 @@ public class StatusEffect : MonoBehaviour
             case EffectType.Poison:
                 ApplyDamage(DamageType.Poison, effect.damagePerSecond * Time.deltaTime);
                 break;
-            case EffectType.Stun:
-                // Обработка оглушения
-                break;
+                // case EffectType.Stun:
+                //     ApplySlow(effect.slowPercentage, 0.5f);
+                //     break;
         }
     }
 
     private void ApplyDamage(DamageType damageType, float amount)
     {
-        // Логика применения урона
-        Debug.Log($"Применение {amount} урона типа {damageType}.");
+        Debug.Log($"Applied {amount} damage of type {damageType}.");
     }
+
+    // private void ApplySlow(float slowPercentage, float time)
+    // {
+
+    //     Debug.Log($"Slowing down by {slowPercentage * 100}%.");
+    //     // For example, you could reduce the character's speed by the given percentage
+    // }
 
     public void AddEffect(Effect newEffect)
     {
@@ -109,7 +124,8 @@ public class StatusEffect : MonoBehaviour
                 effectType = effectType,
                 duration = effectSetting.defaultDuration,
                 damagePerSecond = effectSetting.defaultDamagePerSecond,
-                defaultChance = effectSetting.defaultChance
+                defaultChance = effectSetting.defaultChance,
+                slowPercentage = effectSetting.defaultSlowPercentage
             };
 
             AddEffect(newEffect);

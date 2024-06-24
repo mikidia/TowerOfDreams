@@ -98,6 +98,7 @@ public class EnemyStateMachine : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        lastValidPosition = transform.position;
 
     }
 
@@ -230,7 +231,7 @@ public class EnemyStateMachine : MonoBehaviour
 
         if (_isDashAvailable && _energy - dashUseStamina >= 0)
         {
-            UseDash();
+            // UseDash();
         }
 
         MoveTowards(lastKnownPlayerPosition);
@@ -397,6 +398,15 @@ public class EnemyStateMachine : MonoBehaviour
     {
         yield return new WaitForSeconds(_dashCd);
         _isDashAvailable = true;
+    }
+    public IEnumerator SlowDown(float time)
+    {
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        var tempVariable = moveSpeed;
+        moveSpeed = 0;
+
+        yield return new WaitForSeconds(time);
+        moveSpeed = tempVariable;
     }
 
     // Method to update facing direction

@@ -26,7 +26,6 @@ public class Skills : ScriptableObject
 
     [Tooltip("Skill Script left empty if dont use or assigt script from ASSETS FOLDER not from HIERARCHY ")]
 
-    [SerializeField] MonoScript scripts;
 
 
     public virtual void UseSkill() { }

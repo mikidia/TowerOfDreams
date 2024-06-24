@@ -27,16 +27,21 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private int _chanceToSpawnBoss;
 
     [SerializeField] private Transform roomParent; // Room parent
-
+    [SerializeField] private int roomCounter = 1;
 
     private Bounds spawnBounds;
     [SerializeField] private Transform enemyParent;
 
+    // List to store all spawned enemies
+    private List<GameObject> spawnedEnemies = new List<GameObject>();
 
+    // Index for the next enemy to spawn
+    private int nextEnemyIndex = 0;
+
+    public int RoomCounter { get => roomCounter; set => roomCounter = value; }
 
     void Start()
     {
-
         // Check if enemyParent is assigned
         if (enemyParent == null)
         {
@@ -51,12 +56,15 @@ public class EnemySpawner : MonoBehaviour
             return;
         }
 
-        // Spawn enemies at the start
+        // Spawn all enemies initially but keep them inactive
         SpawnAllEnemies();
+        SpawnNextEnemy(Random.Range(roomCounter, roomCounter + Random.Range(1, roomCounter)));
     }
+
     private void FixedUpdate()
     {
     }
+
     public void SpawnAllEnemies()
     {
         spawnBounds = new Bounds(Vector3.zero, Vector3.zero);
@@ -70,7 +78,6 @@ public class EnemySpawner : MonoBehaviour
             Debug.LogError("No active objects found in roomParent.");
             return;
         }
-
         foreach (var enemyType in enemyTypes)
         {
             for (int i = 0; i < enemyType.count; i++)
@@ -78,7 +85,6 @@ public class EnemySpawner : MonoBehaviour
                 Vector3 spawnPosition;
                 int attempts = 0;
                 const int maxAttempts = 100;
-
                 do
                 {
                     spawnPosition = GetRandomSpawnPosition() + spawnOffset;
@@ -88,10 +94,17 @@ public class EnemySpawner : MonoBehaviour
                 if (attempts >= maxAttempts)
                 {
                     Debug.LogWarning("Failed to find a valid spawn position after " + maxAttempts + " attempts.");
+                    return;
                 }
                 else
                 {
-                    SpawnEnemy(spawnPosition, enemyType.enemyPrefab, enemyType.tag, enemyType.shouldAssignTag);
+                    // Spawn enemy and add to the list
+                    GameObject enemy = SpawnEnemy(spawnPosition, enemyType.enemyPrefab, enemyType.tag, enemyType.shouldAssignTag);
+                    if (enemy != null)
+                    {
+                        enemy.SetActive(false); // Keep the enemy inactive
+                        spawnedEnemies.Add(enemy);
+                    }
                 }
             }
         }
@@ -133,21 +146,38 @@ public class EnemySpawner : MonoBehaviour
                 }
             }
         }
-
         // Adjust bounds to include spawnMargin
-
-
         return combinedBounds;
     }
 
     Vector3 GetRandomSpawnPosition()
     {
-        // Generate a random position within the spawn bounds, considering the player's height
-        return new Vector3(
-            Random.Range(spawnBounds.min.x + 10, spawnBounds.max.x - 10),
-            player.transform.position.y, // Use the player's height
-            Random.Range(spawnBounds.min.z + 10, spawnBounds.max.z - 10)
-        );
+        // Calculate screen bounds in world space
+        Camera mainCamera = Camera.main;
+        Vector3 screenBottomLeft = mainCamera.ViewportToWorldPoint(new Vector3(0, 0, mainCamera.transform.position.z));
+        Vector3 screenTopRight = mainCamera.ViewportToWorldPoint(new Vector3(1, 1, mainCamera.transform.position.z));
+
+        // Randomly decide which side to spawn on (left, right, top, bottom)
+        int side = Random.Range(0, 4);
+        Vector3 spawnPosition = Vector3.zero;
+
+        switch (side)
+        {
+            case 0: // Left
+                spawnPosition = new Vector3(screenBottomLeft.x - 10, player.transform.position.y, Random.Range(screenBottomLeft.z, screenTopRight.z));
+                break;
+            case 1: // Right
+                spawnPosition = new Vector3(screenTopRight.x + 10, player.transform.position.y, Random.Range(screenBottomLeft.z, screenTopRight.z));
+                break;
+            case 2: // Top
+                spawnPosition = new Vector3(Random.Range(screenBottomLeft.x, screenTopRight.x), player.transform.position.y, screenTopRight.z + 10);
+                break;
+            case 3: // Bottom
+                spawnPosition = new Vector3(Random.Range(screenBottomLeft.x, screenTopRight.x), player.transform.position.y, screenBottomLeft.z - 10);
+                break;
+        }
+
+        return spawnPosition;
     }
 
     bool IsValidSpawnPosition(Vector3 position)
@@ -172,18 +202,17 @@ public class EnemySpawner : MonoBehaviour
         // Implementation for setting up characteristics if needed
     }
 
-    void SpawnEnemy(Vector3 position, GameObject enemyPrefab, string tag, bool shouldAssignTag)
+    GameObject SpawnEnemy(Vector3 position, GameObject enemyPrefab, string tag, bool shouldAssignTag)
     {
         // Check if enemyPrefab is assigned
         if (enemyPrefab == null)
         {
             Debug.LogError("Enemy prefab is not assigned.");
-            return;
+            return null;
         }
 
         // Spawn the enemy and set enemyParent as its parent
         GameObject enemy = Instantiate(enemyPrefab, position, Quaternion.identity, enemyParent);
-        enemy.SetActive(true);
         enemy.GetComponent<MobType>().SelectType(_chanceToSpawnRegular, _chanceToSpawnElite, _chanceToSpawnBoss);
         RecheckEnemyPosition(enemy, spawnBounds);
 
@@ -192,8 +221,9 @@ public class EnemySpawner : MonoBehaviour
         {
             enemy.tag = tag;
         }
-    }
 
+        return enemy;
+    }
 
     void RecheckEnemyPosition(GameObject enemyObj, Bounds boundsOfRoom)
     {
@@ -219,4 +249,20 @@ public class EnemySpawner : MonoBehaviour
         } while (!rightPosition);
     }
 
+    // Method to spawn the next enemy from the list
+    public void SpawnNextEnemy(int enemyCount)
+    {
+        for (int i = 0; i < enemyCount; i++)
+        {
+            if (nextEnemyIndex < spawnedEnemies.Count)
+            {
+                spawnedEnemies[nextEnemyIndex].SetActive(true);
+                nextEnemyIndex++;
+            }
+            else
+            {
+                Debug.LogWarning("No more enemies to spawn.");
+            }
+        }
+    }
 }

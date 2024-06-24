@@ -4,18 +4,16 @@ using UnityEngine;
 
 public class LevelingScr : MonoBehaviour
 {
-    [SerializeField] float exp;
-    [SerializeField] float totalExp;
+    [SerializeField] private float exp;
+    [SerializeField] private float totalExp;
+    [SerializeField] private float maxExp;
+    [SerializeField] private float level;
+    [SerializeField] private Dictionary<string, int> skillLevels;
+    [SerializeField] private Skills[] allSkills;
+    [SerializeField] private int skillInLvlMenu;
+    [SerializeField] private SkillsEvolution[] skillsToEvolute;
 
-
-    [SerializeField] float maxExp;
-    [SerializeField] float level;
-
-    [SerializeField] Dictionary<string, int> skillLevels;
-    [SerializeField] Skills[] allSkills;
-    [SerializeField] int skillInLvlMenu;
-
-    public static LevelingScr _instance;
+    public static LevelingScr _instance { get; private set; }
 
     public float Exp { get => exp; set => exp = value; }
     public float TotalExp { get => totalExp; set => totalExp = value; }
@@ -23,275 +21,160 @@ public class LevelingScr : MonoBehaviour
     public float Level { get => level; set => level = value; }
     public Dictionary<string, int> SkillLevels { get => skillLevels; set => skillLevels = value; }
 
+    [System.Serializable]
+    private class SkillsEvolution
+    {
+        public Skills skillOne;
+        public Skills skillTwo;
+        public Skills skillFinish;
+    }
+
     private void Awake()
     {
         if (_instance == null)
         {
-
             _instance = this;
-
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
             Destroy(gameObject);
         }
+
+        InitializeSkillLevels();
+    }
+
+    private void InitializeSkillLevels()
+    {
         skillLevels = new Dictionary<string, int>();
-        foreach (var item in Player._instance.SkillPrefabs)
+        foreach (var skill in Player._instance.SkillPrefabs)
         {
-            skillLevels.Add(item.name, 1);
+            skillLevels.Add(skill.name, 1);
         }
-
-
     }
 
     public void AddSkill(string name)
     {
-        // Check if the skill already exists in skillLevels
         if (!skillLevels.ContainsKey(name))
         {
             skillLevels.Add(name, 1);
-
-            foreach (var item in allSkills)
+            foreach (var skill in allSkills)
             {
-                if (item.name == name)
+                if (skill.name == name)
                 {
-                    // Convert SkillPrefabs to a list, add the new skill, and convert back to an array
                     var skillPrefabsList = Player._instance.SkillPrefabs.ToList();
-                    skillPrefabsList.Add(item);
+                    skillPrefabsList.Add(skill);
                     Player._instance.SkillPrefabs = skillPrefabsList.ToArray();
-
-                    // Since we found the skill and added it, we can break out of the loop
                     break;
                 }
             }
         }
     }
 
-
-
-
     public void AddExp(float experience)
     {
-        int loopChecker = 0;
         exp += experience;
         totalExp += experience;
         if (exp >= maxExp)
         {
-
             exp -= maxExp;
-            List<int> usedIndex = new List<int>();
+            LevelUp();
 
-            Skills[] selectedSkillsForLevelUp = new Skills[4];
+            List<int> usedIndex = new List<int>();
+            Skills[] selectedSkillsForLevelUp = new Skills[skillInLvlMenu];
+
             for (int i = 0; i < skillInLvlMenu; i++)
             {
-
-                loopChecker = 0;
-                int tempNumber = Random.Range(0, allSkills.Length);
-                while (usedIndex.Contains(tempNumber))
+                int tempNumber;
+                do
                 {
-                    loopChecker++;
-                    if (loopChecker > 200) { break; }
                     tempNumber = Random.Range(0, allSkills.Length);
-                }
+                } while (usedIndex.Contains(tempNumber));
 
                 usedIndex.Add(tempNumber);
                 selectedSkillsForLevelUp[i] = allSkills[tempNumber];
-
             }
+            SkillEvolution(selectedSkillsForLevelUp);
             UImanager._instance.ShowLevelUpMenu(skillInLvlMenu, selectedSkillsForLevelUp);
-            LevelUp(totalExp);
 
         }
-
     }
 
-    public void updatePlayerStats()
+    private void SkillEvolution(Skills[] selectedSkillsForLevelUp)
     {
+        Player player = GetComponent<Player>();
 
+        foreach (var evolution in skillsToEvolute)
+        {
+            bool hasSkillOne = player.SkillPrefabs.Contains(evolution.skillOne);
+            bool hasSkillTwo = player.SkillPrefabs.Contains(evolution.skillTwo);
+
+
+            if (true)
+            {
+                selectedSkillsForLevelUp[0] = evolution.skillFinish;
+                return;
+            }
+        }
+    }
+
+    public void UpdatePlayerStats()
+    {
         var playerMovementScript = GameObject.Find("Player").GetComponent<PlayerMovementScript>();
         var playerMain = GameObject.Find("Player").GetComponent<Player>();
+
         if (playerMovementScript != null)
         {
             playerMovementScript.MaxEnergy = playerMain.Stamina * 10;
         }
         playerMain.HpAndStaminaMax();
         Player._instance.UpdatePlayerSkillList();
-
-
-
-
     }
 
-    void LevelUp(float experience)
+    private void LevelUp()
     {
-        switch (totalExp)
+        level = totalExp switch
         {
-
-
-            case <= 7:
-                level = 1;
-                maxExp = 7;
-
-                break;
-            case <= 16:
-                level = 2;
-                maxExp = 16;
-                break;
-            case <= 27:
-                level = 3;
-                maxExp = 27;
-                break;
-            case <= 40:
-                level = 4;
-                maxExp = 40;
-                break;
-            case <= 55:
-                level = 5;
-                maxExp = 55;
-                break;
-            case <= 72:
-                level = 6;
-                maxExp = 72;
-                break;
-            case <= 91:
-                level = 7;
-                maxExp = 91;
-                break;
-            case <= 112:
-                level = 8;
-                maxExp = 112;
-                break;
-            case <= 135:
-                level = 9;
-                maxExp = 135;
-                break;
-            case <= 160:
-                level = 10;
-                maxExp = 160;
-                break;
-            case <= 187:
-                level = 11;
-                maxExp = 187;
-                break;
-            case <= 216:
-                level = 12;
-                maxExp = 216;
-                break;
-            case <= 247:
-                level = 13;
-                maxExp = 247;
-                break;
-            case <= 280:
-                level = 14;
-                maxExp = 280;
-                break;
-            case <= 315:
-                level = 15;
-                maxExp = 315;
-                break;
-            case <= 352:
-                level = 16;
-                maxExp = 352;
-                break;
-            case <= 394:
-                level = 17;
-                maxExp = 394;
-                break;
-            case <= 441:
-                level = 18;
-                maxExp = 441;
-                break;
-            case <= 493:
-                level = 19;
-                maxExp = 493;
-                break;
-            case <= 550:
-                level = 20;
-                maxExp = 550;
-                break;
-            case <= 612:
-                level = 21;
-                maxExp = 612;
-                break;
-            case <= 679:
-                level = 22;
-                maxExp = 679;
-                break;
-            case <= 751:
-                level = 23;
-                maxExp = 751;
-                break;
-            case <= 828:
-                level = 24;
-                maxExp = 828;
-                break;
-            case <= 910:
-                level = 25;
-                maxExp = 910;
-                break;
-            case <= 997:
-                level = 26;
-                maxExp = 997;
-                break;
-            case <= 1089:
-                level = 27;
-                maxExp = 1089;
-                break;
-            case <= 1186:
-                level = 28;
-                maxExp = 1186;
-                break;
-            case <= 1288:
-                level = 29;
-                maxExp = 1288;
-                break;
-            case <= 1395:
-                level = 30;
-                maxExp = 1395;
-                break;
-            case <= 1507:
-                level = 31;
-                maxExp = 1507;
-                break;
-            case <= 1628:
-                level = 32;
-                maxExp = 1628;
-                break;
-            case <= 1758:
-                level = 33;
-                maxExp = 1758;
-                break;
-            case <= 1897:
-                level = 34;
-                maxExp = 1897;
-                break;
-            case <= 2045:
-                level = 35;
-                maxExp = 2045;
-                break;
-            case <= 2202:
-                level = 36;
-                maxExp = 2202;
-                break;
-            case <= 2368:
-                level = 37;
-                maxExp = 2368;
-                break;
-            case <= 2543:
-                level = 38;
-                maxExp = 2368;
-                break;
-
-
-
-
-
-
-
-        }
-
-
-
-
+            <= 7 => 1,
+            <= 16 => 2,
+            <= 27 => 3,
+            <= 40 => 4,
+            <= 55 => 5,
+            <= 72 => 6,
+            <= 91 => 7,
+            <= 112 => 8,
+            <= 135 => 9,
+            <= 160 => 10,
+            <= 187 => 11,
+            <= 216 => 12,
+            <= 247 => 13,
+            <= 280 => 14,
+            <= 315 => 15,
+            <= 352 => 16,
+            <= 394 => 17,
+            <= 441 => 18,
+            <= 493 => 19,
+            <= 550 => 20,
+            <= 612 => 21,
+            <= 679 => 22,
+            <= 751 => 23,
+            <= 828 => 24,
+            <= 910 => 25,
+            <= 997 => 26,
+            <= 1089 => 27,
+            <= 1186 => 28,
+            <= 1288 => 29,
+            <= 1395 => 30,
+            <= 1507 => 31,
+            <= 1628 => 32,
+            <= 1758 => 33,
+            <= 1897 => 34,
+            <= 2045 => 35,
+            <= 2202 => 36,
+            <= 2368 => 37,
+            <= 2543 => 38,
+            _ => level
+        };
+        maxExp = (level * level + 1) * 7;  // Example formula to calculate maxExp dynamically
     }
 }

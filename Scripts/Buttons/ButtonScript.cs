@@ -73,7 +73,7 @@ public class ButtonScript : MonoBehaviour
 
         Player._instance.Intelect += 2;
         UImanager._instance.HideLevelUpMenu();
-        LevelingScr._instance.updatePlayerStats();
+        LevelingScr._instance.UpdatePlayerStats();
 
     }
     public void AddStamina()
@@ -81,7 +81,7 @@ public class ButtonScript : MonoBehaviour
 
         Player._instance.Stamina += 2;
         UImanager._instance.HideLevelUpMenu();
-        LevelingScr._instance.updatePlayerStats();
+        LevelingScr._instance.UpdatePlayerStats();
 
     }
     public void AddStrenght()
@@ -89,7 +89,7 @@ public class ButtonScript : MonoBehaviour
 
         Player._instance.Strength += 2;
         UImanager._instance.HideLevelUpMenu();
-        LevelingScr._instance.updatePlayerStats();
+        LevelingScr._instance.UpdatePlayerStats();
 
     }
     public void AddAgility()
@@ -97,7 +97,7 @@ public class ButtonScript : MonoBehaviour
 
         Player._instance.Agility += 2;
         UImanager._instance.HideLevelUpMenu();
-        LevelingScr._instance.updatePlayerStats();
+        LevelingScr._instance.UpdatePlayerStats();
 
     }
     public void AddViatlity()
@@ -105,7 +105,7 @@ public class ButtonScript : MonoBehaviour
 
         Player._instance.Vitality += 2;
         UImanager._instance.HideLevelUpMenu();
-        LevelingScr._instance.updatePlayerStats();
+        LevelingScr._instance.UpdatePlayerStats();
 
     }
     public void StartGame()

@@ -13,8 +13,9 @@ public class EnemyMain : MonoBehaviour, IEnemy
 
     [SerializeField] private float baseHp = 10f;
     [SerializeField] private float baseDamage = 1f;
-    [SerializeField] private float baseMoveSpeed = 5f;
+    [SerializeField] public float baseMoveSpeed = 5f;
     [SerializeField] private float baseEnergy = 50f;
+    [SerializeField] private float attackCooldown;
     [Header("Final  Stats")]
 
     [SerializeField] private float intelect;
@@ -45,7 +46,7 @@ public class EnemyMain : MonoBehaviour, IEnemy
         SetupCharacteristics();
 
     }
-    void SetupCharacteristics()
+    public void SetupCharacteristics()
     {
         // ������������� ������� ��������
         hp = baseHp;
@@ -81,6 +82,7 @@ public class EnemyMain : MonoBehaviour, IEnemy
             }
 
         }
+        baseMoveSpeed = moveSpeed;
         StatsChecker();
     }
 
@@ -160,12 +162,23 @@ public class EnemyMain : MonoBehaviour, IEnemy
 
     public float Damage1 { get => damage; set => damage = value; }
     public float ExpAfterDeath { get => expAfterDeath; set => expAfterDeath = value; }
+    public float AttackCooldown { get => attackCooldown; set => attackCooldown = value; }
 
     public void GetDamage(int damag)
     {
         if (hp - damag <= 0)
         {
             GameObject.Find("Player").GetComponent<LevelingScr>().AddExp(expAfterDeath);
+            try
+            {
+                GameObject.Find("EnemyManagers").GetComponent<EnemySpawner>().SpawnNextEnemy(1);
+            }
+            catch (System.IndexOutOfRangeException)
+            {
+
+                throw;
+            }
+
             Destroy(gameObject);
             isDeath = true;
 
@@ -186,10 +199,7 @@ public class EnemyMain : MonoBehaviour, IEnemy
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.color = Color.red;
         yield return new WaitForSeconds(0.1f);
-        spriteRenderer.color = Color.black;
-
-
-
+        spriteRenderer.color = Color.white;
     }
 
 

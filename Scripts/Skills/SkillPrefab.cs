@@ -5,6 +5,8 @@ public class SkillPrefab : MonoBehaviour
 {
     [SerializeField] float skillTime;
     [SerializeField] float skillCd;
+    [SerializeField] int skillDamage;
+    [SerializeField] float slowdowneffect;
     [SerializeField] int slot;
     [SerializeField] float castTime;
 
@@ -17,10 +19,16 @@ public class SkillPrefab : MonoBehaviour
     public float SkillCd1 { get => skillCd; set => skillCd = value; }
     public float CastTime { get => castTime; set => castTime = value; }
 
+
     private void Start()
     {
         StartCoroutine("skillDuration");
 
+        player = GameObject.Find("Player").GetComponent<Player>();
+    }
+    private void FixedUpdate()
+    {
+        UpdateScale(player);
     }
     public void ApplySlot(int numberOfSlot)
     {
@@ -41,10 +49,38 @@ public class SkillPrefab : MonoBehaviour
         GameObject.Destroy(gameObject);
 
     }
-    IEnumerator SkillCd()
+    private void OnTriggerEnter(Collider other)
     {
+        var enemy = other.gameObject.GetComponent<EnemyMain>();
+        if (enemy != null)
+        {
+            enemy.GetDamage(skillDamage);
+            enemy.MoveSpeed = enemy.MoveSpeed / 2;
 
-        yield return new WaitForSeconds((float)skillCd);
+
+
+
+        }
+    }
+
+
+    public void UpdateScale(Player player)
+    {
+        if (gameObject.transform.localScale.x != 1 + player.Intelect / 10)
+            gameObject.transform.localScale = new Vector3(1 + player.Intelect / 10, 1, 1 + player.Intelect / 10);
 
     }
+    private void OnTriggerExit(Collider other)
+    {
+        var enemy = other.gameObject.GetComponent<EnemyMain>();
+        if (enemy != null)
+        {
+            enemy.MoveSpeed = enemy.baseMoveSpeed;
+
+
+
+
+        }
+    }
+
 }
