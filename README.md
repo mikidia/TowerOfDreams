@@ -11,13 +11,7 @@
   <div>
  
     
-  </div>
-  <h2>Game Trailer</h2>
-    <a href="https://www.youtube.com/shorts/hswPFNHaln4">
-    <img src="https://img.shields.io/badge/YouTube-red?style=for-the-badge&logo=youtube&logoColor=white" alt="Youtube Badge"/>
-  </a>
-  
-  
+  </div> 
 </div >
 <div id="header" >
 <div id="header" >
