@@ -1,15 +1,7 @@
-<div id="badges">
-    <div id="header" align="center">
-     <img src="https://github.com/mikidia/Mutidisciplinar/assets/58522367/24c556a7-8278-4414-9081-30112339aab6" width="1000"/>
-</div>
+
 <div id="header" align="center">
     <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExN3oxNzFhdjA4ZGVrYjQwY21uZXpwNWdmNndneWxrc3Bya2cxeXI5ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/BPYCygj6el5OJZfAQl/giphy.gif" width="500"/>
-     <img src="https://github.com/mikidia/Mutidisciplinar/assets/58522367/806c293e-6a67-4237-b1e0-8bb06837a49d" width="500"/>
 
-     
-  
-  
-  
 </div>
 
 <h1>Our links</h1>
@@ -31,13 +23,13 @@
 <div id="header" >
 <h2>Description</h2>
 <text>
-This project was carried out as part of Fnac New Talents 2024 by
-three students from the Algarve School of Technology, Innovation and Creation (ETIC) and
-a programmer who is a software engineer.
-It should also be mentioned that it is one of the pilot projects that created the
-Hambee Studio.
-In short, Dreamrush is an uninhibited game with 2D and 3D elements
-elements that is designed to integrate the player into a different visual, auditory and gameplay experience.
+This project was created as final project for Etic algarve By one mounth.This game inspired by cult of the lamb and Tower of God(manhva).In this projest i relize some interesting my ideas such as:
+1.Not fixed fov / When player move fov changing
+2.Status system / bleeding, fire damage ,poision, stun
+3.Advansed Enemy system / when enemy loose player script create 8 point around point when was last player position and he(Enemy) start patrool.
+4.Spels system 
+5.level generation using prefabs
+
 
     
 </text>
@@ -49,15 +41,7 @@ elements that is designed to integrate the player into a different visual, audit
 Programmer <b>Andrii Vantukh</b>, a 1st year student of the Video Games course at ETIC Algarve.
 </text></div>
 
-<div id="header" ><text>
-Programmer <b>Nuno Moutinho</b>, software engineer.
-</text></div>
-<div id="header" ><text>
-Sound Operator <b>Oscar Corte</b>, 1st year student on the Music Creation, Production and Sound Techniques,Production and Sound Techniques course at ETIC Algarve.
-</text></div>
-<div id="header" ><text>
-Artist <b>Vlada Yatsyno</b>, 1st year student on the Video Games course at ETIC Algarve.
-</text></div>
+
 
     
 
